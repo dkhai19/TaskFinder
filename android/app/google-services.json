@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "494392345854",
+    "project_id": "vmafinalproject",
+    "storage_bucket": "vmafinalproject.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:494392345854:android:a72e4d0b3a7749aed711af",
+        "android_client_info": {
+          "package_name": "com.taskfinder"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyATp5OSHHw2iXru1HGO_fzY-OMoH5FpLR0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
