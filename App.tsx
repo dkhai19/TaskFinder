@@ -16,7 +16,7 @@ import {
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {colors} from './src/constants/color';
-import LoginScreen from './src/screens/Login/login-screen';
+import LoginScreen from './src/screens/SignIn/login-screen';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'light';
