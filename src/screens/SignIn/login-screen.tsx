@@ -1,4 +1,5 @@
 import {
+  Alert,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -11,11 +12,61 @@ import {
 } from 'react-native';
 import {colors} from '../../constants/color';
 import {typography} from '../../constants/typo';
+import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
+import {LoginStackParamList} from '../../navigation/RootNavigator';
+import auth from '@react-native-firebase/auth';
+import {useState} from 'react';
+import {
+  validateEmail,
+  validatePassword,
+} from '../../validations/user-infor-validation';
+import Icon from 'react-native-vector-icons/Ionicons';
+type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>;
 
-const LoginScreen = () => {
+const LoginScreen: React.FC<Props> = ({navigation}) => {
+  const [user, setUser] = useState({
+    email: '',
+    password: '',
+  });
+  //Set error string to use to notice user about invalid input
+  const [alert, setAlert] = useState('');
+
+  //State to control user want to hide password or not
+  const [hidePassword, setHidePassword] = useState<boolean>(true);
+  const handleHideOrShowPassword = () => {
+    setHidePassword(prev => !prev);
+  };
+  //Handle change input
+  const handleChangeUserInput = (key: string, value: string) => {
+    setUser({
+      ...user,
+      [key]: value,
+    });
+  };
+  //Navigate to sign up screen
+  const signUpHandler = () => {
+    navigation.navigate('Signup');
+  };
+
+  //Handle sign in logic
+  const signInHandler = () => {
+    if (validateEmail(user.email) && validatePassword(user.password)) {
+      auth()
+        .signInWithEmailAndPassword(user.email, user.password)
+        .then(() => {
+          console.log('Logged in!');
+          navigation.navigate('Main');
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    } else {
+      Alert.alert('Your input is invalid, check again!');
+    }
+  };
   return (
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+    <View
+      // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={loginStyles.container}>
       <View style={loginStyles.images_layer}>
         <View style={{flexDirection: 'row'}}>
@@ -73,40 +124,54 @@ const LoginScreen = () => {
                 style={loginStyles.input}
                 placeholder="Enter email or username"
                 placeholderTextColor={colors.opacityWhite(0.8)}
+                onChangeText={text => handleChangeUserInput('email', text)}
               />
             </View>
-            <View style={loginStyles.input_container}>
+            <View style={[loginStyles.input_container, {flexDirection: 'row'}]}>
               <TextInput
                 style={loginStyles.input}
                 placeholder="Enter password"
                 placeholderTextColor={colors.opacityWhite(0.8)}
+                onChangeText={text => handleChangeUserInput('password', text)}
+                secureTextEntry={hidePassword}
               />
+              <TouchableOpacity
+                onPress={handleHideOrShowPassword}
+                style={loginStyles.icon_container}>
+                <Icon
+                  name={hidePassword ? 'eye' : 'eye-off'}
+                  size={24}
+                  color={colors.red}
+                />
+              </TouchableOpacity>
             </View>
-            <TouchableOpacity style={loginStyles.button_container}>
+            <TouchableOpacity
+              onPress={signInHandler}
+              style={loginStyles.button_container}>
               <Text style={[typography.f17_medium, {color: colors.white}]}>
                 Sign In
               </Text>
             </TouchableOpacity>
             <View style={loginStyles.register_container}>
-              <TouchableOpacity>
+              <Text
+                style={[
+                  typography.f15_regular,
+                  {
+                    color: colors.white,
+                  },
+                ]}>
+                Dont have account?{' '}
+              </Text>
+              <TouchableOpacity onPress={signUpHandler}>
                 <Text
                   style={[
-                    typography.f15_regular,
+                    typography.f16_medium,
                     {
-                      color: colors.white,
+                      color: colors.blue,
+                      textDecorationLine: 'underline',
                     },
                   ]}>
-                  Dont have account?{' '}
-                  <Text
-                    style={[
-                      typography.f15_regular,
-                      {
-                        color: colors.blue,
-                        textDecorationLine: 'underline',
-                      },
-                    ]}>
-                    Sign up
-                  </Text>
+                  Sign up
                 </Text>
               </TouchableOpacity>
             </View>
@@ -121,7 +186,7 @@ const LoginScreen = () => {
           </View>
         </View>
       </View>
-    </KeyboardAvoidingView>
+    </View>
   );
 };
 
@@ -184,6 +249,7 @@ const loginStyles = StyleSheet.create({
     paddingVertical: 18,
     paddingLeft: 28,
     paddingRight: 16,
+    width: '85%',
   },
   button_container: {
     width: '100%',
@@ -195,8 +261,9 @@ const loginStyles = StyleSheet.create({
     marginTop: 16,
   },
   register_container: {
+    flexDirection: 'row',
     width: '100%',
-    alignItems: 'flex-end',
+    justifyContent: 'flex-end',
     marginTop: 16,
   },
   agreement_container: {
@@ -206,6 +273,11 @@ const loginStyles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     paddingBottom: 16,
+  },
+  icon_container: {
+    padding: 8,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
 });
 

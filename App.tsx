@@ -17,6 +17,7 @@ import {
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {colors} from './src/constants/color';
 import LoginScreen from './src/screens/SignIn/login-screen';
+import AppNavigator from './src/navigation/AppNavigator';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'light';
@@ -31,7 +32,7 @@ function App(): React.JSX.Element {
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={colors.opacityBlack(0.7)}
       />
-      <LoginScreen />
+      <AppNavigator />
     </SafeAreaView>
   );
 }

@@ -1,6 +1,7 @@
 export type LoginStackParamList = {
   Login: undefined;
   Signup: undefined;
+  Main: undefined;
 };
 
 export type RootTabParamList = {
@@ -10,7 +11,7 @@ export type RootTabParamList = {
   Setting: undefined;
 };
 
-export type RootStackParamList = {
-  SigninScreen: undefined;
-  MainScreen: undefined;
-};
+// export type RootStackParamList = {
+//   SigninScreen: undefined;
+//   MainScreen: undefined;
+// };
