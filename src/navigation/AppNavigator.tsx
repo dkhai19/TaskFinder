@@ -9,10 +9,15 @@ import NotificationScreen from '../screens/Notification/notification-screen';
 import SettingScreen from '../screens/Setting/setting-screen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../constants/color';
-import {NavigationContainer} from '@react-navigation/native';
+import {NavigationContainer, useFocusEffect} from '@react-navigation/native';
+import {StatusBar, useColorScheme} from 'react-native';
+import {useCallback} from 'react';
+import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
 
 const RootStack = createStackNavigator<LoginStackParamList>();
 const RootTab = createBottomTabNavigator<RootTabParamList>();
+type LoginScreenProps = NativeStackScreenProps<LoginStackParamList, 'Login'>;
+type SignUpScreenProps = NativeStackScreenProps<LoginStackParamList, 'Signup'>;
 //const RootStack = createStackNavigator<RootStackParamList>();
 
 // const SignInNavigator = () => {
@@ -28,7 +33,30 @@ const RootTab = createBottomTabNavigator<RootTabParamList>();
 //   );
 // };
 
+const LoginScreenWrapper: React.FC<LoginScreenProps> = props => {
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBarStyle('light-content');
+    }, []),
+  );
+  return <LoginScreen {...props} />;
+};
+
+const SignUpScreenWrapper: React.FC<SignUpScreenProps> = props => {
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBarStyle('light-content');
+    }, []),
+  );
+  return <SignUpScreen {...props} />;
+};
+
 const RootTabNavigator = () => {
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBarStyle('dark-content');
+    }, []),
+  );
   return (
     <RootTab.Navigator
       screenOptions={({route}) => ({
@@ -65,14 +93,16 @@ const RootTabNavigator = () => {
 };
 
 const AppNavigator = () => {
+  // const isDarkMode = useColorScheme() === 'light';
   return (
     <NavigationContainer>
+      <StatusBar backgroundColor="transparent" translucent />
       <RootStack.Navigator
         screenOptions={{
           headerShown: false,
         }}>
-        <RootStack.Screen name="Login" component={LoginScreen} />
-        <RootStack.Screen name="Signup" component={SignUpScreen} />
+        <RootStack.Screen name="Login" component={LoginScreenWrapper} />
+        <RootStack.Screen name="Signup" component={SignUpScreenWrapper} />
         <RootStack.Screen name="Main" component={RootTabNavigator} />
       </RootStack.Navigator>
     </NavigationContainer>

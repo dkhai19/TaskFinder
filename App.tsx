@@ -16,7 +16,6 @@ import {
 
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {colors} from './src/constants/color';
-import LoginScreen from './src/screens/SignIn/login-screen';
 import AppNavigator from './src/navigation/AppNavigator';
 
 function App(): React.JSX.Element {
@@ -28,10 +27,6 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={colors.opacityBlack(0.7)}
-      />
       <AppNavigator />
     </SafeAreaView>
   );
