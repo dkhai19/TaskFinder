@@ -21,6 +21,7 @@ import {
   validatePassword,
 } from '../../validations/user-infor-validation';
 import Icon from 'react-native-vector-icons/Ionicons';
+import Animated, {PinwheelIn, PinwheelOut} from 'react-native-reanimated';
 type Props = NativeStackScreenProps<LoginStackParamList, 'Signup'>;
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
@@ -30,6 +31,8 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     confirmPassword: '',
     phoneNumber: '',
   });
+
+  const [userCreated, setUserCreated] = useState(false);
 
   //State to store error message
   const [errorMessages, setErrorMessage] = useState({
@@ -76,6 +79,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
 
   //Sign up function
   const signUpFirebaseHandler = () => {
+    setUserCreated(true);
     if (!validateEmail(input.email)) {
       setErrorMessage(prevState => ({
         ...prevState,
@@ -97,9 +101,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     ) {
       auth()
         .createUserWithEmailAndPassword(input.email, input.password)
-        .then(() => {
-          Alert.alert('User created!');
-        })
+        .then(() => {})
         .catch(error => {
           if (error.code === 'auth/email-already-in-use') {
             console.log(
@@ -150,6 +152,11 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           </View>
         </View>
       </View>
+      {userCreated && (
+        <Animated.View entering={PinwheelIn} exiting={PinwheelOut}>
+          <View style={loginStyles.alert}></View>
+        </Animated.View>
+      )}
       <View style={loginStyles.background_layer}>
         <View style={loginStyles.content_container}>
           <View style={loginStyles.slogan_container}>
@@ -375,6 +382,11 @@ const loginStyles = StyleSheet.create({
     right: 0,
     alignItems: 'center',
     paddingBottom: 16,
+  },
+  alert: {
+    height: 60,
+    width: '60%',
+    backgroundColor: colors.white,
   },
 });
 

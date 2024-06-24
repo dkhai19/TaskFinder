@@ -4,7 +4,7 @@
  *
  * @format
  */
-
+import 'react-native-gesture-handler';
 import React from 'react';
 import {
   SafeAreaView,
@@ -17,6 +17,8 @@ import {
 import {Colors} from 'react-native/Libraries/NewAppScreen';
 import {colors} from './src/constants/color';
 import AppNavigator from './src/navigation/AppNavigator';
+import {Provider} from 'react-redux';
+import store from './src/redux/store/store';
 
 function App(): React.JSX.Element {
   const isDarkMode = useColorScheme() === 'light';
@@ -27,7 +29,9 @@ function App(): React.JSX.Element {
 
   return (
     <SafeAreaView style={styles.backgroundStyle}>
-      <AppNavigator />
+      <Provider store={store}>
+        <AppNavigator />
+      </Provider>
     </SafeAreaView>
   );
 }

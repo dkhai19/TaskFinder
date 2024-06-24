@@ -10,7 +10,7 @@ import SettingScreen from '../screens/Setting/setting-screen';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {colors} from '../constants/color';
 import {NavigationContainer, useFocusEffect} from '@react-navigation/native';
-import {StatusBar, useColorScheme} from 'react-native';
+import {StatusBar, View, useColorScheme} from 'react-native';
 import {useCallback} from 'react';
 import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
 
@@ -78,7 +78,7 @@ const RootTabNavigator = () => {
           return (
             <Icon
               name={iconName}
-              size={24}
+              size={26}
               color={focused ? colors.red : colors.black}
             />
           );

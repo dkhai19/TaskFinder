@@ -15,12 +15,16 @@ import {typography} from '../../constants/typo';
 import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
 import {LoginStackParamList} from '../../navigation/RootNavigator';
 import auth from '@react-native-firebase/auth';
-import {useState} from 'react';
+import {useEffect, useState} from 'react';
 import {
   validateEmail,
   validatePassword,
 } from '../../validations/user-infor-validation';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {useDispatch, useSelector} from 'react-redux';
+import {setUserID} from '../../redux/slices/authReducer';
+import {RootState} from '../../redux/rootReducer';
+
 type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
@@ -28,6 +32,9 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     email: '',
     password: '',
   });
+  const dispatch = useDispatch();
+  // const userId = useSelector((state: RootState) => state.authentication.uid);
+  // console.log(userId);
   //Set error string to use to notice user about invalid input
   const [alert, setAlert] = useState('');
 
@@ -53,8 +60,9 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     if (validateEmail(user.email) && validatePassword(user.password)) {
       auth()
         .signInWithEmailAndPassword(user.email, user.password)
-        .then(() => {
-          console.log('Logged in!');
+        .then(userCredential => {
+          const user = userCredential.user;
+          dispatch(setUserID(user.uid));
           navigation.navigate('Main');
         })
         .catch(error => {
