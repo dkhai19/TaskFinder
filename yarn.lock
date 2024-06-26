@@ -1347,6 +1347,16 @@
   dependencies:
     plist "^3.1.0"
 
+"@react-native-firebase/database@^20.1.0":
+  version "20.1.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/database/-/database-20.1.0.tgz"
+  integrity sha512-YCeoKD2xv87Q9Yl8I6//xlgZIj7pnmG+5xp3b1FMFVPC+A3XMtAMo1TRpHneXubs6LtKwle8w4BHz8U+ltaBVA==
+
+"@react-native-firebase/firestore@^20.1.0":
+  version "20.1.0"
+  resolved "https://registry.npmjs.org/@react-native-firebase/firestore/-/firestore-20.1.0.tgz"
+  integrity sha512-g8na4jm7V+nBctzjeSyraK9hygOTPDv3nfkl4E+Nh7nB9DEgS74FrXXezRPVJKdkE0Nw9cWSJ1gU1tTA50ZEpg==
+
 "@react-native-vector-icons/common@^0.0.1-alpha.10":
   version "0.0.1-alpha.10"
   resolved "https://registry.npmjs.org/@react-native-vector-icons/common/-/common-0.0.1-alpha.10.tgz"

@@ -19,12 +19,20 @@ import {useEffect, useState} from 'react';
 import {
   validateEmail,
   validatePassword,
+  validatePhone,
 } from '../../validations/user-infor-validation';
 import Icon from 'react-native-vector-icons/Ionicons';
-import Animated, {PinwheelIn, PinwheelOut} from 'react-native-reanimated';
+import SignUpModal from './signup-model';
+import {signupStyles} from './signup-styles';
+import {handleAddUser} from '../../api/firebase_api';
+import {users} from '../../types/users.type';
+import LoadingModal from '../../animations/LoadingModal';
 type Props = NativeStackScreenProps<LoginStackParamList, 'Signup'>;
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
+  //State store user information
+
+  //State to check input
   const [input, setInput] = useState({
     email: '',
     password: '',
@@ -32,7 +40,8 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     phoneNumber: '',
   });
 
-  const [userCreated, setUserCreated] = useState(false);
+  //State to control modal
+  const [openModal, setOpenModal] = useState<boolean>(false);
 
   //State to store error message
   const [errorMessages, setErrorMessage] = useState({
@@ -64,6 +73,10 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     navigation.goBack();
   };
 
+  const navigateToHome = () => {
+    navigation.replace('Main');
+  };
+
   //Handle input value base on key and text changed
   const handleInputChange = (key: string, value: string) => {
     setInput({
@@ -77,9 +90,10 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     signUpFirebaseHandler();
   };
 
+  //State to control loading
+  const [isLoading, setIsLoading] = useState(false);
   //Sign up function
   const signUpFirebaseHandler = () => {
-    setUserCreated(true);
     if (!validateEmail(input.email)) {
       setErrorMessage(prevState => ({
         ...prevState,
@@ -94,14 +108,34 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           'Password must have at least 8 characters, 1 number, 1 capital and 1 special character ',
       }));
     }
+    if (!validatePhone(input.phoneNumber)) {
+      console.log(input.phoneNumber);
+      setErrorMessage(prevState => ({
+        ...prevState,
+        invalidPhone: 'Phone number must match VietNam phone number',
+      }));
+    }
     if (
       validateEmail(input.email) &&
       validatePassword(input.password) &&
-      input.password === input.confirmPassword
+      input.password === input.confirmPassword &&
+      validatePhone(input.phoneNumber)
     ) {
+      setIsLoading(true);
       auth()
         .createUserWithEmailAndPassword(input.email, input.password)
-        .then(() => {})
+        .then(UserCredential => {
+          const uid = UserCredential.user.uid;
+          handleAddUser({
+            user_id: uid,
+            email: input.email,
+            phone: input.phoneNumber,
+            role: 'employee',
+          });
+          setIsLoading(false);
+          setOpenModal(true);
+          //navigation.navigate('Main');
+        })
         .catch(error => {
           if (error.code === 'auth/email-already-in-use') {
             console.log(
@@ -115,18 +149,20 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={loginStyles.container}>
-      <View style={loginStyles.images_layer}>
+      style={signupStyles.container}>
+      {openModal && <SignUpModal onPress={navigateToHome} />}
+      {isLoading && <LoadingModal visible />}
+      <View style={signupStyles.images_layer}>
         <View style={{flexDirection: 'row'}}>
           <View style={{flex: 1}}>
-            <View style={loginStyles.image1_container}>
+            <View style={signupStyles.image1_container}>
               <Image
                 source={require('../../assets/photos/image1.jpg')}
                 resizeMode="stretch"
                 style={{width: '100%', height: '100%'}}
               />
             </View>
-            <View style={loginStyles.image2_container}>
+            <View style={signupStyles.image2_container}>
               <Image
                 source={require('../../assets/photos/image2.jpg')}
                 resizeMode="stretch"
@@ -135,14 +171,14 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
             </View>
           </View>
           <View style={{flex: 1}}>
-            <View style={loginStyles.image3_container}>
+            <View style={signupStyles.image3_container}>
               <Image
                 source={require('../../assets/photos/image3.jpg')}
                 resizeMode="stretch"
                 style={{width: '100%', height: '100%'}}
               />
             </View>
-            <View style={loginStyles.image4_container}>
+            <View style={signupStyles.image4_container}>
               <Image
                 source={require('../../assets/photos/image4.jpg')}
                 resizeMode="stretch"
@@ -152,14 +188,9 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           </View>
         </View>
       </View>
-      {userCreated && (
-        <Animated.View entering={PinwheelIn} exiting={PinwheelOut}>
-          <View style={loginStyles.alert}></View>
-        </Animated.View>
-      )}
-      <View style={loginStyles.background_layer}>
-        <View style={loginStyles.content_container}>
-          <View style={loginStyles.slogan_container}>
+      <View style={signupStyles.background_layer}>
+        <View style={signupStyles.content_container}>
+          <View style={signupStyles.slogan_container}>
             <Text
               style={[
                 typography.f36_boldItalic,
@@ -168,13 +199,13 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                   letterSpacing: 2,
                 },
               ]}>
-              Start to finding job
+              Take the 1st step
             </Text>
           </View>
-          <View style={loginStyles.middle}>
-            <View style={loginStyles.input_container}>
+          <View style={signupStyles.middle}>
+            <View style={signupStyles.input_container}>
               <TextInput
-                style={loginStyles.input}
+                style={signupStyles.input}
                 placeholder="Enter email or username"
                 onChangeText={text => handleInputChange('email', text)}
                 placeholderTextColor={colors.opacityWhite(0.8)}
@@ -187,9 +218,9 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 </Text>
               </View>
             ) : null}
-            <View style={[loginStyles.input_container]}>
+            <View style={[signupStyles.input_container]}>
               <TextInput
-                style={loginStyles.input}
+                style={signupStyles.input}
                 placeholder="Enter password"
                 placeholderTextColor={colors.opacityWhite(0.8)}
                 onChangeText={text => handleInputChange('password', text)}
@@ -197,7 +228,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
               />
               <TouchableOpacity
                 onPress={handleHideOrShowPassword}
-                style={loginStyles.icon_container}>
+                style={signupStyles.icon_container}>
                 <Icon
                   name={hidePassword ? 'eye' : 'eye-off'}
                   size={24}
@@ -212,9 +243,9 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 </Text>
               </View>
             ) : null}
-            <View style={[loginStyles.input_container]}>
+            <View style={[signupStyles.input_container]}>
               <TextInput
-                style={loginStyles.input}
+                style={signupStyles.input}
                 placeholder="Confirm your password"
                 placeholderTextColor={colors.opacityWhite(0.8)}
                 onChangeText={text =>
@@ -224,7 +255,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
               />
               <TouchableOpacity
                 onPress={handleHideOrShowPassword}
-                style={loginStyles.icon_container}>
+                style={signupStyles.icon_container}>
                 <Icon
                   name={hidePassword ? 'eye' : 'eye-off'}
                   size={24}
@@ -239,23 +270,35 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 </Text>
               </View>
             ) : null}
-            <View style={loginStyles.input_container}>
+            <View style={signupStyles.input_container}>
+              <View style={signupStyles.phone_container}>
+                <Text style={[typography.f17_medium, {color: colors.white}]}>
+                  +84
+                </Text>
+              </View>
               <TextInput
-                style={loginStyles.input}
+                style={signupStyles.input}
                 inputMode="numeric"
                 placeholder="Enter phone number"
-                onChangeText={text => handleInputChange('phone', text)}
+                onChangeText={text => handleInputChange('phoneNumber', text)}
                 placeholderTextColor={colors.opacityWhite(0.8)}
               />
             </View>
+            {errorMessages.invalidPhone !== '' ? (
+              <View style={{paddingHorizontal: 16}}>
+                <Text style={[typography.f15_regular, {color: 'yellow'}]}>
+                  {errorMessages.invalidPhone}
+                </Text>
+              </View>
+            ) : null}
             <TouchableOpacity
               onPress={handleConfirmSignUp}
-              style={loginStyles.button_container}>
+              style={signupStyles.button_container}>
               <Text style={[typography.f17_medium, {color: colors.white}]}>
                 Create Account
               </Text>
             </TouchableOpacity>
-            <View style={loginStyles.register_container}>
+            <View style={signupStyles.register_container}>
               <Text
                 style={[
                   typography.f15_regular,
@@ -279,7 +322,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
               </TouchableOpacity>
             </View>
           </View>
-          {/* <View style={loginStyles.agreement_container}>
+          {/* <View style={signupStyles.agreement_container}>
             <Text style={[typography.f13_regular, {color: colors.white}]}>
               By signing in, you agree to the User Agreemen
             </Text>
@@ -294,100 +337,5 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
 };
 
 const {width, height} = Dimensions.get('window');
-
-const loginStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  images_layer: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: -1,
-  },
-  background_layer: {
-    flex: 1,
-    backgroundColor: colors.opacityBlack(0.75),
-  },
-  image1_container: {
-    width: '100%',
-    height: '60%',
-    backgroundColor: colors.blue,
-  },
-  image2_container: {
-    width: '100%',
-    height: '40%',
-    backgroundColor: colors.red,
-  },
-  image3_container: {
-    width: '100%',
-    height: '45%',
-    backgroundColor: colors.red,
-  },
-  image4_container: {
-    width: '100%',
-    height: '55%',
-    backgroundColor: colors.blue,
-  },
-  content_container: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
-  slogan_container: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  middle: {
-    flex: 7,
-  },
-  input_container: {
-    width: '100%',
-    height: 60,
-    borderRadius: 71,
-    backgroundColor: colors.opacityWhite(0.3),
-    marginTop: 16,
-    flexDirection: 'row',
-    justifyContent: 'flex-start',
-  },
-  input: {
-    color: colors.white,
-    paddingVertical: 18,
-    paddingLeft: 28,
-    paddingRight: 16,
-    width: '85%',
-  },
-  icon_container: {
-    padding: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  button_container: {
-    width: '100%',
-    height: 60,
-    borderRadius: 71,
-    backgroundColor: colors.red,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  register_container: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'flex-end',
-    marginTop: 16,
-  },
-  agreement_container: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    paddingBottom: 16,
-  },
-  alert: {
-    height: 60,
-    width: '60%',
-    backgroundColor: colors.white,
-  },
-});
 
 export default LoginScreen;

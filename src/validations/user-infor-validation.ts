@@ -10,3 +10,8 @@ const passwordRegex =
 export const validatePassword = (password: string) => {
   return passwordRegex.test(password);
 };
+
+const phoneRegex = /^(0[35789])[0-9]{8}$/;
+export const validatePhone = (phone: string) => {
+  return phoneRegex.test(phone);
+};
