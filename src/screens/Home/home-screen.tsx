@@ -1,16 +1,21 @@
-import {Dimensions, StyleSheet, Text, View} from 'react-native';
+import {Dimensions, StyleSheet, Text, View, Animated} from 'react-native';
 import Mapbox from '@rnmapbox/maps';
+import {Button} from 'react-native';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {colors} from '../../constants/color';
+import {useState} from 'react';
 
 Mapbox.setAccessToken(
   'sk.eyJ1IjoiZHVja2hhaTIwMDJ2biIsImEiOiJjbHh2YWh1c2gyOHltMmpzaGw0Z3BkYWI1In0.bmfQquQh-tPTiVSO0uL4Jg',
 );
+
 const {width, height} = Dimensions.get('window');
 const HomeScreen = () => {
   return (
     <View style={styles.page}>
-      <View style={styles.container}>
-        {/* <Mapbox.MapView style={styles.map} /> */}
-      </View>
+      {/* <View style={styles.container}>
+        <Mapbox.MapView style={styles.map} />
+      </View> */}
     </View>
   );
 };

@@ -43,7 +43,7 @@ const SettingScreen: React.FC = () => {
     dispatch({type: 'RESET'});
     try {
       auth().signOut();
-      navigation.navigate('Login');
+      navigation.replace('Login');
     } catch (error) {
       console.log(error);
     }

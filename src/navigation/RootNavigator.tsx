@@ -2,6 +2,7 @@ export type LoginStackParamList = {
   Login: undefined;
   Signup: undefined;
   Main: undefined;
+  Chat: {uid: string};
 };
 
 export type RootTabParamList = {
@@ -9,6 +10,11 @@ export type RootTabParamList = {
   Messages: undefined;
   Notifications: undefined;
   Setting: undefined;
+};
+
+export type ConversationStackParamList = {
+  Conversation: undefined;
+  Chat: {uid: string};
 };
 
 // export type RootStackParamList = {

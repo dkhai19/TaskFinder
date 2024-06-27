@@ -24,10 +24,12 @@ import Icon from 'react-native-vector-icons/Ionicons';
 import {useDispatch, useSelector} from 'react-redux';
 import {setUserID} from '../../redux/slices/authReducer';
 import {RootState} from '../../redux/rootReducer';
+import LoadingModal from '../../animations/LoadingModal';
 
 type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>;
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
+  const [isLoading, setIsLoading] = useState(false);
   const [user, setUser] = useState({
     email: '',
     password: '',
@@ -52,18 +54,18 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
   };
   //Navigate to sign up screen
   const signUpHandler = () => {
-    navigation.navigate('Signup');
+    navigation.replace('Signup');
   };
 
   //Handle sign in logic
   const signInHandler = () => {
     if (validateEmail(user.email) && validatePassword(user.password)) {
+      setIsLoading(() => true);
       auth()
         .signInWithEmailAndPassword(user.email, user.password)
-        .then(userCredential => {
-          const user = userCredential.user;
-          dispatch(setUserID(user.uid));
-          navigation.navigate('Main');
+        .then(() => {
+          setIsLoading(() => false);
+          navigation.replace('Main');
         })
         .catch(error => {
           console.log(error);
@@ -76,6 +78,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     <View
       // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
       style={loginStyles.container}>
+      {isLoading && <LoadingModal visible />}
       <View style={loginStyles.images_layer}>
         <View style={{flexDirection: 'row'}}>
           <View style={{flex: 1}}>
