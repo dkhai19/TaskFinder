@@ -6,7 +6,7 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {fetchAllUser} from '../../api/firebase_api';
+import {fetchAllUser} from '../../firebase/authentications_api';
 import {useEffect, useState} from 'react';
 import {users} from '../../types/users.type';
 import {FirebaseFirestoreTypes} from '@react-native-firebase/firestore';
@@ -43,7 +43,7 @@ const ConversationScreen: React.FC<Props> = ({navigation}) => {
     return (
       <View style={styles.avatarItem}>
         <TouchableOpacity
-          onPress={() => goToChatDetail(item.user_id)}
+          onPress={() => goToChatDetail(item.uid)}
           style={styles.imageContainer}>
           <Image
             style={styles.image}
@@ -57,7 +57,7 @@ const ConversationScreen: React.FC<Props> = ({navigation}) => {
               typography.f13_regular,
               {color: colors.opacityBlack(0.55)},
             ]}>
-            {item.last_name}
+            {item.full_name || item.first_name + ' ' + item.last_name}
           </Text>
         </View>
       </View>
@@ -65,8 +65,8 @@ const ConversationScreen: React.FC<Props> = ({navigation}) => {
   };
 
   const chatItem = (item: FirebaseFirestoreTypes.DocumentData) => {
-    const name = 'Kain Lawrance';
-    const uid = item.user_id;
+    const name = item.full_name || item.first_name + ' ' + item.last_name;
+    const uid = item.uid;
     return (
       <TouchableOpacity
         onPress={() => goToChatDetail(uid)}

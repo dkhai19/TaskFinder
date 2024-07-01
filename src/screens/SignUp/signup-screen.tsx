@@ -24,7 +24,7 @@ import {
 import Icon from 'react-native-vector-icons/Ionicons';
 import SignUpModal from './signup-model';
 import {signupStyles} from './signup-styles';
-import {handleAddUser} from '../../api/firebase_api';
+import {handleAddUser} from '../../firebase/authentications_api';
 import {users} from '../../types/users.type';
 import LoadingModal from '../../animations/LoadingModal';
 type Props = NativeStackScreenProps<LoginStackParamList, 'Signup'>;
@@ -126,8 +126,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
         .createUserWithEmailAndPassword(input.email, input.password)
         .then(UserCredential => {
           const uid = UserCredential.user.uid;
-          handleAddUser({
-            user_id: uid,
+          handleAddUser(uid, {
             email: input.email,
             phone: input.phoneNumber,
             role: 'employee',

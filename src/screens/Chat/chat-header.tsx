@@ -7,9 +7,15 @@ import {typography} from '../../constants/typo';
 interface IChatHeader {
   onBack: () => void;
   onCallHander: () => void;
+  receiver_id: string;
 }
 
-const ChatHeader: React.FC<IChatHeader> = ({onBack, onCallHander}) => {
+const ChatHeader: React.FC<IChatHeader> = ({
+  receiver_id,
+  onBack,
+  onCallHander,
+}) => {
+  console.log('Chat header', receiver_id);
   return (
     <View style={styles.container}>
       <View style={styles.left}>

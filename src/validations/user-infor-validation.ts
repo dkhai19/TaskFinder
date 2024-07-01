@@ -15,3 +15,12 @@ const phoneRegex = /^(0[35789])[0-9]{8}$/;
 export const validatePhone = (phone: string) => {
   return phoneRegex.test(phone);
 };
+
+export const parseDateOfBirth = (dobString: string) => {
+  const date = new Date(dobString);
+  if (isNaN(date.getTime())) {
+    // If date is invalid, return null or handle the error as needed
+    return null;
+  }
+  return date;
+};

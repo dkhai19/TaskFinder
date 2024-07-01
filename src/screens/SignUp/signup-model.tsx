@@ -13,7 +13,8 @@ import {typography} from '../../constants/typo';
 import Input from '../../components/Input';
 import ContainedButton from '../../components/ContainedButton';
 import auth from '@react-native-firebase/auth';
-import {updateUserById} from '../../api/firebase_api';
+import {updateUserById} from '../../firebase/authentications_api';
+import {parseDateOfBirth} from '../../validations/user-infor-validation';
 const {width, height} = Dimensions.get('window');
 
 interface IModal {
@@ -25,7 +26,7 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
   const [additionaInfo, setAdditionalInfo] = useState({
     first_name: '',
     last_name: '',
-    date_of_birth: '',
+    birthday: '',
     identity: '',
   });
   //Animation for show up modal
@@ -53,8 +54,19 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
 
   const handleUpdateUser = async () => {
     const user_id = auth().currentUser?.uid;
+
     if (user_id) {
-      await updateUserById(user_id, additionaInfo).then(() => {
+      const parseDOB = parseDateOfBirth(additionaInfo.birthday);
+      if (!parseDOB) {
+        console.log('Error date format!');
+        return;
+      }
+      const updatedInfo = {
+        ...additionaInfo,
+        birthday: parseDOB,
+      };
+
+      await updateUserById(user_id, updatedInfo).then(() => {
         onPress();
       });
     }
@@ -100,7 +112,7 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
         <View style={{marginBottom: 16}}>
           <Input
             label="Date of Birth"
-            value={additionaInfo.date_of_birth}
+            value={additionaInfo.birthday}
             handleChangeText={(text: string) =>
               onChangeText('date_of_birth', text)
             }
