@@ -12,30 +12,37 @@ import {
   findCommonChats,
   sendMessage,
 } from '../../firebase/chats.api';
-import {Message, Sender} from '../../types/chats.type';
+import {IMessage, ISender} from '../../types/chats.type';
 import MessageRow from './message-row';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../redux/rootReducer';
 type Props = NativeStackScreenProps<ConversationStackParamList, 'Chat'>;
 
 const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   const receiver_uid = route.params.uid;
-  //console.log(receiver_uid);
-  const sender_uid = auth().currentUser?.uid;
+  const sender_uid = useSelector(
+    (state: RootState) => state.authentication.uid,
+  );
   const [text, setText] = useState('');
-  const [messages, setMessages] = useState<Message[]>([]);
+  const [messages, setMessages] = useState<IMessage[]>([]);
 
   useEffect(() => {
-    const loadMessages = async () => {
-      if (sender_uid) {
-        const findChatUID = await findCommonChats(sender_uid, receiver_uid);
-        if (findChatUID) {
-          //console.log('Then can fetch the messages?');
-          const fetch = await fetchMessages(findChatUID);
-          setMessages(fetch);
-        }
+    let unsubscribe: (() => void) | null = null;
+    const loadInformations = async () => {
+      const findChatUID = await findCommonChats(sender_uid, receiver_uid);
+      if (findChatUID) {
+        unsubscribe = fetchMessages(findChatUID, (newMessages: IMessage[]) => {
+          setMessages(newMessages);
+        });
       }
     };
-    loadMessages();
-  }, []);
+    loadInformations();
+    return () => {
+      if (unsubscribe) {
+        unsubscribe();
+      }
+    };
+  }, [receiver_uid]);
 
   const onBackHandler = () => {
     navigation.pop();
@@ -46,19 +53,17 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   };
 
   const sendMessageHandler = async () => {
-    if (sender_uid) {
-      const senderInfor: Sender = {
-        _id: sender_uid,
-        avatar: '5',
-        name: 'Do Duc Khai',
-      };
-      try {
-        console.log(messages);
-        await sendMessage(receiver_uid, text, senderInfor);
-        setText('');
-      } catch (error) {
-        console.error('Fail to send message', error);
-      }
+    const senderInfor: ISender = {
+      _id: sender_uid,
+      avatar: '5',
+      name: 'Do Duc Khai',
+    };
+    try {
+      //console.log('Tin nhan gui di', messages);
+      await sendMessage(receiver_uid, text, senderInfor);
+      setText('');
+    } catch (error) {
+      console.error('Fail to send message', error);
     }
   };
 
@@ -72,14 +77,17 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
           onCallHander={() => console.log('Call')}
         />
       </View>
-      <ScrollView style={styles.body}>
-        {messages.map(message => (
-          <MessageRow
-            isMine={message.user._id === sender_uid ? true : false}
-            content={message.text}
-          />
-        ))}
-      </ScrollView>
+      <View style={styles.body}>
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {messages.map(message => (
+            <MessageRow
+              key={message._id}
+              isMine={message.user._id === sender_uid ? true : false}
+              content={message.text}
+            />
+          ))}
+        </ScrollView>
+      </View>
       <View style={styles.inputField}>
         <ChatInput
           value={text}
@@ -105,7 +113,8 @@ const styles = StyleSheet.create({
     width: '100%',
   },
   body: {
-    paddingHorizontal: 12,
+    padding: 12,
+    height: '80%',
   },
   inputField: {
     position: 'absolute',

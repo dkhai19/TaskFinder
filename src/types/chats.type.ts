@@ -1,27 +1,37 @@
 import {FirebaseFirestoreTypes} from '@react-native-firebase/firestore';
 
-export type Chat = {
+export type IChat = {
   chatUID: string;
   members: string[];
   lastMessage: string;
-  lastMessageTimestamp: Date;
+  lastMessageTimestamp: FirebaseFirestoreTypes.Timestamp;
 };
 
-export type Message = {
+export type IMessage = {
+  _id: string;
   text: string;
   createdAt: Date;
-  user: Sender;
+  user: ISender;
 };
 
-export type UserChats = {
+export type IUserChats = {
   [chatUID: string]: {
+    members: string[];
     lastMessage: string;
-    lastMessageTimestamp: Date;
+    lastMessageTimestamp: FirebaseFirestoreTypes.Timestamp;
   };
 };
 
-export type Sender = {
+export type ISender = {
   _id: string;
   avatar: string;
   name: string;
+};
+
+export type IConversation = {
+  id: string;
+  avatar: string;
+  name: string;
+  lastMessage: string;
+  lastMessageTimestamp: string;
 };

@@ -3,6 +3,9 @@ import {Text, View} from 'react-native';
 import {colors} from '../../constants/color';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {typography} from '../../constants/typo';
+import {useEffect, useState} from 'react';
+import {IUsers} from '../../types/users.type';
+import {findUserById} from '../../firebase/authentications_api';
 
 interface IChatHeader {
   onBack: () => void;
@@ -15,7 +18,14 @@ const ChatHeader: React.FC<IChatHeader> = ({
   onBack,
   onCallHander,
 }) => {
-  console.log('Chat header', receiver_id);
+  const [user, setUser] = useState<IUsers>();
+  useEffect(() => {
+    const fetchInfor = async () => {
+      const data: IUsers = await findUserById(receiver_id);
+      setUser(data);
+    };
+    fetchInfor();
+  }, []);
   return (
     <View style={styles.container}>
       <View style={styles.left}>
@@ -30,7 +40,7 @@ const ChatHeader: React.FC<IChatHeader> = ({
         </View>
         <View>
           <Text style={[typography.f17_medium, {color: colors.black}]}>
-            Kain Lawrance
+            {user?.first_name + ' ' + user?.last_name}
           </Text>
         </View>
       </View>

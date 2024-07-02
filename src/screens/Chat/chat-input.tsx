@@ -25,12 +25,14 @@ const ChatInput: React.FC<IChatInput> = ({handleTextChange, value, onSend}) => {
   return (
     <View style={styles.container}>
       <View style={styles.body}>
-        <TextInput
-          value={value}
-          placeholder="The input information"
-          placeholderTextColor={colors.opacityBlack(0.4)}
-          onChangeText={handleTextChange}
-        />
+        <View style={{width: '90%'}}>
+          <TextInput
+            value={value}
+            placeholder="The input information"
+            placeholderTextColor={colors.opacityBlack(0.4)}
+            onChangeText={handleTextChange}
+          />
+        </View>
         <TouchableOpacity onPress={onSend}>
           <Pulse isRinging={haveText}>
             <Icon

@@ -6,44 +6,60 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native';
-import {fetchAllUser} from '../../firebase/authentications_api';
+import {findUserById} from '../../firebase/authentications_api';
 import {useEffect, useState} from 'react';
-import {users} from '../../types/users.type';
-import {FirebaseFirestoreTypes} from '@react-native-firebase/firestore';
 import {colors} from '../../constants/color';
 import {typography} from '../../constants/typo';
 import ChatItem from './chat-item';
 import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
 import {ConversationStackParamList} from '../../navigation/RootNavigator';
+import {fetchConversations} from '../../firebase/chats.api';
+import {useSelector} from 'react-redux';
+import {RootState} from '../../redux/rootReducer';
+import {IChat, IConversation} from '../../types/chats.type';
+import {convertFirestoreTimestampToDate} from '../../validations/convert-date';
 
 type Props = NativeStackScreenProps<ConversationStackParamList, 'Conversation'>;
 
 const ConversationScreen: React.FC<Props> = ({navigation}) => {
-  const [listUsers, setListUsers] = useState<
-    FirebaseFirestoreTypes.DocumentData[]
-  >([]);
+  const userUID = useSelector((state: RootState) => state.authentication.uid);
+  const [listData, setListData] = useState<IConversation[]>([]);
+
   useEffect(() => {
     const fetchData = async () => {
-      const data = await fetchAllUser();
-      if (data) {
-        setListUsers(data);
-      }
+      const data = await fetchConversations(userUID);
+      const conversations: IConversation[] = await Promise.all(
+        data.map(async chat => {
+          const receiverId = chat.members.filter(uid => uid !== userUID)[0];
+          const user = await findUserById(receiverId);
+          const time = convertFirestoreTimestampToDate(
+            chat.lastMessageTimestamp,
+          );
+          const toHour = time.getHours() + ':' + time.getMinutes();
+          return {
+            id: receiverId,
+            avatar: '5',
+            name: `${user.first_name} ${user.last_name}`,
+            lastMessage: chat.lastMessage,
+            lastMessageTimestamp: toHour,
+          };
+        }),
+      );
+      setListData(conversations);
     };
     fetchData();
+    console.log('Render how many times');
   }, []);
 
   const goToChatDetail = (uid: string) => {
     navigation.navigate('Chat', {uid: uid});
   };
 
-  const avatarItem = (
-    item: FirebaseFirestoreTypes.DocumentData,
-    index: number,
-  ) => {
+  const avatarItem = (item: IConversation) => {
     return (
       <View style={styles.avatarItem}>
         <TouchableOpacity
-          onPress={() => goToChatDetail(item.uid)}
+          onPress={() => goToChatDetail(item.id)}
           style={styles.imageContainer}>
           <Image
             style={styles.image}
@@ -57,24 +73,22 @@ const ConversationScreen: React.FC<Props> = ({navigation}) => {
               typography.f13_regular,
               {color: colors.opacityBlack(0.55)},
             ]}>
-            {item.full_name || item.first_name + ' ' + item.last_name}
+            {item.name}
           </Text>
         </View>
       </View>
     );
   };
 
-  const chatItem = (item: FirebaseFirestoreTypes.DocumentData) => {
-    const name = item.full_name || item.first_name + ' ' + item.last_name;
-    const uid = item.uid;
+  const chatItem = (item: IConversation) => {
     return (
       <TouchableOpacity
-        onPress={() => goToChatDetail(uid)}
+        onPress={() => goToChatDetail(item.id)}
         style={{paddingVertical: 8}}>
         <ChatItem
-          name={name}
-          context="Don't let your dream pass by"
-          lastDate="1:30"
+          name={item.name}
+          context={item.lastMessage}
+          lastDate={item.lastMessageTimestamp}
         />
       </TouchableOpacity>
     );
@@ -87,15 +101,15 @@ const ConversationScreen: React.FC<Props> = ({navigation}) => {
       </View>
       <View style={styles.avatarList}>
         <FlatList
-          data={listUsers}
-          renderItem={({item, index}) => avatarItem(item, index)}
+          data={listData}
+          renderItem={({item}) => avatarItem(item)}
           horizontal
           showsHorizontalScrollIndicator={false}
         />
       </View>
       <View style={styles.chatList}>
         <FlatList
-          data={listUsers}
+          data={listData}
           renderItem={({item}) => chatItem(item)}
           showsVerticalScrollIndicator={false}
         />

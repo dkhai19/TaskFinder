@@ -2,6 +2,7 @@ import {createSlice, PayloadAction} from '@reduxjs/toolkit';
 
 const initialState = {
   uid: '',
+  lightThem: true,
 };
 
 const authReducer = createSlice({
@@ -11,8 +12,11 @@ const authReducer = createSlice({
     setUserID(state, action: PayloadAction<string>) {
       state.uid = action.payload;
     },
+    toggleTheme(state) {
+      state.lightThem = !state.lightThem;
+    },
   },
 });
 
-export const {setUserID} = authReducer.actions;
+export const {setUserID, toggleTheme} = authReducer.actions;
 export default authReducer.reducer;

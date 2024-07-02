@@ -3,6 +3,8 @@ import {StyleSheet, Switch, Text, TouchableOpacity, View} from 'react-native';
 import {colors} from '../constants/color';
 import {typography} from '../constants/typo';
 import {useState} from 'react';
+import {useDispatch} from 'react-redux';
+import {toggleTheme} from '../redux/slices/authReducer';
 
 interface IListItem {
   iconName: string;
@@ -21,8 +23,12 @@ const ListItem: React.FC<IListItem> = ({
   navigate,
   toggle,
 }) => {
-  const [isEnabled, setIsEnabled] = useState(false);
-  const toggleSwitch = () => setIsEnabled(previousState => !previousState);
+  const dispatch = useDispatch();
+  const [isEnable, setIsEnable] = useState(false);
+  const toggleSwitch = () => {
+    setIsEnable(prevState => !prevState);
+    dispatch(toggleTheme());
+  };
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       <View style={styles.row}>
@@ -50,10 +56,10 @@ const ListItem: React.FC<IListItem> = ({
         {toggle && (
           <Switch
             trackColor={{false: '#767577', true: colors.red}}
-            thumbColor={isEnabled ? colors.white : '#f4f3f4'}
+            thumbColor={isEnable ? colors.white : '#f4f3f4'}
             ios_backgroundColor="#3e3e3e"
             onValueChange={toggleSwitch}
-            value={isEnabled}
+            value={isEnable}
           />
         )}
       </View>

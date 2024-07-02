@@ -13,9 +13,9 @@ const {width, height} = Dimensions.get('window');
 const HomeScreen = () => {
   return (
     <View style={styles.page}>
-      {/* <View style={styles.container}>
+      <View style={styles.container}>
         <Mapbox.MapView style={styles.map} />
-      </View> */}
+      </View>
     </View>
   );
 };

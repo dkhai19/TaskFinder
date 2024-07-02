@@ -2,166 +2,120 @@ import firestore, {
   FieldValue,
   FirebaseFirestoreTypes,
 } from '@react-native-firebase/firestore';
-import {Message, Sender, UserChats} from '../types/chats.type';
+import {IChat, IMessage, ISender, IUserChats} from '../types/chats.type';
+
+const chatCollection = firestore().collection('chats');
 
 //Find chatUID between 2 users
 export const findCommonChats = async (userUID1: string, userUID2: string) => {
-  try {
-    const user1ChatsSnapshot = await firestore()
-      .collection('users')
-      .doc(userUID1)
-      .collection('userChats')
-      .get();
-    if (user1ChatsSnapshot.empty) {
-      return null;
-    }
-    const user2ChatsSnapshot = await firestore()
-      .collection('users')
-      .doc(userUID2)
-      .collection('userChats')
-      .get();
-    if (user2ChatsSnapshot.empty) {
-      return null;
-    }
-
-    const user2ChatIDs = new Set(user2ChatsSnapshot.docs.map(doc => doc.id));
-    const commonChat = user1ChatsSnapshot.docs.find(doc =>
-      user2ChatIDs.has(doc.id),
-    );
-    //console.log('commonChat', commonChat?.id);
-    if (commonChat) {
-      return commonChat.id;
-    } else {
-      return null;
-    }
-  } catch (error) {
-    console.error('Error finding chat common:', error);
-    return null;
-  }
+  const documentSnapshot = await chatCollection
+    .where('members', 'array-contains', userUID1)
+    .get();
+  const result = documentSnapshot.docs
+    .map(doc => {
+      const data = doc.data() as Omit<IChat, 'chatUID'>;
+      return {chatUID: doc.id, ...data};
+    })
+    .find((chat: IChat) => chat.members.includes(userUID2));
+  return result?.chatUID;
 };
 
 // Function to handle send message logic
 export const sendMessage = async (
   receiver_id: string,
   text: string,
-  sender: Sender,
+  sender: ISender,
 ) => {
   const timestamp = new Date();
-  const message: Message = {
+  const message: IMessage = {
+    _id: '',
     text: text,
     createdAt: timestamp,
     user: sender,
   };
+
+  // Fetch common chat UID
   const commonChatUID = await findCommonChats(receiver_id, sender._id);
-  if (commonChatUID !== null) {
+
+  if (commonChatUID) {
     console.log('Have common chat');
-    await firestore().collection('chats').doc(commonChatUID).update({
-      lastMessage: text,
-      lastMessageTimestamp: timestamp,
-    });
-    const messageRef = await firestore()
+
+    // Perform updates in parallel
+    const updateChatPromise = firestore()
       .collection('chats')
+      .doc(commonChatUID)
+      .update({
+        lastMessage: text,
+        lastMessageTimestamp: timestamp,
+      });
+
+    const addMessageRef = await chatCollection
       .doc(commonChatUID)
       .collection('messages')
       .add(message);
 
-    const messageUID = messageRef.id;
-    await messageRef.update({
-      _id: messageUID,
+    const updateMessageIdPromise = addMessageRef.update({
+      _id: addMessageRef.id,
     });
 
-    const chatDoc = await firestore()
-      .collection('chats')
-      .doc(commonChatUID)
-      .get();
-    //console.log(chatDoc);
-
-    const chatData = chatDoc.data();
-    const memebers = chatData?.members || [];
-
-    await Promise.all(
-      memebers.map(async (userUID: string) => {
-        await firestore()
-          .collection('users')
-          .doc(userUID)
-          .collection('userChats')
-          .doc(commonChatUID)
-          .update({
-            lastMessage: chatData?.lastMessage,
-            lastMessageTimestamp: chatData?.lastMessageTimestamp,
-          });
-      }),
-    );
+    await Promise.all([updateChatPromise, updateMessageIdPromise]);
   } else {
     console.log('Dont have common chat');
+
     const userUIDs = [receiver_id, sender._id];
-    const conversationDoc = firestore().collection('chats').add({
+    const batch = firestore().batch();
+
+    const newChatRef = firestore().collection('chats').doc();
+    batch.set(newChatRef, {
       members: userUIDs,
       lastMessage: text,
       lastMessageTimestamp: timestamp,
     });
-    const chatUID = (await conversationDoc).id;
-    //Add message to chats collection
-    await firestore()
-      .collection('chats')
-      .doc(chatUID)
-      .collection('messages')
-      .add(message);
-    await Promise.all(
-      userUIDs.map(async userUID => {
-        await firestore()
-          .collection('users')
-          .doc(userUID)
-          .collection('userChats')
-          .doc(chatUID)
-          .set({
-            lastMessage: text,
-            lastMessageTimestamp: new Date(),
-          });
-      }),
-    );
+
+    const newMessageRef = newChatRef.collection('messages').doc();
+    batch.set(newMessageRef, {
+      ...message,
+      _id: newMessageRef.id,
+    });
+
+    await batch.commit();
   }
 };
 
 //Function used to fetch all conversations of an user
-export const fetchConversations = async (
-  userUID: string,
-  callback: (chats: UserChats) => void,
-) => {
-  return firestore()
-    .collection('users')
-    .doc(userUID)
-    .collection('userChats')
-    .orderBy('lastMessageTimestamp', 'desc')
-    .onSnapshot(snapshot => {
-      const chats: UserChats = {};
-      snapshot.docs.forEach(doc => {
-        chats[doc.id] = doc.data() as {
-          lastMessage: string;
-          lastMessageTimestamp: Date;
-        };
-      });
-      callback(chats);
-    });
+export const fetchConversations = async (userUID: string) => {
+  const chatCollection = firestore().collection('chats');
+  const querySnapshot = await chatCollection
+    .where('members', 'array-contains', userUID)
+    .get();
+  const chats: IChat[] = querySnapshot.docs.map(doc => {
+    const data = doc.data() as Omit<IChat, 'chatUID'>;
+    return {chatUID: doc.id, ...data};
+  });
+  return chats;
 };
 
-//Function used to fetch all messages of a chat
-export const fetchMessages = async (chatUID: string) => {
+export const fetchMessages = (
+  chatUID: string,
+  callback: (messages: IMessage[]) => void,
+) => {
+  const chatCollection = firestore().collection('chats');
+
   try {
-    const snapshot = await firestore()
-      .collection('chats')
+    return chatCollection
       .doc(chatUID)
       .collection('messages')
-      .orderBy('timestamp', 'asc')
-      .get();
-    console.log('Fetch messages', snapshot);
-    const messages: Message[] = snapshot.docs.map(doc => ({
-      ...doc.data(),
-    })) as Message[];
+      .orderBy('createdAt', 'asc')
+      .onSnapshot(snapshot => {
+        const messages: IMessage[] = snapshot.docs.map(doc => ({
+          _id: doc.id, // Ensure the _id field is set
+          ...doc.data(),
+        })) as IMessage[];
 
-    return messages;
+        callback(messages);
+      });
   } catch (error) {
     console.error('Error fetching messages: ', error);
-    return [];
+    return () => {};
   }
 };

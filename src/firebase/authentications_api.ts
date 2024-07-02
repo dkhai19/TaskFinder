@@ -1,7 +1,7 @@
-import {users} from '../types/users.type';
+import {IUsers} from '../types/users.type';
 import firestore from '@react-native-firebase/firestore';
 import auth from '@react-native-firebase/auth';
-export const handleAddUser = async (user_id: string, user: users) => {
+export const handleAddUser = async (user_id: string, user: IUsers) => {
   try {
     console.log('Adding user:', user);
     await firestore()
@@ -45,4 +45,9 @@ export const updateUserById = async (user_id: string, user_infor: object) => {
       console.log('Updated!');
     })
     .catch(error => console.error('Update failed', error));
+};
+
+export const findUserById = async (user_id: string): Promise<IUsers> => {
+  const userDoc = await firestore().collection('users').doc(user_id).get();
+  return {uid: userDoc.id, ...userDoc.data()} as IUsers;
 };

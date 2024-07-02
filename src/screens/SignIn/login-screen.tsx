@@ -63,8 +63,10 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
       setIsLoading(() => true);
       auth()
         .signInWithEmailAndPassword(user.email, user.password)
-        .then(() => {
+        .then(currentUser => {
           setIsLoading(() => false);
+          dispatch(setUserID(currentUser.user.uid));
+          //console.log(currentUser.user.uid);
           navigation.replace('Main');
         })
         .catch(error => {
