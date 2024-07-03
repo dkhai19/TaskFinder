@@ -54,7 +54,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
   };
   //Navigate to sign up screen
   const signUpHandler = () => {
-    navigation.replace('Signup');
+    navigation.navigate('Signup');
   };
 
   //Handle sign in logic

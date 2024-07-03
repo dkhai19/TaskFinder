@@ -5,6 +5,7 @@ import {typography} from '../constants/typo';
 interface IInput {
   label: string;
   isNumeric?: boolean;
+  isEditable?: boolean;
   value: string;
   handleChangeText: (text: string) => void;
 }
@@ -12,6 +13,7 @@ interface IInput {
 const Input: React.FC<IInput> = ({
   label,
   isNumeric,
+  isEditable,
   value,
   handleChangeText,
 }) => {
@@ -28,6 +30,7 @@ const Input: React.FC<IInput> = ({
           keyboardType={isNumeric ? 'numeric' : 'default'}
           value={value}
           onChangeText={handleChangeText}
+          editable={isEditable ? false : true}
         />
       </View>
     </View>

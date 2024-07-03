@@ -15,6 +15,8 @@ import ContainedButton from '../../components/ContainedButton';
 import auth from '@react-native-firebase/auth';
 import {updateUserById} from '../../firebase/authentications_api';
 import {parseDateOfBirth} from '../../validations/user-infor-validation';
+import DatePicker from 'react-native-date-picker';
+import IconButton from '../../components/IconButton';
 const {width, height} = Dimensions.get('window');
 
 interface IModal {
@@ -23,6 +25,8 @@ interface IModal {
 
 const SignUpModal: React.FC<IModal> = ({onPress}) => {
   const translateYValue = useRef(new Animated.Value(height)).current;
+  const [date, setDate] = useState(new Date());
+  const [open, setOpen] = useState(false);
   const [additionaInfo, setAdditionalInfo] = useState({
     first_name: '',
     last_name: '',
@@ -109,15 +113,40 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
             />
           </View>
         </View>
-        <View style={{marginBottom: 16}}>
-          <Input
-            label="Date of Birth"
-            value={additionaInfo.birthday}
-            handleChangeText={(text: string) =>
-              onChangeText('date_of_birth', text)
-            }
-          />
+
+        <View
+          style={{
+            flexDirection: 'row',
+            marginBottom: 16,
+            justifyContent: 'space-between',
+          }}>
+          <View style={{width: '80%'}}>
+            <Input
+              label="Date of birth"
+              value={additionaInfo.birthday}
+              isEditable
+              handleChangeText={(text: string) =>
+                onChangeText('birthday', text)
+              }
+            />
+          </View>
+          <View style={{width: '15%', backgroundColor: colors.white}}>
+            <IconButton onPress={() => setOpen(true)} />
+          </View>
         </View>
+        <DatePicker
+          modal
+          mode="date"
+          open={open}
+          date={date}
+          onConfirm={date => {
+            setOpen(false);
+            onChangeText('birthday', date.toDateString());
+          }}
+          onCancel={() => {
+            setOpen(false);
+          }}
+        />
         <View style={{marginBottom: 16}}>
           <Input
             label="Identity"
