@@ -5,55 +5,57 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import {findUserById} from '../../firebase/authentications_api';
-import {useEffect, useState} from 'react';
-import {colors} from '../../constants/color';
-import {typography} from '../../constants/typo';
-import ChatItem from './chat-item';
-import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
-import {ConversationStackParamList} from '../../navigation/RootNavigator';
-import {fetchConversations} from '../../firebase/chats.api';
-import {useSelector} from 'react-redux';
-import {RootState} from '../../redux/rootReducer';
-import {IChat, IConversation} from '../../types/chats.type';
-import {convertFirestoreTimestampToDate} from '../../validations/convert-date';
+} from 'react-native'
+import {findUserById} from '../../firebase/authentications_api'
+import {useEffect, useState} from 'react'
+import {colors} from '../../constants/color'
+import {typography} from '../../constants/typo'
+import ChatItem from './chat-item'
+import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
+import {ConversationStackParamList} from '../../navigation/RootNavigator'
+import {fetchConversations} from '../../firebase/chats.api'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
+import {IChat, IConversation} from '../../types/chats.type'
+import {convertFirestoreTimestampToDate} from '../../validations/convert-date'
 
-type Props = NativeStackScreenProps<ConversationStackParamList, 'Conversation'>;
+type Props = NativeStackScreenProps<ConversationStackParamList, 'Conversation'>
 
 const ConversationScreen: React.FC<Props> = ({navigation}) => {
-  const userUID = useSelector((state: RootState) => state.authentication.uid);
-  const [listData, setListData] = useState<IConversation[]>([]);
+  const userUID = useSelector((state: RootState) => state.authentication.uid)
+  const [listData, setListData] = useState<IConversation[]>([])
 
   useEffect(() => {
-    const fetchData = async () => {
-      const data = await fetchConversations(userUID);
+    const processConversations = async (data: IChat[]) => {
       const conversations: IConversation[] = await Promise.all(
         data.map(async chat => {
-          const receiverId = chat.members.filter(uid => uid !== userUID)[0];
-          const user = await findUserById(receiverId);
+          const receiverId = chat.members.filter(uid => uid !== userUID)[0]
+          const user = await findUserById(receiverId)
           const time = convertFirestoreTimestampToDate(
             chat.lastMessageTimestamp,
-          );
-          const toHour = time.getHours() + ':' + time.getMinutes();
+          )
+          const toHour = time.getHours() + ':' + time.getMinutes()
           return {
             id: receiverId,
             avatar: '5',
             name: `${user.first_name} ${user.last_name}`,
             lastMessage: chat.lastMessage,
             lastMessageTimestamp: toHour,
-          };
+          }
         }),
-      );
-      setListData(conversations);
-    };
-    fetchData();
-    console.log('Render how many times');
-  }, []);
+      )
+      setListData(conversations)
+    }
+
+    const unsubscribe = fetchConversations(userUID, processConversations)
+
+    // Cleanup subscription on unmount
+    return () => unsubscribe()
+  }, [])
 
   const goToChatDetail = (uid: string) => {
-    navigation.navigate('Chat', {uid: uid});
-  };
+    navigation.navigate('Chat', {uid: uid})
+  }
 
   const avatarItem = (item: IConversation) => {
     return (
@@ -77,8 +79,8 @@ const ConversationScreen: React.FC<Props> = ({navigation}) => {
           </Text>
         </View>
       </View>
-    );
-  };
+    )
+  }
 
   const chatItem = (item: IConversation) => {
     return (
@@ -91,8 +93,8 @@ const ConversationScreen: React.FC<Props> = ({navigation}) => {
           lastDate={item.lastMessageTimestamp}
         />
       </TouchableOpacity>
-    );
-  };
+    )
+  }
 
   return (
     <View style={styles.container}>
@@ -115,8 +117,8 @@ const ConversationScreen: React.FC<Props> = ({navigation}) => {
         />
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -152,5 +154,5 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: 24,
   },
-});
-export default ConversationScreen;
+})
+export default ConversationScreen

@@ -6,6 +6,7 @@ import {
   Animated,
   Platform,
   PermissionsAndroid,
+  TouchableOpacity,
 } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import {Button} from 'react-native'
@@ -14,18 +15,20 @@ import {colors} from '../../constants/color'
 import {useEffect, useState} from 'react'
 import IconButton from '../../components/IconButton'
 import Geolocation from 'react-native-geolocation-service'
+import {getAllTasks} from '../../firebase/tasks.api'
+import {ITask} from '../../types/tasks.type'
 
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiZHVja2hhaTIwMDJ2biIsImEiOiJjbHh2ODBvZXQwamtkMmpwdTFsa3JoeDVrIn0.vrtl6qLPN_NGnRKA2EvLvg',
 )
 type LocationCoordinates = [number, number] | null
-
+type TaskData = ITask[]
 const {width, height} = Dimensions.get('window')
 const HomeScreen = () => {
-  const [location, setLocation] = useState<LocationCoordinates>(null) //prettier-ignore
+  const [location, setLocation] = useState<LocationCoordinates>(null); //prettier-ignore
   const [permissionStatus, setPermissionStatus] = useState('pending')
   const [movingCamera, setMovingCamera] = useState(false)
-  const [mapReady, setMapReady] = useState(false)
+  const [tasks, setTasks] = useState<TaskData>([])
   const requestLocationPermission = async () => {
     if (Platform.OS === 'ios') {
     } else {
@@ -61,15 +64,19 @@ const HomeScreen = () => {
   }
 
   useEffect(() => {
+    const handleSetData = (items: ITask[]) => {
+      //console.log(items)
+      setTasks(items)
+    }
+    const unsubcribe = getAllTasks(handleSetData)
+
     requestLocationPermission()
     setTimeout(() => {
       setMovingCamera(true)
     }, 2000)
-  }, [])
 
-  const handleMarkerPress = () => {
-    console.log('hihi')
-  }
+    return () => unsubcribe()
+  }, [])
 
   if (permissionStatus === 'pending') {
     return (
@@ -93,6 +100,10 @@ const HomeScreen = () => {
       ? location
       : [21.027763, 105.834160]; // prettier-ignore
 
+  const handleTaskPress = (item: ITask) => {
+    console.log(item)
+  }
+
   return (
     <View style={styles.page}>
       <View style={styles.container}>
@@ -106,13 +117,27 @@ const HomeScreen = () => {
               <Mapbox.Camera
                 //followUserLocation
                 centerCoordinate={validLocation}
-                zoomLevel={18}
+                zoomLevel={13}
+                pitch={60}
                 animationDuration={2000}
                 animationMode="flyTo"
               />
-              <Mapbox.PointAnnotation id="marker" coordinate={validLocation}>
+              {/* <Mapbox.PointAnnotation id="marker" coordinate={validLocation}>
                 <View />
-              </Mapbox.PointAnnotation>
+              </Mapbox.PointAnnotation> */}
+              {tasks.map((item: ITask) => (
+                <View key={item.taskId}>
+                  <Mapbox.PointAnnotation
+                    onSelected={() => handleTaskPress(item)}
+                    id="marker"
+                    coordinate={[
+                      item.location.longtitude,
+                      item.location.latitude,
+                    ]}>
+                    <View />
+                  </Mapbox.PointAnnotation>
+                </View>
+              ))}
             </View>
           )}
         </Mapbox.MapView>
