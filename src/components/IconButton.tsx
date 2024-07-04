@@ -5,12 +5,13 @@ import {colors} from '../constants/color';
 
 interface IIconButton {
   onPress: () => void;
+  iconName: string;
 }
 
-const IconButton: React.FC<IIconButton> = ({onPress}) => {
+const IconButton: React.FC<IIconButton> = ({onPress, iconName}) => {
   return (
     <TouchableOpacity style={styles.container} onPress={onPress}>
-      <Icon name="calendar-outline" size={24} color={colors.white} />
+      <Icon name={iconName} size={24} color={colors.white} />
     </TouchableOpacity>
   );
 };

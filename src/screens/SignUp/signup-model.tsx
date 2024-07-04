@@ -131,7 +131,10 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
             />
           </View>
           <View style={{width: '15%', backgroundColor: colors.white}}>
-            <IconButton onPress={() => setOpen(true)} />
+            <IconButton
+              iconName="calendar-outline"
+              onPress={() => setOpen(true)}
+            />
           </View>
         </View>
         <DatePicker
