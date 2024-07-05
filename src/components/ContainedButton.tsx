@@ -6,14 +6,15 @@ import {
   TouchableOpacity,
   View,
   ViewStyle,
-} from 'react-native';
-import {colors} from '../constants/color';
-import {typography} from '../constants/typo';
+} from 'react-native'
+import {colors} from '../constants/color'
+import {typography} from '../constants/typo'
 
 interface IContainedButton {
-  title: string;
-  style?: StyleProp<ViewStyle>;
-  onPress: () => void;
+  title: string
+
+  style?: StyleProp<ViewStyle>
+  onPress: () => void
 }
 
 const ContainedButton: React.FC<IContainedButton> = ({
@@ -27,8 +28,8 @@ const ContainedButton: React.FC<IContainedButton> = ({
         {title}
       </Text>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -39,6 +40,6 @@ const styles = StyleSheet.create({
     borderRadius: 8,
     backgroundColor: colors.red,
   },
-});
+})
 
-export default ContainedButton;
+export default ContainedButton

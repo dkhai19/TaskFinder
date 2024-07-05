@@ -7,6 +7,7 @@ import {
   Platform,
   PermissionsAndroid,
   TouchableOpacity,
+  TouchableWithoutFeedback,
 } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import {Button} from 'react-native'
@@ -17,6 +18,10 @@ import IconButton from '../../components/IconButton'
 import Geolocation from 'react-native-geolocation-service'
 import {getAllTasks} from '../../firebase/tasks.api'
 import {ITask} from '../../types/tasks.type'
+import {useDispatch, useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
+import HomeModal from './home-modal'
+import {toggleModal} from '../../redux/slices/taskReducer'
 
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiZHVja2hhaTIwMDJ2biIsImEiOiJjbHh2ODBvZXQwamtkMmpwdTFsa3JoeDVrIn0.vrtl6qLPN_NGnRKA2EvLvg',
@@ -29,6 +34,10 @@ const HomeScreen = () => {
   const [permissionStatus, setPermissionStatus] = useState('pending')
   const [movingCamera, setMovingCamera] = useState(false)
   const [tasks, setTasks] = useState<TaskData>([])
+  const [taskModal, setTaskModal] = useState<ITask>()
+  //const tasks = useSelector((state: RootState) => state.task.tasks)
+  const modalVisible = useSelector((state: RootState) => state.task.taskModal)
+  const dispatch = useDispatch()
   const requestLocationPermission = async () => {
     if (Platform.OS === 'ios') {
     } else {
@@ -52,8 +61,8 @@ const HomeScreen = () => {
   const getLocation = () => {
     Geolocation.getCurrentPosition(
       position => {
-        console.log(position.coords)
         console.log('Get the current position')
+        console.log(position.coords)
         setLocation([position.coords.longitude, position.coords.latitude])
       },
       error => {
@@ -65,7 +74,7 @@ const HomeScreen = () => {
 
   useEffect(() => {
     const handleSetData = (items: ITask[]) => {
-      //console.log(items)
+      console.log(items)
       setTasks(items)
     }
     const unsubcribe = getAllTasks(handleSetData)
@@ -74,7 +83,7 @@ const HomeScreen = () => {
     setTimeout(() => {
       setMovingCamera(true)
     }, 2000)
-
+    //console.log(tasks)
     return () => unsubcribe()
   }, [])
 
@@ -102,11 +111,41 @@ const HomeScreen = () => {
 
   const handleTaskPress = (item: ITask) => {
     console.log(item)
+    setTaskModal(item)
+    dispatch(toggleModal())
   }
 
+  const touchWithoutFeedback = () => {}
+
+  // const generateFeatureCollection = () => {
+  //   return {
+  //     type: 'FeatureCollection',
+  //     features: [
+  //       {
+  //         type: 'Feature',
+  //         geometry: {
+  //           type: 'Point',
+  //           coordinates: [validLocation],
+  //         },
+  //         properties: {
+  //           id: '1',
+  //           name: '2',
+  //         },
+  //       },
+  //     ],
+  //   }
+  // }
   return (
     <View style={styles.page}>
       <View style={styles.container}>
+        {modalVisible && taskModal && (
+          <View style={styles.overlay}>
+            <TouchableWithoutFeedback onPress={() => dispatch(toggleModal())}>
+              <View style={styles.overlayBackground}></View>
+            </TouchableWithoutFeedback>
+            <HomeModal item={taskModal} />
+          </View>
+        )}
         <Mapbox.MapView
           styleURL="mapbox://styles/mapbox/streets-v12"
           style={styles.map}
@@ -122,21 +161,25 @@ const HomeScreen = () => {
                 animationDuration={2000}
                 animationMode="flyTo"
               />
-              {/* <Mapbox.PointAnnotation id="marker" coordinate={validLocation}>
-                <View />
-              </Mapbox.PointAnnotation> */}
-              {tasks.map((item: ITask) => (
-                <View key={item.taskId}>
-                  <Mapbox.PointAnnotation
-                    onSelected={() => handleTaskPress(item)}
-                    id="marker"
-                    coordinate={[
-                      item.location.longtitude,
-                      item.location.latitude,
-                    ]}>
-                    <View />
-                  </Mapbox.PointAnnotation>
+              <Mapbox.PointAnnotation id="marker" coordinate={validLocation}>
+                <View style={{width: 40, height: 40}}>
+                  <IconButton
+                    iconName="person-outline"
+                    onPress={() => touchWithoutFeedback}
+                  />
                 </View>
+              </Mapbox.PointAnnotation>
+              {tasks.map((item: ITask) => (
+                <Mapbox.PointAnnotation
+                  onSelected={() => handleTaskPress(item)}
+                  id={`marker-${item.taskId}`}
+                  key={`marker-${item.taskId}`}
+                  coordinate={[
+                    item.location.longtitude,
+                    item.location.latitude,
+                  ]}>
+                  <View />
+                </Mapbox.PointAnnotation>
               ))}
             </View>
           )}
@@ -158,6 +201,14 @@ const styles = StyleSheet.create({
   },
   map: {
     flex: 1,
+  },
+  overlay: {
+    ...StyleSheet.absoluteFillObject,
+    zIndex: 1000,
+  },
+  overlayBackground: {
+    ...StyleSheet.absoluteFillObject,
+    backgroundColor: colors.opacityBlack(0.6),
   },
 })
 
