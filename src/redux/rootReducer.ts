@@ -1,12 +1,13 @@
 import {combineReducers} from '@reduxjs/toolkit'
-import authReducer from './slices/authReducer'
-import applicationReducer from './slices/applicationReducer'
-import taskReducer from './slices/taskReducer'
-
+import authSlice from './slices/authSlice'
+import userSlice from './slices/userSlice'
+import applicationSlice from './slices/applicationSlice'
+import taskSlice from './slices/taskSlice'
 const combinedReducer = combineReducers({
-  authentication: authReducer,
-  application: applicationReducer,
-  task: taskReducer,
+  authentication: authSlice,
+  application: applicationSlice,
+  task: taskSlice,
+  user: userSlice,
 })
 
 const rootReducer = (state: any, action: any) => {

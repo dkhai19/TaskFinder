@@ -21,7 +21,7 @@ import {ITask} from '../../types/tasks.type'
 import {useDispatch, useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import HomeModal from './home-modal'
-import {toggleModal} from '../../redux/slices/taskReducer'
+import {toggleModal} from '../../redux/slices/taskSlice'
 
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiZHVja2hhaTIwMDJ2biIsImEiOiJjbHh2ODBvZXQwamtkMmpwdTFsa3JoeDVrIn0.vrtl6qLPN_NGnRKA2EvLvg',

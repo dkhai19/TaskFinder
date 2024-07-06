@@ -8,7 +8,7 @@ import {
 } from 'react-native'
 import {useDispatch} from 'react-redux'
 import {AppDispatch} from '../redux/store/store'
-import {toggleModal} from '../redux/slices/taskReducer'
+import {toggleModal} from '../redux/slices/taskSlice'
 interface IDragView {
   style: StyleProp<ViewStyle>
   children: React.ReactNode

@@ -18,6 +18,7 @@ import RowItem from './row-item'
 import {IApplication} from '../../types/applications.type'
 import {checkIsApplied, postApplication} from '../../firebase/applications.api'
 import {RootState} from '../../redux/rootReducer'
+import {useSelector} from 'react-redux'
 
 interface IHomeModal {
   item: ITask
@@ -25,19 +26,33 @@ interface IHomeModal {
 
 const HomeModal: React.FC<IHomeModal> = ({item}) => {
   //console.log('The task modal', item)
-  const [user, setUser] = useState<IUsers>()
+  const [owner, setOwner] = useState<IUsers>()
   const [isApplied, setIsApplied] = useState<boolean>()
+  const currentUserId = useSelector(
+    (state: RootState) => state.authentication.uid,
+  )
+  const [currentUser, setCurrentUser] = useState<IUsers>()
 
   useEffect(() => {
     const fetchData = async () => {
-      const findUser = await findUserById(item.userId)
-      setUser(findUser)
-      const isUserApplied = await checkIsApplied(item.taskId, item.userId)
-      console.log('Have I applied to this task', isUserApplied)
-      setIsApplied(isUserApplied)
+      try {
+        const [findOwner, findCurrent, isUserApplied] = await Promise.all([
+          findUserById(item.userId),
+          findUserById(currentUserId),
+          checkIsApplied(item.taskId, item.userId),
+        ])
+
+        setCurrentUser(findCurrent)
+        setOwner(findOwner)
+        setIsApplied(isUserApplied)
+        //console.log('Have I applied to this task', isUserApplied);
+      } catch (error) {
+        console.error('Error fetching data', error)
+      }
     }
+
     fetchData()
-  }, [])
+  }, [item.userId, item.taskId, currentUserId])
 
   const handleFollow = () => {}
 
@@ -72,7 +87,7 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigateToProfile(item.userId)}>
               <Text style={[typography.f14_medium, {color: colors.black}]}>
-                {user?.first_name + ' ' + user?.last_name}
+                {owner?.first_name + ' ' + owner?.last_name}
               </Text>
             </TouchableOpacity>
           </View>
@@ -105,9 +120,12 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
             onPress={() =>
               handleApply({
                 task_id: item.taskId,
-                user_id: item.userId,
+                user_id: currentUser?.uid,
                 application_date: new Date(),
                 status: 'applying',
+                first_name: currentUser?.first_name,
+                last_name: currentUser?.last_name,
+                rating: currentUser?.rating,
               })
             }
           />

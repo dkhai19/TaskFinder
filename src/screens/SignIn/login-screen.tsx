@@ -9,73 +9,73 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import {colors} from '../../constants/color';
-import {typography} from '../../constants/typo';
-import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
-import {LoginStackParamList} from '../../navigation/RootNavigator';
-import auth from '@react-native-firebase/auth';
-import {useEffect, useState} from 'react';
+} from 'react-native'
+import {colors} from '../../constants/color'
+import {typography} from '../../constants/typo'
+import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
+import {LoginStackParamList} from '../../navigation/RootNavigator'
+import auth from '@react-native-firebase/auth'
+import {useEffect, useState} from 'react'
 import {
   validateEmail,
   validatePassword,
-} from '../../validations/user-infor-validation';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {useDispatch, useSelector} from 'react-redux';
-import {setUserID} from '../../redux/slices/authReducer';
-import {RootState} from '../../redux/rootReducer';
-import LoadingModal from '../../animations/LoadingModal';
+} from '../../validations/user-infor-validation'
+import Icon from 'react-native-vector-icons/Ionicons'
+import {useDispatch, useSelector} from 'react-redux'
+import {setUserID} from '../../redux/slices/authSlice'
+import {RootState} from '../../redux/rootReducer'
+import LoadingModal from '../../animations/LoadingModal'
 
-type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>;
+type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState({
     email: '',
     password: '',
-  });
-  const dispatch = useDispatch();
+  })
+  const dispatch = useDispatch()
   // const userId = useSelector((state: RootState) => state.authentication.uid);
   // console.log(userId);
   //Set error string to use to notice user about invalid input
-  const [alert, setAlert] = useState('');
+  const [alert, setAlert] = useState('')
 
   //State to control user want to hide password or not
-  const [hidePassword, setHidePassword] = useState<boolean>(true);
+  const [hidePassword, setHidePassword] = useState<boolean>(true)
   const handleHideOrShowPassword = () => {
-    setHidePassword(prev => !prev);
-  };
+    setHidePassword(prev => !prev)
+  }
   //Handle change input
   const handleChangeUserInput = (key: string, value: string) => {
     setUser({
       ...user,
       [key]: value,
-    });
-  };
+    })
+  }
   //Navigate to sign up screen
   const signUpHandler = () => {
-    navigation.navigate('Signup');
-  };
+    navigation.navigate('Signup')
+  }
 
   //Handle sign in logic
   const signInHandler = () => {
     if (validateEmail(user.email) && validatePassword(user.password)) {
-      setIsLoading(() => true);
+      setIsLoading(() => true)
       auth()
         .signInWithEmailAndPassword(user.email, user.password)
         .then(currentUser => {
-          setIsLoading(() => false);
-          dispatch(setUserID(currentUser.user.uid));
+          setIsLoading(() => false)
+          dispatch(setUserID(currentUser.user.uid))
           //console.log(currentUser.user.uid);
-          navigation.replace('Main');
+          navigation.replace('Main')
         })
         .catch(error => {
-          console.log(error);
-        });
+          console.log(error)
+        })
     } else {
-      Alert.alert('Your input is invalid, check again!');
+      Alert.alert('Your input is invalid, check again!')
     }
-  };
+  }
   return (
     <View
       // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -200,10 +200,10 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
-const {width, height} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window')
 
 const loginStyles = StyleSheet.create({
   container: {
@@ -292,6 +292,6 @@ const loginStyles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
   },
-});
+})
 
-export default LoginScreen;
+export default LoginScreen

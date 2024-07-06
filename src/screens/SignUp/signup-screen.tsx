@@ -9,28 +9,32 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import {colors} from '../../constants/color';
-import {typography} from '../../constants/typo';
-import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
-import {LoginStackParamList} from '../../navigation/RootNavigator';
-import auth from '@react-native-firebase/auth';
-import {useEffect, useState} from 'react';
+} from 'react-native'
+import {colors} from '../../constants/color'
+import {typography} from '../../constants/typo'
+import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
+import {LoginStackParamList} from '../../navigation/RootNavigator'
+import auth from '@react-native-firebase/auth'
+import {useEffect, useState} from 'react'
 import {
   validateEmail,
   validatePassword,
   validatePhone,
-} from '../../validations/user-infor-validation';
-import Icon from 'react-native-vector-icons/Ionicons';
-import SignUpModal from './signup-model';
-import {signupStyles} from './signup-styles';
-import {handleAddUser} from '../../firebase/authentications_api';
-import {IUsers} from '../../types/users.type';
-import LoadingModal from '../../animations/LoadingModal';
-type Props = NativeStackScreenProps<LoginStackParamList, 'Signup'>;
+} from '../../validations/user-infor-validation'
+import Icon from 'react-native-vector-icons/Ionicons'
+import SignUpModal from './signup-model'
+import {signupStyles} from './signup-styles'
+import {handleAddUser} from '../../firebase/authentications_api'
+import {IUsers} from '../../types/users.type'
+import LoadingModal from '../../animations/LoadingModal'
+import {useDispatch} from 'react-redux'
+import {AppDispatch} from '../../redux/store/store'
+import {addUser} from '../../redux/thunks/userThunks'
+type Props = NativeStackScreenProps<LoginStackParamList, 'Signup'>
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
   //State store user information
+  const dispatch = useDispatch<AppDispatch>()
 
   //State to check input
   const [input, setInput] = useState({
@@ -38,10 +42,10 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     password: '',
     confirmPassword: '',
     phoneNumber: '',
-  });
+  })
 
   //State to control modal
-  const [openModal, setOpenModal] = useState<boolean>(false);
+  const [openModal, setOpenModal] = useState<boolean>(false)
 
   //State to store error message
   const [errorMessages, setErrorMessage] = useState({
@@ -49,49 +53,49 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     invalidPassword: '',
     invalidConfirmPassword: '',
     invalidPhone: '',
-  });
+  })
 
   //Check every input of confirmPassword whether it matchs password
   useEffect(() => {
     if (input.confirmPassword !== input.password && input.password !== '') {
-      errorMessages.invalidConfirmPassword = 'Your confirm password not match!';
+      errorMessages.invalidConfirmPassword = 'Your confirm password not match!'
     } else {
       setErrorMessage({
         ...errorMessages,
         invalidConfirmPassword: '',
-      });
+      })
     }
-  }, [input.confirmPassword]);
+  }, [input.confirmPassword])
 
   //State to control user want to hide password or not
-  const [hidePassword, setHidePassword] = useState<boolean>(true);
+  const [hidePassword, setHidePassword] = useState<boolean>(true)
   const handleHideOrShowPassword = () => {
-    setHidePassword(prev => !prev);
-  };
+    setHidePassword(prev => !prev)
+  }
   //Navigate to sign in screen
   const signInHandler = () => {
-    navigation.goBack();
-  };
+    navigation.goBack()
+  }
 
   const navigateToHome = () => {
-    navigation.replace('Main');
-  };
+    navigation.replace('Main')
+  }
 
   //Handle input value base on key and text changed
   const handleInputChange = (key: string, value: string) => {
     setInput({
       ...input,
       [key]: value,
-    });
-  };
+    })
+  }
 
   //Logic for sign up
   const handleConfirmSignUp = () => {
-    signUpFirebaseHandler();
-  };
+    signUpFirebaseHandler()
+  }
 
   //State to control loading
-  const [isLoading, setIsLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false)
   //Sign up function
   const signUpFirebaseHandler = () => {
     if (!validateEmail(input.email)) {
@@ -99,21 +103,21 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
         ...prevState,
         invalidEmail:
           'Email must have at least 6 characters before @ and the suffix follow @gmail.com',
-      }));
+      }))
     }
     if (!validatePassword(input.password)) {
       setErrorMessage(prevState => ({
         ...prevState,
         invalidPassword:
           'Password must have at least 8 characters, 1 number, 1 capital and 1 special character ',
-      }));
+      }))
     }
     if (!validatePhone(input.phoneNumber)) {
-      console.log(input.phoneNumber);
+      console.log(input.phoneNumber)
       setErrorMessage(prevState => ({
         ...prevState,
         invalidPhone: 'Phone number must match VietNam phone number',
-      }));
+      }))
     }
     if (
       validateEmail(input.email) &&
@@ -121,29 +125,31 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
       input.password === input.confirmPassword &&
       validatePhone(input.phoneNumber)
     ) {
-      setIsLoading(true);
+      setIsLoading(true)
       auth()
         .createUserWithEmailAndPassword(input.email, input.password)
         .then(UserCredential => {
-          const uid = UserCredential.user.uid;
-          handleAddUser(uid, {
+          const uid = UserCredential.user.uid
+          const userData: IUsers = {
+            uid: uid,
             email: input.email,
             phone: input.phoneNumber,
             role: 'employee',
-          });
-          setIsLoading(false);
-          setOpenModal(true);
+          }
+          dispatch(addUser(userData))
+          setIsLoading(false)
+          setOpenModal(true)
           //navigation.navigate('Main');
         })
         .catch(error => {
           if (error.code === 'auth/email-already-in-use') {
             console.log(
               ' The email address is already in use by another account.',
-            );
+            )
           }
-        });
+        })
     }
-  };
+  }
 
   return (
     <KeyboardAvoidingView
@@ -332,9 +338,9 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
         </View>
       </View>
     </KeyboardAvoidingView>
-  );
-};
+  )
+}
 
-const {width, height} = Dimensions.get('window');
+const {width, height} = Dimensions.get('window')
 
-export default LoginScreen;
+export default LoginScreen

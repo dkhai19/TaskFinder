@@ -1,40 +1,41 @@
-import {IUsers} from '../types/users.type';
-import firestore from '@react-native-firebase/firestore';
-import auth from '@react-native-firebase/auth';
-export const handleAddUser = async (user_id: string, user: IUsers) => {
+import {IUsers} from '../types/users.type'
+import firestore from '@react-native-firebase/firestore'
+import auth from '@react-native-firebase/auth'
+
+export const handleAddUser = async (user: IUsers) => {
   try {
-    console.log('Adding user:', user);
+    console.log('Adding user:', user)
     await firestore()
       .collection('users')
-      .doc(user_id)
-      .set({...user});
-    console.log('User added successfully!');
+      .doc(user.uid)
+      .set({...user})
+    console.log('User added successfully!')
   } catch (error) {
-    console.error('Error adding user to Firestore:', error);
+    console.error('Error adding user to Firestore:', error)
   }
-};
+}
 
 export const fetchAllUser = async () => {
-  const currentUser = auth().currentUser;
+  const currentUser = auth().currentUser
   if (!currentUser) {
-    throw new Error('No user is currently authenticated');
+    throw new Error('No user is currently authenticated')
   }
-  const currentUserUID = currentUser.uid;
+  const currentUserUID = currentUser.uid
   try {
-    const querySnapshot = await firestore().collection('users').get();
+    const querySnapshot = await firestore().collection('users').get()
     const users = querySnapshot.docs
       .map(doc => ({
         uid: doc.id,
         ...doc.data(),
       }))
-      .filter(user => user.uid !== currentUserUID);
-    console.log(users);
-    return users;
+      .filter(user => user.uid !== currentUserUID)
+    console.log(users)
+    return users
   } catch (error) {
-    console.error('Error to fetch user on Firestore', error);
-    return null;
+    console.error('Error to fetch user on Firestore', error)
+    return null
   }
-};
+}
 
 export const updateUserById = async (user_id: string, user_infor: object) => {
   await firestore()
@@ -42,12 +43,12 @@ export const updateUserById = async (user_id: string, user_infor: object) => {
     .doc(user_id)
     .update({...user_infor})
     .then(() => {
-      console.log('Updated!');
+      console.log('Updated!')
     })
-    .catch(error => console.error('Update failed', error));
-};
+    .catch(error => console.error('Update failed', error))
+}
 
 export const findUserById = async (user_id: string): Promise<IUsers> => {
-  const userDoc = await firestore().collection('users').doc(user_id).get();
-  return {uid: userDoc.id, ...userDoc.data()} as IUsers;
-};
+  const userDoc = await firestore().collection('users').doc(user_id).get()
+  return {uid: userDoc.id, ...userDoc.data()} as IUsers
+}

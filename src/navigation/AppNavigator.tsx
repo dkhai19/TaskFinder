@@ -1,30 +1,30 @@
-import {createStackNavigator} from '@react-navigation/stack';
+import {createStackNavigator} from '@react-navigation/stack'
 import {
   ConversationStackParamList,
   LoginStackParamList,
   RootTabParamList,
-} from './RootNavigator';
-import {createBottomTabNavigator} from '@react-navigation/bottom-tabs';
-import LoginScreen from '../screens/SignIn/login-screen';
-import SignUpScreen from '../screens/SignUp/signup-screen';
-import HomeScreen from '../screens/Home/home-screen';
-import ConversationScreen from '../screens/Conversation/conversation-screen';
-import NotificationScreen from '../screens/Notification/notification-screen';
-import SettingScreen from '../screens/Setting/setting-screen';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {colors} from '../constants/color';
-import {NavigationContainer, useFocusEffect} from '@react-navigation/native';
-import {StatusBar, View, useColorScheme} from 'react-native';
-import {useCallback} from 'react';
-import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
-import SpinAnimation from '../animations/SpiningRound';
-import ChatScreen from '../screens/Chat/chat-screen';
+} from './RootNavigator'
+import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
+import LoginScreen from '../screens/SignIn/login-screen'
+import SignUpScreen from '../screens/SignUp/signup-screen'
+import HomeScreen from '../screens/Home/home-screen'
+import ConversationScreen from '../screens/Conversation/conversation-screen'
+import SettingScreen from '../screens/Setting/setting-screen'
+import Icon from 'react-native-vector-icons/Ionicons'
+import {colors} from '../constants/color'
+import {NavigationContainer, useFocusEffect} from '@react-navigation/native'
+import {StatusBar, View, useColorScheme} from 'react-native'
+import {useCallback} from 'react'
+import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
+import SpinAnimation from '../animations/SpiningRound'
+import ChatScreen from '../screens/Chat/chat-screen'
+import ManagementScreen from '../screens/Management/manage-screen'
 
-const RootStack = createStackNavigator<LoginStackParamList>();
-const RootTab = createBottomTabNavigator<RootTabParamList>();
-const ConversationStack = createStackNavigator<ConversationStackParamList>();
-type LoginScreenProps = NativeStackScreenProps<LoginStackParamList, 'Login'>;
-type SignUpScreenProps = NativeStackScreenProps<LoginStackParamList, 'Signup'>;
+const RootStack = createStackNavigator<LoginStackParamList>()
+const RootTab = createBottomTabNavigator<RootTabParamList>()
+const ConversationStack = createStackNavigator<ConversationStackParamList>()
+type LoginScreenProps = NativeStackScreenProps<LoginStackParamList, 'Login'>
+type SignUpScreenProps = NativeStackScreenProps<LoginStackParamList, 'Signup'>
 //const RootStack = createStackNavigator<RootStackParamList>();
 
 // const SignInNavigator = () => {
@@ -43,20 +43,20 @@ type SignUpScreenProps = NativeStackScreenProps<LoginStackParamList, 'Signup'>;
 const LoginScreenWrapper: React.FC<LoginScreenProps> = props => {
   useFocusEffect(
     useCallback(() => {
-      StatusBar.setBarStyle('light-content');
+      StatusBar.setBarStyle('light-content')
     }, []),
-  );
-  return <LoginScreen {...props} />;
-};
+  )
+  return <LoginScreen {...props} />
+}
 
 const SignUpScreenWrapper: React.FC<SignUpScreenProps> = props => {
   useFocusEffect(
     useCallback(() => {
-      StatusBar.setBarStyle('light-content');
+      StatusBar.setBarStyle('light-content')
     }, []),
-  );
-  return <SignUpScreen {...props} />;
-};
+  )
+  return <SignUpScreen {...props} />
+}
 
 const ConversationWrapper = () => {
   return (
@@ -70,15 +70,15 @@ const ConversationWrapper = () => {
       />
       {/* <ConversationStack.Screen name="Chat" component={ChatScreen} /> */}
     </ConversationStack.Navigator>
-  );
-};
+  )
+}
 
 const RootTabNavigator = () => {
   useFocusEffect(
     useCallback(() => {
-      StatusBar.setBarStyle('dark-content');
+      StatusBar.setBarStyle('dark-content')
     }, []),
-  );
+  )
   return (
     <RootTab.Navigator
       screenOptions={({route}) => ({
@@ -94,17 +94,15 @@ const RootTabNavigator = () => {
           elevation: 5,
         },
         tabBarIcon: ({focused}) => {
-          let iconName: string = '';
+          let iconName: string = ''
           if (route.name === 'Homepage') {
-            iconName = focused ? 'home-sharp' : 'home-outline';
+            iconName = focused ? 'home-sharp' : 'home-outline'
           } else if (route.name === 'Messages') {
-            iconName = focused ? 'chatbubbles-sharp' : 'chatbubbles-outline';
-          } else if (route.name === 'Notifications') {
-            iconName = focused
-              ? 'notifications-sharp'
-              : 'notifications-outline';
+            iconName = focused ? 'chatbubbles-sharp' : 'chatbubbles-outline'
+          } else if (route.name === 'Management') {
+            iconName = focused ? 'documents-sharp' : 'documents-outline'
           } else if (route.name === 'Setting') {
-            iconName = focused ? 'settings-sharp' : 'settings-outline';
+            iconName = focused ? 'settings-sharp' : 'settings-outline'
           }
           //console.log(`Tab: ${route.name}, Focused: ${focused}`);
           return focused ? (
@@ -113,16 +111,16 @@ const RootTabNavigator = () => {
             </SpinAnimation>
           ) : (
             <Icon name={iconName} size={26} color={colors.black} />
-          );
+          )
         },
       })}>
       <RootTab.Screen name="Homepage" component={HomeScreen} />
       <RootTab.Screen name="Messages" component={ConversationWrapper} />
-      <RootTab.Screen name="Notifications" component={NotificationScreen} />
+      <RootTab.Screen name="Management" component={ManagementScreen} />
       <RootTab.Screen name="Setting" component={SettingScreen} />
     </RootTab.Navigator>
-  );
-};
+  )
+}
 
 const AppNavigator = () => {
   // const isDarkMode = useColorScheme() === 'light';
@@ -139,7 +137,7 @@ const AppNavigator = () => {
         <RootStack.Screen name="Chat" component={ChatScreen} />
       </RootStack.Navigator>
     </NavigationContainer>
-  );
-};
+  )
+}
 
-export default AppNavigator;
+export default AppNavigator

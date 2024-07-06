@@ -1,18 +1,18 @@
-import Icon from 'react-native-vector-icons/Ionicons';
-import {StyleSheet, Switch, Text, TouchableOpacity, View} from 'react-native';
-import {colors} from '../constants/color';
-import {typography} from '../constants/typo';
-import {useState} from 'react';
-import {useDispatch} from 'react-redux';
-import {toggleTheme} from '../redux/slices/authReducer';
+import Icon from 'react-native-vector-icons/Ionicons'
+import {StyleSheet, Switch, Text, TouchableOpacity, View} from 'react-native'
+import {colors} from '../constants/color'
+import {typography} from '../constants/typo'
+import {useState} from 'react'
+import {useDispatch} from 'react-redux'
+import {toggleTheme} from '../redux/slices/authSlice'
 
 interface IListItem {
-  iconName: string;
-  header: string;
-  value?: string;
-  onPress?: () => void;
-  navigate?: boolean;
-  toggle?: boolean;
+  iconName: string
+  header: string
+  value?: string
+  onPress?: () => void
+  navigate?: boolean
+  toggle?: boolean
 }
 
 const ListItem: React.FC<IListItem> = ({
@@ -23,12 +23,12 @@ const ListItem: React.FC<IListItem> = ({
   navigate,
   toggle,
 }) => {
-  const dispatch = useDispatch();
-  const [isEnable, setIsEnable] = useState(false);
+  const dispatch = useDispatch()
+  const [isEnable, setIsEnable] = useState(false)
   const toggleSwitch = () => {
-    setIsEnable(prevState => !prevState);
-    dispatch(toggleTheme());
-  };
+    setIsEnable(prevState => !prevState)
+    dispatch(toggleTheme())
+  }
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       <View style={styles.row}>
@@ -64,8 +64,8 @@ const ListItem: React.FC<IListItem> = ({
         )}
       </View>
     </TouchableOpacity>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -79,6 +79,6 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
   },
-});
+})
 
-export default ListItem;
+export default ListItem
