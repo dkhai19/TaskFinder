@@ -12,7 +12,7 @@ const combinedReducer = combineReducers({
 
 const rootReducer = (state: any, action: any) => {
   if (action.TYPE === 'RESET') {
-    state = {}
+    state = undefined
   }
   return combinedReducer(state, action)
 }

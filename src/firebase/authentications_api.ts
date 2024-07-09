@@ -1,45 +1,22 @@
 import {IUsers} from '../types/users.type'
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
+import {convertFirestoreTimestampToDate} from '../validations/convert-date'
+
+const userCollection = firestore().collection('users')
 
 export const handleAddUser = async (user: IUsers) => {
   try {
     console.log('Adding user:', user)
-    await firestore()
-      .collection('users')
-      .doc(user.uid)
-      .set({...user})
+    await userCollection.doc(user.uid).set({...user})
     console.log('User added successfully!')
   } catch (error) {
     console.error('Error adding user to Firestore:', error)
   }
 }
 
-export const fetchAllUser = async () => {
-  const currentUser = auth().currentUser
-  if (!currentUser) {
-    throw new Error('No user is currently authenticated')
-  }
-  const currentUserUID = currentUser.uid
-  try {
-    const querySnapshot = await firestore().collection('users').get()
-    const users = querySnapshot.docs
-      .map(doc => ({
-        uid: doc.id,
-        ...doc.data(),
-      }))
-      .filter(user => user.uid !== currentUserUID)
-    console.log(users)
-    return users
-  } catch (error) {
-    console.error('Error to fetch user on Firestore', error)
-    return null
-  }
-}
-
 export const updateUserById = async (user_id: string, user_infor: object) => {
-  await firestore()
-    .collection('users')
+  await userCollection
     .doc(user_id)
     .update({...user_infor})
     .then(() => {
@@ -50,5 +27,7 @@ export const updateUserById = async (user_id: string, user_infor: object) => {
 
 export const findUserById = async (user_id: string): Promise<IUsers> => {
   const userDoc = await firestore().collection('users').doc(user_id).get()
-  return {uid: userDoc.id, ...userDoc.data()} as IUsers
+  const data = userDoc.data()
+  const birthday = convertFirestoreTimestampToDate(data?.birthday).toISOString()
+  return {uid: userDoc.id, birthday, ...data} as IUsers
 }

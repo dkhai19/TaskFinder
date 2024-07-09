@@ -28,21 +28,15 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
   //console.log('The task modal', item)
   const [owner, setOwner] = useState<IUsers>()
   const [isApplied, setIsApplied] = useState<boolean>()
-  const currentUserId = useSelector(
-    (state: RootState) => state.authentication.uid,
-  )
-  const [currentUser, setCurrentUser] = useState<IUsers>()
+  const currentUser = useSelector((state: RootState) => state.user.currentUser)
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [findOwner, findCurrent, isUserApplied] = await Promise.all([
+        const [findOwner, isUserApplied] = await Promise.all([
           findUserById(item.userId),
-          findUserById(currentUserId),
           checkIsApplied(item.taskId, item.userId),
         ])
-
-        setCurrentUser(findCurrent)
         setOwner(findOwner)
         setIsApplied(isUserApplied)
         //console.log('Have I applied to this task', isUserApplied);
@@ -52,7 +46,7 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
     }
 
     fetchData()
-  }, [item.userId, item.taskId, currentUserId])
+  }, [item.userId, item.taskId])
 
   const handleFollow = () => {}
 
@@ -108,7 +102,7 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
           <RowItem
             iconName="time-outline"
             iconColor={colors.red}
-            title={`${item.startDate.toDateString()} - ${item.endDate.toDateString()}`}
+            title={`${item.startDate} - ${item.endDate}`}
           />
         </View>
         <View style={styles.description}>

@@ -11,7 +11,7 @@ const ManagementScreen = () => {
   return (
     <View style={styles.container}>
       <View style={styles.headingText}>
-        <Text style={[typography.f20_bold, {color: colors.black}]}>
+        <Text style={[typography.f17_medium, {color: colors.black}]}>
           Tasks you applied
         </Text>
       </View>
@@ -29,6 +29,7 @@ const styles = StyleSheet.create({
     backgroundColor: colors.white,
   },
   headingText: {
+    marginTop: 36,
     justifyContent: 'center',
     alignItems: 'center',
   },

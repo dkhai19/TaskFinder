@@ -24,21 +24,23 @@ type Props = NativeStackScreenProps<ConversationStackParamList, 'Conversation'>
 const ConversationScreen: React.FC<Props> = ({navigation}) => {
   const userUID = useSelector((state: RootState) => state.authentication.uid)
   const [listData, setListData] = useState<IConversation[]>([])
-
+  const listOtherUsers = useSelector(
+    (state: RootState) => state.user.otherUsers,
+  )
   useEffect(() => {
     const processConversations = async (data: IChat[]) => {
       const conversations: IConversation[] = await Promise.all(
         data.map(async chat => {
           const receiverId = chat.members.filter(uid => uid !== userUID)[0]
-          const user = await findUserById(receiverId)
+          const user = listOtherUsers?.find(item => item.uid === receiverId)
           const time = convertFirestoreTimestampToDate(
             chat.lastMessageTimestamp,
           )
           const toHour = time.getHours() + ':' + time.getMinutes()
           return {
             id: receiverId,
-            avatar: '5',
-            name: `${user.first_name} ${user.last_name}`,
+            avatar: '5', // can sua
+            name: `${user?.first_name} ${user?.last_name}`,
             lastMessage: chat.lastMessage,
             lastMessageTimestamp: toHour,
           }
@@ -48,7 +50,6 @@ const ConversationScreen: React.FC<Props> = ({navigation}) => {
     }
 
     const unsubscribe = fetchConversations(userUID, processConversations)
-
     // Cleanup subscription on unmount
     return () => unsubscribe()
   }, [])

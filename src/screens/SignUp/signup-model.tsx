@@ -6,33 +6,33 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
-} from 'react-native';
-import {colors} from '../../constants/color';
-import {useEffect, useRef, useState} from 'react';
-import {typography} from '../../constants/typo';
-import Input from '../../components/Input';
-import ContainedButton from '../../components/ContainedButton';
-import auth from '@react-native-firebase/auth';
-import {updateUserById} from '../../firebase/authentications_api';
-import {parseDateOfBirth} from '../../validations/user-infor-validation';
-import DatePicker from 'react-native-date-picker';
-import IconButton from '../../components/IconButton';
-const {width, height} = Dimensions.get('window');
+} from 'react-native'
+import {colors} from '../../constants/color'
+import {useEffect, useRef, useState} from 'react'
+import {typography} from '../../constants/typo'
+import Input from '../../components/Input'
+import ContainedButton from '../../components/ContainedButton'
+import auth from '@react-native-firebase/auth'
+import {updateUserById} from '../../firebase/authentications_api'
+import {parseDateOfBirth} from '../../validations/user-infor-validation'
+import DatePicker from 'react-native-date-picker'
+import IconButton from '../../components/IconButton'
+const {width, height} = Dimensions.get('window')
 
 interface IModal {
-  onPress: () => void;
+  onPress: () => void
 }
 
 const SignUpModal: React.FC<IModal> = ({onPress}) => {
-  const translateYValue = useRef(new Animated.Value(height)).current;
-  const [date, setDate] = useState(new Date());
-  const [open, setOpen] = useState(false);
+  const translateYValue = useRef(new Animated.Value(height)).current
+  const [date, setDate] = useState(new Date())
+  const [open, setOpen] = useState(false)
   const [additionaInfo, setAdditionalInfo] = useState({
     first_name: '',
     last_name: '',
     birthday: '',
     identity: '',
-  });
+  })
   //Animation for show up modal
   useEffect(() => {
     Animated.parallel([
@@ -46,35 +46,35 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
         speed: 4,
         useNativeDriver: true,
       }),
-    ]).start();
-  }, []);
+    ]).start()
+  }, [])
 
   const onChangeText = (key: string, text: string) => {
     setAdditionalInfo(prevState => ({
       ...prevState,
       [key]: text,
-    }));
-  };
+    }))
+  }
 
   const handleUpdateUser = async () => {
-    const user_id = auth().currentUser?.uid;
+    const user_id = auth().currentUser?.uid
 
     if (user_id) {
-      const parseDOB = parseDateOfBirth(additionaInfo.birthday);
+      const parseDOB = parseDateOfBirth(additionaInfo.birthday)
       if (!parseDOB) {
-        console.log('Error date format!');
-        return;
+        console.log('Error date format!')
+        return
       }
       const updatedInfo = {
         ...additionaInfo,
         birthday: parseDOB,
-      };
+      }
 
       await updateUserById(user_id, updatedInfo).then(() => {
-        onPress();
-      });
+        onPress()
+      })
     }
-  };
+  }
 
   return (
     <Animated.View
@@ -143,11 +143,11 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
           open={open}
           date={date}
           onConfirm={date => {
-            setOpen(false);
-            onChangeText('birthday', date.toDateString());
+            setOpen(false)
+            onChangeText('birthday', date.toDateString())
           }}
           onCancel={() => {
-            setOpen(false);
+            setOpen(false)
           }}
         />
         <View style={{marginBottom: 16}}>
@@ -166,8 +166,8 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
         <ContainedButton onPress={() => handleUpdateUser()} title="Confirm" />
       </View>
     </Animated.View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -203,6 +203,6 @@ const styles = StyleSheet.create({
   noteText: {
     color: colors.opacityBlack(0.5),
   },
-});
+})
 
-export default SignUpModal;
+export default SignUpModal

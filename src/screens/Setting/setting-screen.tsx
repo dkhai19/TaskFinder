@@ -5,24 +5,24 @@ import {
   Text,
   TouchableOpacity,
   View,
-} from 'react-native';
-import {colors} from '../../constants/color';
-import {typography} from '../../constants/typo';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {useDispatch} from 'react-redux';
-import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types';
-import {LoginStackParamList} from '../../navigation/RootNavigator';
-import {StackNavigationProp} from '@react-navigation/stack';
-import {useNavigation} from '@react-navigation/native';
-import auth from '@react-native-firebase/auth';
-import KeyValueText from '../../components/KeyValue';
-import ListItem from '../../components/ListItem';
+} from 'react-native'
+import {colors} from '../../constants/color'
+import {typography} from '../../constants/typo'
+import Icon from 'react-native-vector-icons/Ionicons'
+import {useDispatch} from 'react-redux'
+import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
+import {LoginStackParamList} from '../../navigation/RootNavigator'
+import {StackNavigationProp} from '@react-navigation/stack'
+import {useNavigation} from '@react-navigation/native'
+import auth from '@react-native-firebase/auth'
+import KeyValueText from '../../components/KeyValue'
+import ListItem from '../../components/ListItem'
 
-type Props = StackNavigationProp<LoginStackParamList, 'Login'>;
+type Props = StackNavigationProp<LoginStackParamList, 'Login'>
 
 const SettingScreen: React.FC = () => {
-  const navigation = useNavigation<Props>();
-  const dispatch = useDispatch();
+  const navigation = useNavigation<Props>()
+  const dispatch = useDispatch()
 
   const showAlert = () => {
     Alert.alert('Signing out', 'Do you want to sign out?', [
@@ -34,21 +34,22 @@ const SettingScreen: React.FC = () => {
         text: 'Confirm',
         onPress: confirmSignOut,
       },
-    ]);
-  };
+    ])
+  }
 
   //Clear redux and also firebase state
   const confirmSignOut = () => {
     //Clear redux
-    dispatch({type: 'RESET'});
+    dispatch({type: 'RESET_STORE'})
     try {
-      auth().signOut();
-      navigation.replace('Login');
+      auth().signOut()
+      navigation.replace('Login')
     } catch (error) {
-      console.log(error);
+      console.log(error)
     }
-  };
-  const currentUser = auth().currentUser;
+  }
+
+  const currentUser = auth().currentUser
   return (
     <View style={settingStyles.container}>
       <View style={settingStyles.body}>
@@ -103,8 +104,8 @@ const SettingScreen: React.FC = () => {
         </View>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const settingStyles = StyleSheet.create({
   container: {
@@ -146,5 +147,5 @@ const settingStyles = StyleSheet.create({
   navigation_container: {
     paddingTop: 32,
   },
-});
-export default SettingScreen;
+})
+export default SettingScreen

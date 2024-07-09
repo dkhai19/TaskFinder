@@ -126,7 +126,7 @@ const AppNavigator = () => {
   // const isDarkMode = useColorScheme() === 'light';
   return (
     <NavigationContainer>
-      <StatusBar backgroundColor="transparent" translucent />
+      <StatusBar backgroundColor="transparent" />
       <RootStack.Navigator
         screenOptions={{
           headerShown: false,
