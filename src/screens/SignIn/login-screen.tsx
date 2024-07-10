@@ -73,6 +73,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           console.log(error)
         })
     } else {
+      setIsLoading(() => false)
       Alert.alert('Your input is invalid, check again!')
     }
   }

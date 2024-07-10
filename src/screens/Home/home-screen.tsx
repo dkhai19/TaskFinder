@@ -38,7 +38,7 @@ Mapbox.setAccessToken(
 
 const {width, height} = Dimensions.get('window')
 
-const HomeScreen = () => {
+const HomeScreen: React.FC = () => {
   const [location, setLocation] = useState<LocationCoordinates>([105.834160, 21.027763]); //prettier-ignore
   const [permissionStatus, setPermissionStatus] = useState('pending')
   const [movingCamera, setMovingCamera] = useState(false)

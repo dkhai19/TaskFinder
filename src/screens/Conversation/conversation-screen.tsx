@@ -11,17 +11,19 @@ import {useEffect, useState} from 'react'
 import {colors} from '../../constants/color'
 import {typography} from '../../constants/typo'
 import ChatItem from './chat-item'
-import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
-import {ConversationStackParamList} from '../../navigation/RootNavigator'
+
 import {fetchConversations} from '../../firebase/chats.api'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import {IChat, IConversation} from '../../types/chats.type'
 import {convertFirestoreTimestampToDate} from '../../validations/convert-date'
+import {useNavigation} from '@react-navigation/native'
+import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
+import {RootStackParamList} from '../../navigation/RootNavigator'
 
-type Props = NativeStackScreenProps<ConversationStackParamList, 'Conversation'>
-
-const ConversationScreen: React.FC<Props> = ({navigation}) => {
+const ConversationScreen: React.FC = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const userUID = useSelector((state: RootState) => state.authentication.uid)
   const [listData, setListData] = useState<IConversation[]>([])
   const listOtherUsers = useSelector(
@@ -54,8 +56,11 @@ const ConversationScreen: React.FC<Props> = ({navigation}) => {
     return () => unsubscribe()
   }, [])
 
-  const goToChatDetail = (uid: string) => {
-    navigation.navigate('Chat', {uid: uid})
+  const goToChatDetail = (receiver_uid: string) => {
+    navigation.navigate('ChatNavigator', {
+      screen: 'Chat',
+      params: {uid: receiver_uid},
+    })
   }
 
   const avatarItem = (item: IConversation) => {

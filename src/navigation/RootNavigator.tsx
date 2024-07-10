@@ -1,8 +1,11 @@
+import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
+import {ICall} from '../types/calls.type'
+import {RouteProp} from '@react-navigation/native'
+
 export type LoginStackParamList = {
   Login: undefined
   Signup: undefined
   Main: undefined
-  Chat: {uid: string}
 }
 
 export type RootTabParamList = {
@@ -12,11 +15,19 @@ export type RootTabParamList = {
   Setting: undefined
 }
 
-export type ConversationStackParamList = {
-  Conversation: undefined
+export type ChatStackParamList = {
   Chat: {uid: string}
+  Call: ICall
 }
 
+export type RootStackParamList = {
+  LoginNavigator: undefined
+  RootTabNavigator: undefined
+  ChatNavigator: {
+    screen: keyof ChatStackParamList
+    params: ChatStackParamList[keyof ChatStackParamList]
+  }
+}
 // export type RootStackParamList = {
 //   SigninScreen: undefined;
 //   MainScreen: undefined;

@@ -142,6 +142,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           //navigation.navigate('Main');
         })
         .catch(error => {
+          setIsLoading(() => false)
           if (error.code === 'auth/email-already-in-use') {
             console.log(
               ' The email address is already in use by another account.',

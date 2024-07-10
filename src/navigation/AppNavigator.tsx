@@ -1,7 +1,8 @@
 import {createStackNavigator} from '@react-navigation/stack'
 import {
-  ConversationStackParamList,
+  ChatStackParamList,
   LoginStackParamList,
+  RootStackParamList,
   RootTabParamList,
 } from './RootNavigator'
 import {createBottomTabNavigator} from '@react-navigation/bottom-tabs'
@@ -19,26 +20,15 @@ import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native
 import SpinAnimation from '../animations/SpiningRound'
 import ChatScreen from '../screens/Chat/chat-screen'
 import ManagementScreen from '../screens/Management/manage-screen'
+import CallScreen from '../screens/Call/call-screen'
 
-const RootStack = createStackNavigator<LoginStackParamList>()
 const RootTab = createBottomTabNavigator<RootTabParamList>()
-const ConversationStack = createStackNavigator<ConversationStackParamList>()
+const RootStack = createStackNavigator<RootStackParamList>()
+const LoginStack = createStackNavigator<LoginStackParamList>()
+const ChatStack = createStackNavigator<ChatStackParamList>()
+
 type LoginScreenProps = NativeStackScreenProps<LoginStackParamList, 'Login'>
 type SignUpScreenProps = NativeStackScreenProps<LoginStackParamList, 'Signup'>
-//const RootStack = createStackNavigator<RootStackParamList>();
-
-// const SignInNavigator = () => {
-//   return (
-//     <RootStack.Navigator
-//       screenOptions={{
-//         headerShown: false,
-//       }}>
-//       <RootStack.Screen name="Login" component={LoginScreen} />
-//       <RootStack.Screen name="Signup" component={SignUpScreen} />
-//       <RootStack.Screen name="Main" component={RootTabNavigator} />
-//     </RootStack.Navigator>
-//   );
-// };
 
 const LoginScreenWrapper: React.FC<LoginScreenProps> = props => {
   useFocusEffect(
@@ -58,18 +48,15 @@ const SignUpScreenWrapper: React.FC<SignUpScreenProps> = props => {
   return <SignUpScreen {...props} />
 }
 
-const ConversationWrapper = () => {
+const ChatStackNavigator = () => {
   return (
-    <ConversationStack.Navigator
+    <ChatStack.Navigator
       screenOptions={{
         headerShown: false,
       }}>
-      <ConversationStack.Screen
-        name="Conversation"
-        component={ConversationScreen}
-      />
-      {/* <ConversationStack.Screen name="Chat" component={ChatScreen} /> */}
-    </ConversationStack.Navigator>
+      <ChatStack.Screen name="Chat" component={ChatScreen} />
+      <ChatStack.Screen name="Call" component={CallScreen} />
+    </ChatStack.Navigator>
   )
 }
 
@@ -115,10 +102,23 @@ const RootTabNavigator = () => {
         },
       })}>
       <RootTab.Screen name="Homepage" component={HomeScreen} />
-      <RootTab.Screen name="Messages" component={ConversationWrapper} />
+      <RootTab.Screen name="Messages" component={ConversationScreen} />
       <RootTab.Screen name="Management" component={ManagementScreen} />
       <RootTab.Screen name="Setting" component={SettingScreen} />
     </RootTab.Navigator>
+  )
+}
+
+const LoginStackNavigator = () => {
+  return (
+    <LoginStack.Navigator
+      screenOptions={{
+        headerShown: false,
+      }}>
+      <LoginStack.Screen name="Login" component={LoginScreenWrapper} />
+      <LoginStack.Screen name="Signup" component={SignUpScreenWrapper} />
+      <LoginStack.Screen name="Main" component={RootTabNavigator} />
+    </LoginStack.Navigator>
   )
 }
 
@@ -131,10 +131,15 @@ const AppNavigator = () => {
         screenOptions={{
           headerShown: false,
         }}>
-        <RootStack.Screen name="Login" component={LoginScreenWrapper} />
-        <RootStack.Screen name="Signup" component={SignUpScreenWrapper} />
-        <RootStack.Screen name="Main" component={RootTabNavigator} />
-        <RootStack.Screen name="Chat" component={ChatScreen} />
+        <RootStack.Screen
+          name="LoginNavigator"
+          component={LoginStackNavigator}
+        />
+        <RootStack.Screen
+          name="RootTabNavigator"
+          component={RootTabNavigator}
+        />
+        <RootStack.Screen name="ChatNavigator" component={ChatStackNavigator} />
       </RootStack.Navigator>
     </NavigationContainer>
   )
