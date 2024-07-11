@@ -29,6 +29,7 @@ const ConversationScreen: React.FC = () => {
   const listOtherUsers = useSelector(
     (state: RootState) => state.user.otherUsers,
   )
+
   useEffect(() => {
     const processConversations = async (data: IChat[]) => {
       const conversations: IConversation[] = await Promise.all(
@@ -52,6 +53,7 @@ const ConversationScreen: React.FC = () => {
     }
 
     const unsubscribe = fetchConversations(userUID, processConversations)
+    console.log(listData)
     // Cleanup subscription on unmount
     return () => unsubscribe()
   }, [])

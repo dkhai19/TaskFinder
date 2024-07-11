@@ -63,7 +63,7 @@ const ChatStackNavigator = () => {
 const RootTabNavigator = () => {
   useFocusEffect(
     useCallback(() => {
-      StatusBar.setBarStyle('dark-content')
+      StatusBar.setBarStyle('light-content')
     }, []),
   )
   return (
@@ -110,6 +110,11 @@ const RootTabNavigator = () => {
 }
 
 const LoginStackNavigator = () => {
+  useFocusEffect(
+    useCallback(() => {
+      StatusBar.setBarStyle('light-content')
+    }, []),
+  )
   return (
     <LoginStack.Navigator
       screenOptions={{
@@ -126,7 +131,6 @@ const AppNavigator = () => {
   // const isDarkMode = useColorScheme() === 'light';
   return (
     <NavigationContainer>
-      <StatusBar backgroundColor="transparent" />
       <RootStack.Navigator
         screenOptions={{
           headerShown: false,

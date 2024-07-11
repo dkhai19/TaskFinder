@@ -16,6 +16,10 @@ import MessageRow from './message-row'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import {ICall} from '../../types/calls.type'
+import client, {
+  requestCameraPermission,
+  requestMicrophonePermission,
+} from '../../apis/stream'
 
 type Props = NativeStackScreenProps<ChatStackParamList, 'Chat'>
 
@@ -24,7 +28,13 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   const sender_uid = useSelector((state: RootState) => state.authentication.uid)
   const [text, setText] = useState('')
   const [messages, setMessages] = useState<IMessage[]>([])
-
+  const navigationItem: ICall = {
+    apiKey: 'mmhfdzb5evj2',
+    token:
+      'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoia2hhaSJ9.d00IXB_joZTWNis3zHW5vXeq64xvyElO--iXCYV_xCw',
+    uid: 'khai',
+    callId: 'default_3f595617-07a3-4f70-9f0f-7a898e85b455',
+  }
   useEffect(() => {
     let unsubscribe: (() => void) | null = null
     const loadInformations = async () => {
@@ -66,15 +76,27 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
     }
   }
 
-  const navigateCallScreen = () => {
-    const navigationItem: ICall = {
-      apiKey: 'mmhfdzb5evj2',
-      token:
-        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiQmVuX1NreXdhbGtlciIsImlzcyI6Imh0dHBzOi8vcHJvbnRvLmdldHN0cmVhbS5pbyIsInN1YiI6InVzZXIvQmVuX1NreXdhbGtlciIsImlhdCI6MTcyMDU5MzUxMSwiZXhwIjoxNzIxMTk4MzE2fQ.TBC7awDAQRDNfWBYCs4KXorDo37Z0lBkczu89ZDdbJ4',
-      uid: 'Ben_Skywalker',
-      callId: 'ITieY8MrnuVO',
+  const authenticateUser = async (uid: string, token: string) => {
+    const cameraPermission = await requestCameraPermission()
+    const microPermission = await requestMicrophonePermission()
+    if (cameraPermission && microPermission) {
+      await client
+        .connectUser(
+          {
+            id: uid,
+          },
+          token,
+        )
+        .then(() => {
+          navigation.navigate('Call', {...navigationItem})
+        })
+    } else {
+      console.log('Cant do call because it require permission')
     }
-    navigation.navigate('Call', {...navigationItem})
+  }
+
+  const navigateCallScreen = () => {
+    authenticateUser(navigationItem.uid, navigationItem.token)
   }
 
   return (
