@@ -66,8 +66,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     await AsyncStorage.setItem('password', password)
 
     const getUserInfor = await findUserById(uid)
-    console.log(getUserInfor)
-    setIsLoading(() => false)
+    dispatch(setCurrentUser(getUserInfor))
   }
 
   useEffect(() => {
@@ -80,8 +79,15 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           .signInWithEmailAndPassword(getEmail, getPwd)
           .then(currentUser => {
             dispatch(setUserID(currentUser.user.uid))
-            setIsLoading(() => false)
-            navigation.replace('Main')
+            storeLoginInformation(
+              user.email,
+              user.password,
+              currentUser.user.uid,
+            )
+            setTimeout(() => {
+              setIsLoading(() => false)
+              navigation.replace('Main')
+            }, 1500)
           })
           .catch(error => {
             console.log(error)
@@ -103,7 +109,10 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           dispatch(setUserID(currentUser.user.uid))
           //console.log(currentUser.user.uid);
           storeLoginInformation(user.email, user.password, currentUser.user.uid)
-          navigation.replace('Main')
+          setTimeout(() => {
+            setIsLoading(() => false)
+            navigation.replace('Main')
+          }, 1500)
         })
         .catch(error => {
           console.log(error)

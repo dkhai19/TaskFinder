@@ -70,6 +70,7 @@ const HomeScreen: React.FC = () => {
       }
     }
 
+    console.log('Current user', currentUser)
     const jwtString = signJWT({
       user_id: currentUser?.uid,
       name: `${currentUser?.first_name} ${currentUser?.last_name}`,

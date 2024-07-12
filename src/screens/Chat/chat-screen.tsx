@@ -29,6 +29,7 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   const sender_uid = useSelector((state: RootState) => state.authentication.uid)
   const [text, setText] = useState('')
   const [messages, setMessages] = useState<IMessage[]>([])
+  const currentUser = useSelector((state: RootState) => state.user.currentUser)
   const jwtToken = useSelector((state: RootState) => state.authentication.token)
   const navigationItem: ICall = {
     apiKey: 'mmhfdzb5evj2',
@@ -86,6 +87,7 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
         .connectUser(
           {
             id: sender_uid,
+            name: `${currentUser?.first_name} ${currentUser?.last_name}`,
           },
           jwtToken,
         )

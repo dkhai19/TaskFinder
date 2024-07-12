@@ -62,7 +62,6 @@ const CallScreen: React.FC<Props> = ({navigation, route}) => {
 
   const goBack = () => {
     navigation.pop()
-    call.leave()
   }
 
   return (
