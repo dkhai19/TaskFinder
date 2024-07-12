@@ -1,11 +1,11 @@
-import {IUsers} from '../types/users.type'
+import {IUserProfiles, IUsers, IUserSignUp} from '../types/users.type'
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
 import {convertFirestoreTimestampToDate} from '../validations/convert-date'
 
 const userCollection = firestore().collection('users')
 
-export const handleAddUser = async (user: IUsers) => {
+export const handleAddUser = async (user: IUserSignUp) => {
   try {
     console.log('Adding user:', user)
     await userCollection.doc(user.uid).set({...user})
@@ -15,7 +15,10 @@ export const handleAddUser = async (user: IUsers) => {
   }
 }
 
-export const updateUserById = async (user_id: string, user_infor: object) => {
+export const updateUserById = async (
+  user_id: string,
+  user_infor: IUserProfiles,
+) => {
   await userCollection
     .doc(user_id)
     .update({...user_infor})

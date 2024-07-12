@@ -2,8 +2,6 @@ import {
   Alert,
   Dimensions,
   Image,
-  KeyboardAvoidingView,
-  Platform,
   StyleSheet,
   Text,
   TextInput,
@@ -21,10 +19,12 @@ import {
   validatePassword,
 } from '../../validations/user-infor-validation'
 import Icon from 'react-native-vector-icons/Ionicons'
-import {useDispatch, useSelector} from 'react-redux'
+import {useDispatch} from 'react-redux'
 import {setUserID} from '../../redux/slices/authSlice'
-import {RootState} from '../../redux/rootReducer'
 import LoadingModal from '../../animations/LoadingModal'
+import AsyncStorage from '@react-native-async-storage/async-storage'
+import {findUserById} from '../../firebase/authentications_api'
+import {setCurrentUser} from '../../redux/slices/userSlice'
 
 type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>
 
@@ -57,6 +57,42 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     navigation.navigate('Signup')
   }
 
+  const storeLoginInformation = async (
+    email: string,
+    password: string,
+    uid: string,
+  ) => {
+    await AsyncStorage.setItem('email', email)
+    await AsyncStorage.setItem('password', password)
+
+    const getUserInfor = await findUserById(uid)
+    console.log(getUserInfor)
+    setIsLoading(() => false)
+  }
+
+  useEffect(() => {
+    const autoSignIn = async () => {
+      const getEmail = await AsyncStorage.getItem('email')
+      const getPwd = await AsyncStorage.getItem('password')
+      if (getEmail && getPwd) {
+        setIsLoading(() => true)
+        auth()
+          .signInWithEmailAndPassword(getEmail, getPwd)
+          .then(currentUser => {
+            dispatch(setUserID(currentUser.user.uid))
+            setIsLoading(() => false)
+            navigation.replace('Main')
+          })
+          .catch(error => {
+            console.log(error)
+          })
+      } else {
+        return
+      }
+    }
+    autoSignIn()
+  }, [])
+
   //Handle sign in logic
   const signInHandler = () => {
     if (validateEmail(user.email) && validatePassword(user.password)) {
@@ -65,8 +101,8 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
         .signInWithEmailAndPassword(user.email, user.password)
         .then(currentUser => {
           dispatch(setUserID(currentUser.user.uid))
-          setIsLoading(() => false)
           //console.log(currentUser.user.uid);
+          storeLoginInformation(user.email, user.password, currentUser.user.uid)
           navigation.replace('Main')
         })
         .catch(error => {

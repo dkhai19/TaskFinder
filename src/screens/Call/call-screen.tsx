@@ -70,7 +70,7 @@ const CallScreen: React.FC<Props> = ({navigation, route}) => {
       <StreamCall call={call}>
         <SafeAreaView style={styles.container}>
           <CallContent
-            layout="spotlight"
+            layout="grid"
             onHangupCallHandler={goBack}
             onBackPressed={goBack}
           />

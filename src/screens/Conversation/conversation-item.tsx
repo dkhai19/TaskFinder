@@ -1,15 +1,19 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
-import {typography} from '../../constants/typo';
-import {colors} from '../../constants/color';
+import {Image, StyleSheet, Text, View} from 'react-native'
+import {typography} from '../../constants/typo'
+import {colors} from '../../constants/color'
 
-interface IChatItem {
-  imageUrl?: string;
-  name: string;
-  context: string;
-  lastDate: string;
+interface IConversationItem {
+  imageUrl?: string
+  name: string
+  context: string
+  lastDate: string
 }
 
-const ChatItem: React.FC<IChatItem> = ({name, context, lastDate}) => {
+const ConversationItem: React.FC<IConversationItem> = ({
+  name,
+  context,
+  lastDate,
+}) => {
   return (
     <View style={styles.container}>
       <View style={{flex: 1}}>
@@ -36,8 +40,8 @@ const ChatItem: React.FC<IChatItem> = ({name, context, lastDate}) => {
         </Text>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -59,6 +63,6 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'flex-end',
   },
-});
+})
 
-export default ChatItem;
+export default ConversationItem

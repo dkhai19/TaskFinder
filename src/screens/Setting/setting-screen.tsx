@@ -17,6 +17,7 @@ import {useNavigation} from '@react-navigation/native'
 import auth from '@react-native-firebase/auth'
 import KeyValueText from '../../components/KeyValue'
 import ListItem from '../../components/ListItem'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 type Props = StackNavigationProp<LoginStackParamList, 'Login'>
 
@@ -43,6 +44,7 @@ const SettingScreen: React.FC = () => {
     dispatch({type: 'RESET_STORE'})
     try {
       auth().signOut()
+      AsyncStorage.clear()
       navigation.replace('Login')
     } catch (error) {
       console.log(error)

@@ -3,15 +3,9 @@ import {
   StyleSheet,
   Text,
   View,
-  Animated,
-  Platform,
-  PermissionsAndroid,
-  TouchableOpacity,
   TouchableWithoutFeedback,
 } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
-import {Button} from 'react-native'
-import Icon from 'react-native-vector-icons/Ionicons'
 import {colors} from '../../constants/color'
 import {useEffect, useState} from 'react'
 import IconButton from '../../components/IconButton'
@@ -31,6 +25,8 @@ import {
   requestLocationPermission,
 } from '../../apis/location'
 import {fetchOthers} from '../../redux/thunks/userThunks'
+import {signJWT} from '../../apis/stream'
+import {setToken} from '../../redux/slices/authSlice'
 
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiZHVja2hhaTIwMDJ2biIsImEiOiJjbHh2ODBvZXQwamtkMmpwdTFsa3JoeDVrIn0.vrtl6qLPN_NGnRKA2EvLvg',
@@ -42,8 +38,8 @@ const HomeScreen: React.FC = () => {
   const [location, setLocation] = useState<LocationCoordinates>([105.834160, 21.027763]); //prettier-ignore
   const [permissionStatus, setPermissionStatus] = useState('pending')
   const [movingCamera, setMovingCamera] = useState(false)
+  const currentUser = useSelector((state: RootState) => state.user.currentUser)
   //const [tasks, setTasks] = useState<TaskData>([])
-
   const modalVisible = useSelector((state: RootState) => state.task.taskModal)
   const tasks = useSelector((state: RootState) => state.task.tasksData)
   const [taskModal, setTaskModal] = useState<ITask>()
@@ -74,9 +70,15 @@ const HomeScreen: React.FC = () => {
       }
     }
 
+    const jwtString = signJWT({
+      user_id: currentUser?.uid,
+      name: `${currentUser?.first_name} ${currentUser?.last_name}`,
+    })
+
     setupTasks()
     setupLocation()
     dispatch(fetchOthers())
+    dispatch(setToken(jwtString))
     setTimeout(() => {
       setMovingCamera(true)
     }, 2000)

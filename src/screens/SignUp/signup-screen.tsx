@@ -25,11 +25,12 @@ import Icon from 'react-native-vector-icons/Ionicons'
 import SignUpModal from './signup-model'
 import {signupStyles} from './signup-styles'
 import {handleAddUser} from '../../firebase/authentications_api'
-import {IUsers} from '../../types/users.type'
+import {IUsers, IUserSignUp} from '../../types/users.type'
 import LoadingModal from '../../animations/LoadingModal'
 import {useDispatch} from 'react-redux'
 import {AppDispatch} from '../../redux/store/store'
 import {addUser} from '../../redux/thunks/userThunks'
+import {setUserID} from '../../redux/slices/authSlice'
 type Props = NativeStackScreenProps<LoginStackParamList, 'Signup'>
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
@@ -137,6 +138,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
             role: 'employee',
           }
           dispatch(addUser(userData))
+          dispatch(setUserID(uid))
           setIsLoading(false)
           setOpenModal(true)
           //navigation.navigate('Main');

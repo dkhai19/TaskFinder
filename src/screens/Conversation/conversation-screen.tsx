@@ -6,11 +6,9 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {findUserById} from '../../firebase/authentications_api'
 import {useEffect, useState} from 'react'
 import {colors} from '../../constants/color'
 import {typography} from '../../constants/typo'
-import ChatItem from './chat-item'
 
 import {fetchConversations} from '../../firebase/chats.api'
 import {useSelector} from 'react-redux'
@@ -20,10 +18,12 @@ import {convertFirestoreTimestampToDate} from '../../validations/convert-date'
 import {useNavigation} from '@react-navigation/native'
 import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
 import {RootStackParamList} from '../../navigation/RootNavigator'
+import ConversationItem from './conversation-item'
 
 const ConversationScreen: React.FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
+  //Need to change
   const userUID = useSelector((state: RootState) => state.authentication.uid)
   const [listData, setListData] = useState<IConversation[]>([])
   const listOtherUsers = useSelector(
@@ -56,7 +56,7 @@ const ConversationScreen: React.FC = () => {
     console.log(listData)
     // Cleanup subscription on unmount
     return () => unsubscribe()
-  }, [])
+  }, [userUID])
 
   const goToChatDetail = (receiver_uid: string) => {
     navigation.navigate('ChatNavigator', {
@@ -95,7 +95,7 @@ const ConversationScreen: React.FC = () => {
       <TouchableOpacity
         onPress={() => goToChatDetail(item.id)}
         style={{paddingVertical: 8}}>
-        <ChatItem
+        <ConversationItem
           name={item.name}
           context={item.lastMessage}
           lastDate={item.lastMessageTimestamp}

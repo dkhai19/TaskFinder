@@ -2,13 +2,13 @@ export type IUsers = {
   uid?: string
   email: string
   password?: string
-  phone: string
+  phone?: string
   gender?: boolean
   birthday?: string
   first_name?: string
   last_name?: string
   rating?: number
-  role: string
+  role?: string
 }
 
 export type IUserProfiles = {
@@ -19,4 +19,16 @@ export type IUserProfiles = {
   birthday: string
   first_name: string
   last_name: string
+}
+
+export type IUserSignUp = {
+  uid: string
+  email: string
+  phone: string
+  role: string
+}
+
+export type IPayloadUser = {
+  user_id: string | undefined
+  name: string | undefined
 }

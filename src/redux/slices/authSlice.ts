@@ -1,7 +1,8 @@
-import {createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {createAsyncThunk, createSlice, PayloadAction} from '@reduxjs/toolkit'
 
 const initialState = {
   uid: '',
+  token: '',
   lightThem: true,
 }
 
@@ -12,11 +13,14 @@ const authSlice = createSlice({
     setUserID(state, action: PayloadAction<string>) {
       state.uid = action.payload
     },
+    setToken(state, action: PayloadAction<string>) {
+      state.token = action.payload
+    },
     toggleTheme(state) {
       state.lightThem = !state.lightThem
     },
   },
 })
 
-export const {setUserID, toggleTheme} = authSlice.actions
+export const {setUserID, toggleTheme, setToken} = authSlice.actions
 export default authSlice.reducer
