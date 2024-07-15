@@ -21,6 +21,7 @@ import SpinAnimation from '../animations/SpiningRound'
 import ChatScreen from '../screens/Chat/chat-screen'
 import ManagementScreen from '../screens/Management/manage-screen'
 import CallScreen from '../screens/Call/call-screen'
+import PersonalScreen from '../screens/Personal/personal-screen'
 
 const RootTab = createBottomTabNavigator<RootTabParamList>()
 const RootStack = createStackNavigator<RootStackParamList>()
@@ -73,6 +74,7 @@ const RootTabNavigator = () => {
         tabBarShowLabel: false,
         tabBarStyle: {
           position: 'absolute',
+          zIndex: 1,
           height: 60,
           left: 16,
           right: 16,
@@ -144,6 +146,7 @@ const AppNavigator = () => {
           component={RootTabNavigator}
         />
         <RootStack.Screen name="ChatNavigator" component={ChatStackNavigator} />
+        <RootStack.Screen name="Personal" component={PersonalScreen} />
       </RootStack.Navigator>
     </NavigationContainer>
   )

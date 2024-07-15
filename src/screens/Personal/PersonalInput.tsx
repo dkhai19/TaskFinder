@@ -1,24 +1,19 @@
 import {StyleSheet, Text, TextInput, View} from 'react-native'
-import {colors} from '../constants/color'
-import {typography} from '../constants/typo'
-
-interface IInput {
+import {colors} from '../../constants/color'
+import {typography} from '../../constants/typo'
+interface IPersonalInput {
   label: string
   isNumeric?: boolean
   isEditable?: boolean
-  multiline?: boolean
-  numOfLines?: number
   value: string
   handleChangeText: (text: string) => void
 }
 
-const Input: React.FC<IInput> = ({
+const PersonalInput: React.FC<IPersonalInput> = ({
   label,
   isNumeric,
   isEditable,
   value,
-  multiline,
-  numOfLines,
   handleChangeText,
 }) => {
   return (
@@ -26,15 +21,13 @@ const Input: React.FC<IInput> = ({
       <View
         style={{paddingLeft: 8, paddingTop: 8, justifyContent: 'space-evenly'}}>
         <Text
-          style={[typography.f13_regular, {color: colors.opacityBlack(0.5)}]}>
+          style={[typography.f12_regular, {color: colors.opacityBlack(0.5)}]}>
           {label}
         </Text>
         <TextInput
           style={[styles.input, typography.f14_medium]}
           keyboardType={isNumeric ? 'numeric' : 'default'}
           value={value}
-          multiline={multiline}
-          numberOfLines={numOfLines}
           onChangeText={handleChangeText}
           editable={isEditable ? false : true}
         />
@@ -48,12 +41,12 @@ const styles = StyleSheet.create({
     width: '100%',
     height: 62,
     borderRadius: 8,
-    borderWidth: 3,
-    borderColor: colors.opacityBlack(0.2),
+    borderWidth: 1,
+    borderColor: colors.opacityBlack(0.5),
   },
   input: {
-    paddingBottom: 16,
+    paddingBottom: 8,
   },
 })
 
-export default Input
+export default PersonalInput

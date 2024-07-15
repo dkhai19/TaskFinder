@@ -23,7 +23,7 @@ import {useDispatch} from 'react-redux'
 import {setUserID} from '../../redux/slices/authSlice'
 import LoadingModal from '../../animations/LoadingModal'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import {findUserById} from '../../firebase/authentications_api'
+import {findUserById} from '../../firebase/users.api'
 import {setCurrentUser} from '../../redux/slices/userSlice'
 
 type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>
@@ -90,6 +90,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
             }, 1500)
           })
           .catch(error => {
+            setIsLoading(() => false)
             console.log(error)
           })
       } else {

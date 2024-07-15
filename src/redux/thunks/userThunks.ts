@@ -1,6 +1,6 @@
 import {createAsyncThunk} from '@reduxjs/toolkit'
 import {IUserProfiles, IUsers} from '../../types/users.type'
-import {handleAddUser} from '../../firebase/authentications_api'
+import {handleAddUser} from '../../firebase/users.api'
 import firestore from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
 import {convertFirestoreTimestampToDate} from '../../validations/convert-date'
@@ -37,15 +37,16 @@ export const fetchOthers = createAsyncThunk(
           // console.log('See the birthday after converted', birthday)
           // console.log('Type of birthday', typeof birthday)
           return {
-            uid: doc.id,
+            id: doc.id,
             email: data.email,
             first_name: data.first_name,
             last_name: data.last_name,
+            phone: data.phone,
             gender: data.gender,
             birthday: birthday,
           }
         })
-        .filter(user => user.uid !== currentUserUID) as IUserProfiles[]
+        .filter(user => user.id !== currentUserUID) as IUserProfiles[]
       //console.log('Fetch all user ne', users[0].birthday)
       return users
     } catch (error) {

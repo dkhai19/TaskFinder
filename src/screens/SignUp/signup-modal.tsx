@@ -6,17 +6,20 @@ import {
   Animated,
   Dimensions,
   TouchableOpacity,
+  TextInput,
 } from 'react-native'
 import {colors} from '../../constants/color'
 import {useEffect, useRef, useState} from 'react'
 import {typography} from '../../constants/typo'
 import Input from '../../components/Input'
 import ContainedButton from '../../components/ContainedButton'
-import auth from '@react-native-firebase/auth'
-import {updateUserById} from '../../firebase/authentications_api'
+import {updateSignUpInformation} from '../../firebase/users.api'
 import {parseDateOfBirth} from '../../validations/user-infor-validation'
 import DatePicker from 'react-native-date-picker'
 import IconButton from '../../components/IconButton'
+import {RootState} from '../../redux/rootReducer'
+import {useSelector} from 'react-redux'
+import RadioButtonGroup from '../../components/RadioButtonGroup'
 const {width, height} = Dimensions.get('window')
 
 interface IModal {
@@ -27,11 +30,18 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
   const translateYValue = useRef(new Animated.Value(height)).current
   const [date, setDate] = useState(new Date())
   const [open, setOpen] = useState(false)
+  const user_id = useSelector((state: RootState) => state.authentication.uid)
+  const genderOptions = [
+    {label: 'Male', value: 'Male'},
+    {label: 'Femail', value: 'Female'},
+    {label: 'Others', value: 'Others'},
+  ]
   const [additionaInfo, setAdditionalInfo] = useState({
     first_name: '',
     last_name: '',
     birthday: '',
-    identity: '',
+    introduction: '',
+    gender: '',
   })
   //Animation for show up modal
   useEffect(() => {
@@ -57,8 +67,6 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
   }
 
   const handleUpdateUser = async () => {
-    const user_id = auth().currentUser?.uid
-
     if (user_id) {
       const parseDOB = parseDateOfBirth(additionaInfo.birthday)
       if (!parseDOB) {
@@ -70,7 +78,7 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
         birthday: parseDOB,
       }
 
-      await updateUserById(user_id, updatedInfo).then(() => {
+      await updateSignUpInformation(user_id, updatedInfo).then(() => {
         onPress()
       })
     }
@@ -151,17 +159,26 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
           }}
         />
         <View style={{marginBottom: 16}}>
-          <Input
-            label="Identity"
-            isNumeric
-            value={additionaInfo.identity}
-            handleChangeText={(text: string) => onChangeText('identity', text)}
+          <TextInput
+            style={styles.introduction}
+            placeholder="Tell us about yourself"
+            onChangeText={(value: string) =>
+              onChangeText('introduction', value)
+            }
+            multiline
+            numberOfLines={6}
           />
           <View style={{padding: 4}}>
             <Text style={[typography.f13_medium, styles.noteText]}>
-              * Sequence of 12 digits on your identity card
+              * Introduce about yourself to impress employers
             </Text>
           </View>
+        </View>
+        <View style={{marginBottom: 16}}>
+          <RadioButtonGroup
+            options={genderOptions}
+            onSelect={value => onChangeText('gender', value)}
+          />
         </View>
         <ContainedButton onPress={() => handleUpdateUser()} title="Confirm" />
       </View>
@@ -202,6 +219,11 @@ const styles = StyleSheet.create({
   },
   noteText: {
     color: colors.opacityBlack(0.5),
+  },
+  introduction: {
+    borderWidth: 2,
+    borderColor: colors.opacityBlack(0.4),
+    borderRadius: 12,
   },
 })
 

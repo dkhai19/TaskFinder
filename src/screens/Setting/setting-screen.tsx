@@ -9,22 +9,29 @@ import {
 import {colors} from '../../constants/color'
 import {typography} from '../../constants/typo'
 import Icon from 'react-native-vector-icons/Ionicons'
-import {useDispatch} from 'react-redux'
-import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
-import {LoginStackParamList} from '../../navigation/RootNavigator'
+import {useDispatch, useSelector} from 'react-redux'
+import {
+  NativeStackNavigationProp,
+  NativeStackScreenProps,
+} from 'react-native-screens/lib/typescript/native-stack/types'
+import {
+  LoginStackParamList,
+  RootStackParamList,
+} from '../../navigation/RootNavigator'
 import {StackNavigationProp} from '@react-navigation/stack'
 import {useNavigation} from '@react-navigation/native'
 import auth from '@react-native-firebase/auth'
 import KeyValueText from '../../components/KeyValue'
 import ListItem from '../../components/ListItem'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-
-type Props = StackNavigationProp<LoginStackParamList, 'Login'>
+import {RootState} from '../../redux/rootReducer'
+import {useState} from 'react'
 
 const SettingScreen: React.FC = () => {
-  const navigation = useNavigation<Props>()
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const dispatch = useDispatch()
-
+  const currentUser = useSelector((state: RootState) => state.user.currentUser)
   const showAlert = () => {
     Alert.alert('Signing out', 'Do you want to sign out?', [
       {
@@ -45,35 +52,35 @@ const SettingScreen: React.FC = () => {
     try {
       auth().signOut()
       AsyncStorage.clear()
-      navigation.replace('Login')
+      navigation.replace('LoginNavigator')
     } catch (error) {
       console.log(error)
     }
   }
 
-  const currentUser = auth().currentUser
+  const navigateToProfile = () => {
+    navigation.navigate('Personal')
+  }
+
   return (
     <View style={settingStyles.container}>
       <View style={settingStyles.body}>
-        <View style={settingStyles.header}>
-          <Text style={[typography.f24_semibold, {color: colors.black}]}>
-            Personal
-          </Text>
-        </View>
         <View style={settingStyles.image_row}>
-          <Image
-            style={settingStyles.image}
-            source={{
-              uri: 'https://gratisography.com/wp-content/uploads/2024/01/gratisography-cyber-kitty-800x525.jpg',
-            }}
-          />
+          <View style={settingStyles.image_container}>
+            <Image
+              style={settingStyles.image}
+              source={{
+                uri: 'https://gratisography.com/wp-content/uploads/2024/01/gratisography-cyber-kitty-800x525.jpg',
+              }}
+            />
+          </View>
           <View style={settingStyles.text_column}>
-            <Text style={[typography.f17_medium, {color: colors.black}]}>
-              Do Duc Khai
+            <Text style={[typography.f20_bold, {color: colors.black}]}>
+              {currentUser?.first_name + ' ' + currentUser?.last_name}
             </Text>
             <Text
               style={[
-                typography.f13_regular,
+                typography.f15_regular,
                 {color: colors.opacityBlack(0.4)},
               ]}>
               {currentUser?.email}
@@ -86,19 +93,15 @@ const SettingScreen: React.FC = () => {
         </View>
         <View style={settingStyles.navigation_container}>
           <ListItem
-            iconName="person-outline"
+            iconName="person"
             header="Personal Information"
             navigate
+            onPress={navigateToProfile}
           />
-          <ListItem
-            iconName="people-outline"
-            header="Following"
-            value="14"
-            navigate
-          />
+          <ListItem iconName="people" header="Following" value="14" navigate />
           <ListItem iconName="moon" header="Dark mode" toggle />
           <ListItem
-            iconName="log-out-outline"
+            iconName="log-out"
             header="Sign out"
             navigate
             onPress={showAlert}
@@ -131,11 +134,26 @@ const settingStyles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     maxHeight: 100,
+    borderBottomWidth: 0.2,
+    borderColor: colors.opacityBlack(0.3),
+  },
+  image_container: {
+    height: 80,
+    width: 80,
+    elevation: 5,
+    shadowColor: colors.opacityBlack(0.8),
+    shadowOffset: {width: 0, height: 2},
+    shadowOpacity: 0.25,
+    shadowRadius: 3.84,
+    overflow: 'hidden',
+    borderRadius: 16,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   image: {
     height: 70,
     width: 70,
-    borderRadius: 35,
+    borderRadius: 16,
   },
   text_column: {
     paddingLeft: 16,
@@ -145,9 +163,10 @@ const settingStyles = StyleSheet.create({
   achievement_container: {
     flexDirection: 'row',
     justifyContent: 'space-evenly',
+    paddingTop: 24,
   },
   navigation_container: {
-    paddingTop: 32,
+    paddingTop: 24,
   },
 })
 export default SettingScreen

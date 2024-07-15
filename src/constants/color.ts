@@ -1,12 +1,18 @@
 export const colors = {
   white: '#FFFFFF',
-  red: '#FA6650',
-  blue: '#2F80ED',
+  red: '#fa6650',
+  blue: '#2f81ed',
   black: '#000000',
   opacityBlack: (opacity: number) => {
-    return `rgba(0,0,0,${opacity})`;
+    return `rgba(0,0,0,${opacity})`
   },
   opacityWhite: (opacity: number) => {
-    return `rgba(255,255,255,${opacity})`;
+    return `rgba(255,255,255,${opacity})`
   },
-};
+  opacityRed: (opacity: number) => {
+    return `rgba(250, 102, 80,${opacity})`
+  },
+  opacityBlue: (opacity: number) => {
+    return `rgba(47, 128, 237,${opacity})`
+  },
+}

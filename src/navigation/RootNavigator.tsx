@@ -27,6 +27,7 @@ export type RootStackParamList = {
     screen: keyof ChatStackParamList
     params: ChatStackParamList[keyof ChatStackParamList]
   }
+  Personal: undefined
 }
 // export type RootStackParamList = {
 //   SigninScreen: undefined;

@@ -1,6 +1,10 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
 import {addUser, fetchOthers} from '../thunks/userThunks'
-import {IUserProfiles, IUsers} from '../../types/users.type'
+import {
+  IUserProfiles,
+  IUsers,
+  mapUserProfileToUser,
+} from '../../types/users.type'
 
 interface userState {
   currentUser: IUsers | null
@@ -22,6 +26,9 @@ const userSlice = createSlice({
   reducers: {
     setCurrentUser(state, action: PayloadAction<IUsers>) {
       state.currentUser = action.payload
+    },
+    updateCurrentUser(state, action: PayloadAction<IUserProfiles>) {
+      state.currentUser = mapUserProfileToUser(action.payload)
     },
   },
   extraReducers: builder => {
@@ -49,10 +56,9 @@ const userSlice = createSlice({
       )
       .addCase(fetchOthers.rejected, (state, action) => {
         state.status = 'failed'
-        state.error = action.payload as string
       })
   },
 })
 
-export const {setCurrentUser} = userSlice.actions
+export const {setCurrentUser, updateCurrentUser} = userSlice.actions
 export default userSlice.reducer

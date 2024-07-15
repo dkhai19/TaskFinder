@@ -22,20 +22,25 @@ import {
   validatePhone,
 } from '../../validations/user-infor-validation'
 import Icon from 'react-native-vector-icons/Ionicons'
-import SignUpModal from './signup-model'
+import SignUpModal from './signup-modal'
 import {signupStyles} from './signup-styles'
 import {IUsers} from '../../types/users.type'
 import LoadingModal from '../../animations/LoadingModal'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {AppDispatch} from '../../redux/store/store'
 import {addUser} from '../../redux/thunks/userThunks'
 import {setUserID} from '../../redux/slices/authSlice'
+import {RootState} from '../../redux/rootReducer'
+import {findUserById} from '../../firebase/users.api'
+import {setCurrentUser} from '../../redux/slices/userSlice'
 type Props = NativeStackScreenProps<LoginStackParamList, 'Signup'>
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
+  const userId = useSelector((state: RootState) => state.authentication.uid)
   //State store user information
   const dispatch = useDispatch<AppDispatch>()
-
+  //State to control loading
+  const [isLoading, setIsLoading] = useState(false)
   //State to check input
   const [input, setInput] = useState({
     email: '',
@@ -77,8 +82,18 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     navigation.goBack()
   }
 
+  const setUserInformation = async () => {
+    const getUserInfor = await findUserById(userId)
+    dispatch(setCurrentUser(getUserInfor))
+  }
+
   const navigateToHome = () => {
-    navigation.replace('Main')
+    setIsLoading(() => true)
+    setUserInformation()
+    setTimeout(() => {
+      setIsLoading(() => false)
+      navigation.replace('Main')
+    }, 1000)
   }
 
   //Handle input value base on key and text changed
@@ -94,8 +109,6 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     signUpFirebaseHandler()
   }
 
-  //State to control loading
-  const [isLoading, setIsLoading] = useState(false)
   //Sign up function
   const signUpFirebaseHandler = () => {
     if (!validateEmail(input.email)) {
@@ -131,7 +144,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
         .then(UserCredential => {
           const uid = UserCredential.user.uid
           const userData: IUsers = {
-            uid: uid,
+            id: uid,
             email: input.email,
             phone: input.phoneNumber,
             role: 'employee',

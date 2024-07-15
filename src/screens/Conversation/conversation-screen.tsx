@@ -29,13 +29,16 @@ const ConversationScreen: React.FC = () => {
   const listOtherUsers = useSelector(
     (state: RootState) => state.user.otherUsers,
   )
+  //console.log('list other users', listOtherUsers)
 
   useEffect(() => {
     const processConversations = async (data: IChat[]) => {
       const conversations: IConversation[] = await Promise.all(
         data.map(async chat => {
           const receiverId = chat.members.filter(uid => uid !== userUID)[0]
-          const user = listOtherUsers?.find(item => item.uid === receiverId)
+          //console.log('receiver id', receiverId)
+          const user = listOtherUsers?.find(item => item.id === receiverId)
+          //console.log('receiver user', user)
           const time = convertFirestoreTimestampToDate(
             chat.lastMessageTimestamp,
           )

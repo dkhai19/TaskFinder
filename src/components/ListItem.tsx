@@ -32,12 +32,16 @@ const ListItem: React.FC<IListItem> = ({
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       <View style={styles.row}>
-        <View style={{paddingRight: 8}}>
-          <Icon name={iconName} size={24} color={colors.black} />
+        <View style={styles.icon_container}>
+          <View style={{}}>
+            <Icon name={iconName} size={24} color={colors.black} />
+          </View>
         </View>
-        <Text style={[typography.f16_regular, {color: colors.black}]}>
-          {header}
-        </Text>
+        <View style={{paddingLeft: 16}}>
+          <Text style={[typography.f16_medium, {color: colors.black}]}>
+            {header}
+          </Text>
+        </View>
       </View>
       <View style={styles.row}>
         <Text
@@ -78,6 +82,13 @@ const styles = StyleSheet.create({
   },
   row: {
     flexDirection: 'row',
+    alignItems: 'center',
+  },
+  icon_container: {
+    paddingHorizontal: 8,
+    paddingVertical: 12,
+    backgroundColor: colors.opacityRed(0.4),
+    borderRadius: 8,
   },
 })
 

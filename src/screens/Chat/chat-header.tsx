@@ -1,16 +1,16 @@
-import {Image, StyleSheet, TouchableOpacity} from 'react-native';
-import {Text, View} from 'react-native';
-import {colors} from '../../constants/color';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {typography} from '../../constants/typo';
-import {useEffect, useState} from 'react';
-import {IUsers} from '../../types/users.type';
-import {findUserById} from '../../firebase/authentications_api';
+import {Image, StyleSheet, TouchableOpacity} from 'react-native'
+import {Text, View} from 'react-native'
+import {colors} from '../../constants/color'
+import Icon from 'react-native-vector-icons/Ionicons'
+import {typography} from '../../constants/typo'
+import {useEffect, useState} from 'react'
+import {IUsers} from '../../types/users.type'
+import {findUserById} from '../../firebase/users.api'
 
 interface IChatHeader {
-  onBack: () => void;
-  onCallHander: () => void;
-  receiver_id: string;
+  onBack: () => void
+  onCallHander: () => void
+  receiver_id: string
 }
 
 const ChatHeader: React.FC<IChatHeader> = ({
@@ -18,14 +18,14 @@ const ChatHeader: React.FC<IChatHeader> = ({
   onBack,
   onCallHander,
 }) => {
-  const [user, setUser] = useState<IUsers>();
+  const [user, setUser] = useState<IUsers>()
   useEffect(() => {
     const fetchInfor = async () => {
-      const data: IUsers = await findUserById(receiver_id);
-      setUser(data);
-    };
-    fetchInfor();
-  }, []);
+      const data: IUsers = await findUserById(receiver_id)
+      setUser(data)
+    }
+    fetchInfor()
+  }, [])
   return (
     <View style={styles.container}>
       <View style={styles.left}>
@@ -50,8 +50,8 @@ const ChatHeader: React.FC<IChatHeader> = ({
         </TouchableOpacity>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -77,6 +77,6 @@ const styles = StyleSheet.create({
     height: 34,
     borderRadius: 17,
   },
-});
+})
 
-export default ChatHeader;
+export default ChatHeader

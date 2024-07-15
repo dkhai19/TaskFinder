@@ -6,9 +6,9 @@ import CryptoJS from 'crypto-js'
 //import base64url from 'base64url'
 import {IPayloadUser} from '../types/users.type'
 
-const STREAM_API_KEY = '9puabwjb5p2p'
+const STREAM_API_KEY = 'j4afxwujxm3t'
 const SECRET_API =
-  'xs93ftx87nujrm35z6eat7uzge5jky74hcby9umye2g4sdcdurkc25hmj8jf3gak'
+  'ppysy4acrw6jcu6ej328en4rmasxekv9d7yeqwyb2n5886cwv9pxz25uvapng5zm'
 
 const client = new StreamVideoClient({
   apiKey: STREAM_API_KEY,
