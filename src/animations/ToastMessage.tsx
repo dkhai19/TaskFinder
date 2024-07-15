@@ -17,7 +17,7 @@ const ToastMessage: React.FC<IToastMessage> = ({message, onHide}) => {
       Animated.timing(animatedValue, {
         toValue: 0,
         easing: Easing.in(Easing.ease),
-        duration: 1000,
+        duration: 700,
         useNativeDriver: true,
       }),
       Animated.spring(animatedValue, {
@@ -62,7 +62,7 @@ const ToastMessage: React.FC<IToastMessage> = ({message, onHide}) => {
           <Ionicons name="alert-outline" size={18} color={colors.red} />
         </View>
         <View>
-          <Text style={[typography.f16_medium, {color: colors.black}]}>
+          <Text style={[typography.f17_medium, {color: colors.black}]}>
             {message}
           </Text>
         </View>
@@ -74,13 +74,14 @@ const ToastMessage: React.FC<IToastMessage> = ({message, onHide}) => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
+    zIndex: 100,
     width: width * 0.9,
     height: 52,
     top: 16,
     borderRadius: 8,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.9)',
+    backgroundColor: colors.red,
   },
 })
 

@@ -7,14 +7,24 @@ import {
 } from '../../types/users.type'
 
 interface userState {
-  currentUser: IUsers | null
+  currentUser: IUsers
   otherUsers: IUserProfiles[] | null
   status: 'idle' | 'loading' | 'succeeded' | 'failed'
   error: string | null
 }
 
 const initialState: userState = {
-  currentUser: null,
+  currentUser: {
+    id: '',
+    birthday: '',
+    email: '',
+    first_name: '',
+    last_name: '',
+    gender: '',
+    rating: 0,
+    introduction: '',
+    phone: '',
+  },
   otherUsers: null,
   status: 'idle',
   error: null,

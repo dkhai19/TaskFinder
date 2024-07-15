@@ -146,11 +146,18 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           const userData: IUsers = {
             id: uid,
             email: input.email,
+            birthday: '',
+            first_name: '',
+            last_name: '',
+            gender: '',
+            introduction: '',
+            rating: 0,
             phone: input.phoneNumber,
             role: 'employee',
           }
           dispatch(addUser(userData))
           dispatch(setUserID(uid))
+          dispatch(setCurrentUser(userData))
           setIsLoading(false)
           setOpenModal(true)
           //navigation.navigate('Main');

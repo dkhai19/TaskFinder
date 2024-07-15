@@ -1,34 +1,34 @@
 export type IUsers = {
-  id?: string
-  email?: string
-  password?: string
-  phone?: string
-  gender?: string
-  birthday?: string
-  first_name?: string
-  last_name?: string
+  id: string
+  email: string
+  phone: string
+  gender: string
+  birthday: string
+  first_name: string
+  last_name: string
   rating?: number
   role?: string
-  introduction?: string
+  introduction: string
+  fcmToken?: string
 }
 
 export type IUserProfiles = {
-  id?: string
-  email?: string
-  phone?: string
-  gender?: string
+  id: string
+  email: string
+  phone: string
+  gender: string
   birthday: string
-  first_name?: string
-  last_name?: string
-  introduction?: string
-}
-
-export type IUserAddtionalInfor = {
   first_name: string
   last_name: string
-  birthday: Date
   introduction: string
 }
+
+// export type IUserAddtionalInfor = {
+//   first_name: string
+//   last_name: string
+//   birthday: Date
+//   introduction: string
+// }
 
 export type IPayloadUser = {
   user_id: string | undefined
@@ -43,4 +43,5 @@ export const mapUserProfileToUser = (profile: IUserProfiles): IUsers => ({
   phone: profile.phone,
   gender: profile.gender,
   introduction: profile.introduction,
+  email: profile.email,
 })

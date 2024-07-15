@@ -1,5 +1,6 @@
 import {
   Animated,
+  Button,
   Dimensions,
   Image,
   ScrollView,
@@ -29,6 +30,8 @@ import {updateUserProfile} from '../../firebase/users.api'
 import ToastMessage from '../../animations/ToastMessage'
 import {AppDispatch} from '../../redux/store/store'
 import {updateCurrentUser} from '../../redux/slices/userSlice'
+import {validatePhone} from '../../validations/user-infor-validation'
+import SuccessAnimation from '../../animations/ToastSuccess'
 const {width, height} = Dimensions.get('window')
 
 const PersonalScreen: React.FC = () => {
@@ -39,16 +42,18 @@ const PersonalScreen: React.FC = () => {
   const animValue = useRef(new Animated.Value(width)).current
   const [date, setDate] = useState(new Date())
   const [open, setOpen] = useState(false)
-  const [isUpdateFailed, setIsUpdateFailed] = useState<boolean>(false)
+  const [updated, setUpdated] = useState<boolean>(false)
   const [displayToast, setDisplayToast] = useState<boolean>(false)
+  const [canUpdated, setCanUpdate] = useState<boolean>(false)
   const [editInfor, setEditInfor] = useState<IUserProfiles>({
-    id: currentUser?.id,
-    first_name: currentUser?.first_name,
-    last_name: currentUser?.last_name,
-    birthday: currentUser?.birthday || '',
-    phone: currentUser?.phone,
-    gender: currentUser?.gender,
-    introduction: currentUser?.introduction,
+    id: currentUser.id,
+    first_name: currentUser.first_name,
+    last_name: currentUser.last_name,
+    birthday: currentUser.birthday,
+    phone: currentUser.phone,
+    gender: currentUser.gender,
+    introduction: currentUser.introduction,
+    email: currentUser.email,
   })
   const genderOptions = [
     {label: 'Male', value: 'Male'},
@@ -65,36 +70,38 @@ const PersonalScreen: React.FC = () => {
     //console.log(editInfor)
   }, [])
 
-  const onChangeInformation = (key: string, value: string) => {
-    if (key === 'phone') {
-      value = value.toString()
+  useEffect(() => {
+    const checkIfEqual = (
+      obj1: IUserProfiles,
+      obj2: IUserProfiles,
+    ): boolean => {
+      return (
+        obj1.id === obj2.id &&
+        obj1.first_name === obj2.first_name &&
+        obj1.last_name === obj2.last_name &&
+        obj1.birthday === obj2.birthday &&
+        obj1.phone === obj2.phone &&
+        obj1.gender === obj2.gender &&
+        obj1.introduction === obj2.introduction &&
+        obj1.email === obj2.email
+      )
     }
-    console.log(value)
-    setEditInfor(prevState => ({
-      ...prevState,
-      [key]: value,
-    }))
-  }
 
-  const updateHandler = async (user: IUserProfiles) => {
-    await updateUserProfile(user)
-      .then(() => {
-        dispatch(updateCurrentUser(user))
-        navigation.pop()
-        return true
-      })
-      .catch(() => {
-        setIsUpdateFailed(() => true)
-        setDisplayToast(() => true)
-        return false
-      })
-  }
+    const isEqual = checkIfEqual(editInfor, currentUser)
+    if (
+      isEqual ||
+      editInfor.first_name === '' ||
+      editInfor.last_name === '' ||
+      editInfor.phone === '' ||
+      editInfor.introduction === ''
+    ) {
+      setCanUpdate(() => false)
+    } else {
+      setCanUpdate(() => true)
+    }
+  }, [editInfor, currentUser])
 
-  const handleUpdate = () => {
-    updateHandler(editInfor)
-  }
-
-  const handleGoBack = () => {
+  const animationGoBack = () => {
     Animated.timing(animValue, {
       toValue: width,
       duration: 1000,
@@ -103,6 +110,45 @@ const PersonalScreen: React.FC = () => {
     setTimeout(() => {
       navigation.pop()
     }, 1000)
+  }
+
+  const onChangeInformation = (key: string, value: string) => {
+    if (key === 'phone') {
+      value = value.toString()
+    }
+    setEditInfor(prevState => ({
+      ...prevState,
+      [key]: value,
+    }))
+  }
+
+  const updateHandler = async (user: IUserProfiles) => {
+    if (!validatePhone(user.phone)) {
+      setDisplayToast(() => true)
+    } else {
+      await updateUserProfile(user)
+        .then(() => {
+          dispatch(updateCurrentUser(user))
+          setUpdated(() => true)
+          setTimeout(() => {
+            setUpdated(() => false)
+            animationGoBack()
+          }, 2000)
+          return true
+        })
+        .catch(() => {
+          setDisplayToast(() => true)
+          return false
+        })
+    }
+  }
+
+  const handleUpdate = () => {
+    updateHandler(editInfor)
+  }
+
+  const handleGoBack = () => {
+    animationGoBack()
   }
 
   if (!currentUser) {
@@ -127,13 +173,16 @@ const PersonalScreen: React.FC = () => {
       ]}>
       {displayToast && (
         <ToastMessage
-          message="Invalid input"
+          message="Invalid input!"
           onHide={() => setDisplayToast(() => false)}
         />
       )}
+      {updated && <SuccessAnimation message="Your information have updated!" />}
       <ScrollView>
         <View style={styles.headingContainer}>
-          <TouchableOpacity style={{}} onPress={handleGoBack}>
+          <TouchableOpacity
+            style={{backgroundColor: colors.white}}
+            onPress={handleGoBack}>
             <Icon name="arrow-back-outline" size={28} color={colors.black} />
           </TouchableOpacity>
           <View style={styles.headingText}>
@@ -155,7 +204,7 @@ const PersonalScreen: React.FC = () => {
             <View style={{width: '48%'}}>
               <Input
                 label="First name"
-                value={editInfor.first_name || ''}
+                value={editInfor.first_name}
                 handleChangeText={value =>
                   onChangeInformation('first_name', value)
                 }
@@ -164,7 +213,7 @@ const PersonalScreen: React.FC = () => {
             <View style={{width: '48%'}}>
               <Input
                 label="Last name"
-                value={editInfor.last_name || ''}
+                value={editInfor.last_name}
                 handleChangeText={value =>
                   onChangeInformation('last_name', value)
                 }
@@ -175,7 +224,7 @@ const PersonalScreen: React.FC = () => {
             <View style={{width: '80%'}}>
               <Input
                 label="Date of birth"
-                value={editInfor.birthday || ''}
+                value={editInfor.birthday}
                 isEditable
                 handleChangeText={(text: string) =>
                   onChangeInformation('birthday', text)
@@ -210,7 +259,7 @@ const PersonalScreen: React.FC = () => {
           <View style={styles.phoneContainer}>
             <Input
               label="Phone number"
-              value={editInfor.phone || ''}
+              value={editInfor.phone}
               isNumeric
               handleChangeText={(text: string) =>
                 onChangeInformation('phone', text)
@@ -235,7 +284,15 @@ const PersonalScreen: React.FC = () => {
             />
           </View>
           <View style={{marginTop: 48}}>
-            <ContainedButton title="Apply changes" onPress={handleUpdate} />
+            {canUpdated ? (
+              <ContainedButton title="Apply changes" onPress={handleUpdate} />
+            ) : (
+              <View style={styles.buttonContainer}>
+                <Text style={[typography.f20_medium, {color: colors.white}]}>
+                  Apply Changes
+                </Text>
+              </View>
+            )}
           </View>
         </View>
       </ScrollView>
@@ -300,6 +357,14 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.opacityBlack(0.4),
     borderRadius: 12,
+  },
+  buttonContainer: {
+    width: '100%',
+    height: 52,
+    justifyContent: 'center',
+    alignItems: 'center',
+    borderRadius: 8,
+    backgroundColor: colors.opacityBlack(0.15),
   },
 })
 

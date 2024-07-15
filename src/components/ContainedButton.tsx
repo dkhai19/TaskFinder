@@ -12,7 +12,6 @@ import {typography} from '../constants/typo'
 
 interface IContainedButton {
   title: string
-
   style?: StyleProp<ViewStyle>
   onPress: () => void
 }

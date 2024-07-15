@@ -1,9 +1,10 @@
-import {IUserAddtionalInfor, IUserProfiles, IUsers} from '../types/users.type'
+import {IUserProfiles, IUsers} from '../types/users.type'
 import firestore from '@react-native-firebase/firestore'
 import {
   convertFirestoreTimestampToDate,
   formatDate,
 } from '../validations/convert-date'
+import {parseDateOfBirth} from '../validations/user-infor-validation'
 
 const userCollection = firestore().collection('users')
 
@@ -17,13 +18,20 @@ export const handleAddUser = async (user: IUsers) => {
   }
 }
 
-export const updateSignUpInformation = async (
-  user_id: string,
-  user_infor: IUserAddtionalInfor,
-) => {
+export const updateSignUpInformation = async (user_infor: IUsers) => {
+  const parseDOB = parseDateOfBirth(user_infor.birthday)
+  if (!parseDOB) {
+    console.log('Error date format!')
+    return
+  }
+  const updatedInfo = {
+    ...user_infor,
+    birthday: parseDOB,
+  }
+  console.log('updated infor', updatedInfo)
   await userCollection
-    .doc(user_id)
-    .update({...user_infor})
+    .doc(updatedInfo.id)
+    .update({...updatedInfo})
     .then(() => {
       console.log('Updated!')
     })

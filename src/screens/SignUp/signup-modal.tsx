@@ -20,6 +20,7 @@ import IconButton from '../../components/IconButton'
 import {RootState} from '../../redux/rootReducer'
 import {useSelector} from 'react-redux'
 import RadioButtonGroup from '../../components/RadioButtonGroup'
+import {IUsers} from '../../types/users.type'
 const {width, height} = Dimensions.get('window')
 
 interface IModal {
@@ -30,18 +31,22 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
   const translateYValue = useRef(new Animated.Value(height)).current
   const [date, setDate] = useState(new Date())
   const [open, setOpen] = useState(false)
-  const user_id = useSelector((state: RootState) => state.authentication.uid)
+  const user = useSelector((state: RootState) => state.user.currentUser)
   const genderOptions = [
     {label: 'Male', value: 'Male'},
     {label: 'Femail', value: 'Female'},
     {label: 'Others', value: 'Others'},
   ]
-  const [additionaInfo, setAdditionalInfo] = useState({
-    first_name: '',
-    last_name: '',
-    birthday: '',
-    introduction: '',
-    gender: '',
+  const [additionaInfo, setAdditionalInfo] = useState<IUsers>({
+    id: user.id,
+    email: user.email,
+    phone: user.phone,
+    first_name: user.first_name,
+    last_name: user.last_name,
+    birthday: user.birthday,
+    introduction: user.introduction,
+    gender: user.gender,
+    role: user.role,
   })
   //Animation for show up modal
   useEffect(() => {
@@ -67,21 +72,18 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
   }
 
   const handleUpdateUser = async () => {
-    if (user_id) {
-      const parseDOB = parseDateOfBirth(additionaInfo.birthday)
-      if (!parseDOB) {
-        console.log('Error date format!')
-        return
-      }
-      const updatedInfo = {
-        ...additionaInfo,
-        birthday: parseDOB,
-      }
-
-      await updateSignUpInformation(user_id, updatedInfo).then(() => {
-        onPress()
-      })
-    }
+    // const parseDOB = parseDateOfBirth(additionaInfo.birthday)
+    // if (!parseDOB) {
+    //   console.log('Error date format!')
+    //   return
+    // }
+    // const updatedInfo = {
+    //   ...additionaInfo,
+    //   birthday: parseDOB,
+    // }
+    await updateSignUpInformation(additionaInfo).then(() => {
+      onPress()
+    })
   }
 
   return (

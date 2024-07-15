@@ -1,31 +1,15 @@
-import {
-  Alert,
-  Image,
-  StyleSheet,
-  Text,
-  TouchableOpacity,
-  View,
-} from 'react-native'
+import {Alert, Image, StyleSheet, Text, View} from 'react-native'
 import {colors} from '../../constants/color'
 import {typography} from '../../constants/typo'
-import Icon from 'react-native-vector-icons/Ionicons'
 import {useDispatch, useSelector} from 'react-redux'
-import {
-  NativeStackNavigationProp,
-  NativeStackScreenProps,
-} from 'react-native-screens/lib/typescript/native-stack/types'
-import {
-  LoginStackParamList,
-  RootStackParamList,
-} from '../../navigation/RootNavigator'
-import {StackNavigationProp} from '@react-navigation/stack'
+import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
+import {RootStackParamList} from '../../navigation/RootNavigator'
 import {useNavigation} from '@react-navigation/native'
 import auth from '@react-native-firebase/auth'
 import KeyValueText from '../../components/KeyValue'
 import ListItem from '../../components/ListItem'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {RootState} from '../../redux/rootReducer'
-import {useState} from 'react'
 
 const SettingScreen: React.FC = () => {
   const navigation =

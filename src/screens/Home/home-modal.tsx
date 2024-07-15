@@ -114,12 +114,12 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
             onPress={() =>
               handleApply({
                 task_id: item.taskId,
-                user_id: currentUser?.uid,
+                user_id: currentUser.id,
                 application_date: new Date(),
                 status: 'applying',
-                first_name: currentUser?.first_name,
-                last_name: currentUser?.last_name,
-                rating: currentUser?.rating,
+                first_name: currentUser.first_name,
+                last_name: currentUser.last_name,
+                rating: currentUser.rating,
               })
             }
           />
