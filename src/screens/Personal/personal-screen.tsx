@@ -94,6 +94,17 @@ const PersonalScreen: React.FC = () => {
     updateHandler(editInfor)
   }
 
+  const handleGoBack = () => {
+    Animated.timing(animValue, {
+      toValue: width,
+      duration: 1000,
+      useNativeDriver: true,
+    }).start()
+    setTimeout(() => {
+      navigation.pop()
+    }, 1000)
+  }
+
   if (!currentUser) {
     return (
       <View style={{flex: 1}}>
@@ -122,7 +133,7 @@ const PersonalScreen: React.FC = () => {
       )}
       <ScrollView>
         <View style={styles.headingContainer}>
-          <TouchableOpacity style={{}} onPress={() => navigation.goBack()}>
+          <TouchableOpacity style={{}} onPress={handleGoBack}>
             <Icon name="arrow-back-outline" size={28} color={colors.black} />
           </TouchableOpacity>
           <View style={styles.headingText}>
