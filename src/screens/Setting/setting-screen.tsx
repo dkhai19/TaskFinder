@@ -53,9 +53,7 @@ const SettingScreen: React.FC = () => {
           <View style={settingStyles.image_container}>
             <Image
               style={settingStyles.image}
-              source={{
-                uri: 'https://gratisography.com/wp-content/uploads/2024/01/gratisography-cyber-kitty-800x525.jpg',
-              }}
+              source={{uri: currentUser.avatar}}
             />
           </View>
           <View style={settingStyles.text_column}>

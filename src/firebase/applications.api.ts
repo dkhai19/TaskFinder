@@ -26,3 +26,22 @@ export const checkIsApplied = async (task_id: string, user_id: string) => {
     return false
   }
 }
+
+export const getAllMyApplications = async (user_id: string) => {
+  try {
+    const querySnapshot = await applicationCollection
+      .where('user_id', '==', user_id)
+      .get()
+    const result: IApplication[] = querySnapshot.docs.map(doc => {
+      const data = doc.data() as IApplication
+      return {
+        ...data,
+      }
+    })
+
+    return result
+  } catch (error) {
+    console.error('Error fetching messages: ', error)
+    return []
+  }
+}

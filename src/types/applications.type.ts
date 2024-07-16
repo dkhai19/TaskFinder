@@ -1,8 +1,10 @@
+import {FirebaseFirestoreTypes} from '@react-native-firebase/firestore'
+
 export type IApplication = {
-  application_date: Date
+  application_date: FirebaseFirestoreTypes.Timestamp
   status: string
   task_id: string
-  user_id?: string
+  user_id: string
   first_name?: string
   last_name?: string
   rating?: number

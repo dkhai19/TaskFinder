@@ -25,11 +25,14 @@ const ManageFilterBar: React.FC<IManageFilterBar> = ({onChangeType}) => {
       case 'All':
         toValue = 0
         break
-      case 'Granted':
+      case 'Processing':
         toValue = 1
         break
-      case 'Rejected':
+      case 'Granted':
         toValue = 2
+        break
+      case 'Rejected':
+        toValue = 3
         break
       default:
         toValue = 0
@@ -43,11 +46,11 @@ const ManageFilterBar: React.FC<IManageFilterBar> = ({onChangeType}) => {
   }, [selected, animation])
 
   const translateX = animation.interpolate({
-    inputRange: [0, 1, 2],
-    outputRange: [0, width * 0.33, width * 0.67], // adjust these values based on the width of your buttons
+    inputRange: [0, 1, 2, 3],
+    outputRange: [0, width * 0.25, width * 0.5, width * 0.75],
   })
 
-  const options = ['All', 'Granted', 'Rejected']
+  const options = ['All', 'Processing', 'Granted', 'Rejected']
 
   const handleChange = (item: string) => {
     setSelected(item)
@@ -78,9 +81,9 @@ const styles = StyleSheet.create({
   },
   background: {
     position: 'absolute',
-    width: width * 0.33,
+    width: width * 0.25,
     height: '100%',
-    backgroundColor: 'lightblue',
+    backgroundColor: colors.opacityRed(0.15),
     borderRadius: 5,
   },
   button: {

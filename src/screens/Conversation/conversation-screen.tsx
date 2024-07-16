@@ -55,11 +55,16 @@ const ConversationScreen: React.FC = () => {
       )
       setListData(conversations)
     }
-
-    const unsubscribe = fetchConversations(userUID, processConversations)
-    console.log(listData)
-    // Cleanup subscription on unmount
-    return () => unsubscribe()
+    let unsubscribe: (() => void) | null = null
+    const loadConversations = async () => {
+      unsubscribe = await fetchConversations(userUID, processConversations)
+    }
+    loadConversations()
+    return () => {
+      if (unsubscribe) {
+        unsubscribe()
+      }
+    }
   }, [userUID])
 
   const goToChatDetail = (receiver_uid: string) => {
@@ -111,7 +116,7 @@ const ConversationScreen: React.FC = () => {
   return (
     <View style={styles.container}>
       <View style={styles.title}>
-        <Text style={[typography.f17_medium, styles.black]}>Messages</Text>
+        <Text style={[typography.f20_bold, styles.black]}>Messages</Text>
       </View>
       <View style={styles.avatarList}>
         <FlatList

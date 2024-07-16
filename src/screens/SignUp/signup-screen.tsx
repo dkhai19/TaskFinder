@@ -145,6 +145,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           const uid = UserCredential.user.uid
           const userData: IUsers = {
             id: uid,
+            avatar: '',
             email: input.email,
             birthday: '',
             first_name: '',

@@ -1,5 +1,6 @@
 import {IUserProfiles, IUsers} from '../types/users.type'
 import firestore from '@react-native-firebase/firestore'
+import storage from '@react-native-firebase/storage'
 import {
   convertFirestoreTimestampToDate,
   formatDate,
@@ -47,7 +48,8 @@ const parseDateString = (dateString: string): Date | null => {
 export const updateUserProfile = async (user_infor: IUserProfiles) => {
   console.log(user_infor)
   const birthdayDate = parseDateString(user_infor.birthday)
-
+  const imageURL =
+    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
   // Ensure the date is valid
   if (!birthdayDate) {
     console.error('Invalid birthday date')
@@ -56,7 +58,7 @@ export const updateUserProfile = async (user_infor: IUserProfiles) => {
 
   await userCollection
     .doc(user_infor.id)
-    .update({...user_infor, birthday: birthdayDate})
+    .update({...user_infor, birthday: birthdayDate, avatar: imageURL})
     .then(() => {
       console.log('Change profile success!')
     })

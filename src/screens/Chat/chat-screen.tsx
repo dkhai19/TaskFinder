@@ -42,9 +42,12 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
     const loadInformations = async () => {
       const findChatUID = await findCommonChats(sender_uid, receiver_uid)
       if (findChatUID) {
-        unsubscribe = fetchMessages(findChatUID, (newMessages: IMessage[]) => {
-          setMessages(newMessages)
-        })
+        unsubscribe = await fetchMessages(
+          findChatUID,
+          (newMessages: IMessage[]) => {
+            setMessages(newMessages)
+          },
+        )
       }
     }
     loadInformations()

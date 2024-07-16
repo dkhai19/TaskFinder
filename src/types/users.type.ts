@@ -1,5 +1,6 @@
 export type IUsers = {
   id: string
+  avatar?: string
   email: string
   phone: string
   gender: string

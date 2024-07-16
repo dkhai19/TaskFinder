@@ -193,10 +193,7 @@ const PersonalScreen: React.FC = () => {
         </View>
         <View style={styles.imageContainer}>
           <View style={styles.imageBorder}>
-            <Image
-              style={styles.image}
-              source={require('../../assets/photos/image8.jpg')}
-            />
+            <Image style={styles.image} source={{uri: currentUser.avatar}} />
           </View>
         </View>
         <View style={styles.inputField}>

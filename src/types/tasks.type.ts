@@ -7,7 +7,7 @@ export type ITask = {
     latitude: number
     longtitude: number
   }
-  startDate: string
-  endDate: string
+  start_date: string
+  end_date: string
   status: string
 }
