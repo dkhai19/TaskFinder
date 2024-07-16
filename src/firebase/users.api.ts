@@ -39,7 +39,7 @@ export const updateSignUpInformation = async (user_infor: IUsers) => {
     .catch(error => console.error('Update failed', error))
 }
 
-const parseDateString = (dateString: string): Date | null => {
+export const parseDateString = (dateString: string): Date | null => {
   const [day, month, year] = dateString.split('/')
   const parsedDate = new Date(`${year}-${month}-${day}`)
   return isNaN(parsedDate.getTime()) ? null : parsedDate

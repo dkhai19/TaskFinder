@@ -41,8 +41,8 @@ export const getTaskById = async (task_id: string) => {
     if (querySnapshot.exists) {
       const data = querySnapshot.data()
       if (data) {
-        const endDate = data.end_date.toDate().toISOString()
-        const startDate = data.start_date.toDate().toISOString()
+        const endDate = data.end_date.toDate()
+        const startDate = data.start_date.toDate()
         const location = {
           latitude: data.location.latitude,
           longtitude: data.location.longitude,

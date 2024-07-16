@@ -1,5 +1,5 @@
 import {Dimensions, Image, StyleSheet, Text, View} from 'react-native'
-import {IApplication} from '../../types/applications.type'
+import {IGetApplication} from '../../types/applications.type'
 import {colors} from '../../constants/color'
 import {ITask} from '../../types/tasks.type'
 import {useEffect, useState} from 'react'
@@ -19,7 +19,7 @@ import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/nat
 import Status from './status'
 
 interface IApplicationItem {
-  item: IApplication
+  item: IGetApplication
 }
 
 const ApplicationItem: React.FC<IApplicationItem> = ({item}) => {
@@ -28,8 +28,9 @@ const ApplicationItem: React.FC<IApplicationItem> = ({item}) => {
   const [taskDetail, setTaskDetail] = useState<ITask | null>()
   const others = useSelector((state: RootState) => state.user.otherUsers)
   const [ownerId, setOwnerId] = useState<string | null>()
+
   const convertDate = formatDate(
-    convertFirestoreTimestampToDate(item.application_date).toISOString(),
+    convertFirestoreTimestampToDate(item.application_date).toDateString(),
   )
 
   //console.log(item)

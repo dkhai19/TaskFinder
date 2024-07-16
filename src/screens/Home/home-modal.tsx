@@ -15,10 +15,15 @@ import {findUserById} from '../../firebase/users.api'
 import {typography} from '../../constants/typo'
 import ContainedButton from '../../components/ContainedButton'
 import RowItem from './row-item'
-import {IApplication} from '../../types/applications.type'
+import {IPostApplication} from '../../types/applications.type'
 import {checkIsApplied, postApplication} from '../../firebase/applications.api'
 import {RootState} from '../../redux/rootReducer'
 import {useSelector} from 'react-redux'
+import {FirebaseFirestoreTypes} from '@react-native-firebase/firestore'
+import {
+  convertFirestoreTimestampToDate,
+  formatDate,
+} from '../../validations/convert-date'
 
 interface IHomeModal {
   item: ITask
@@ -54,7 +59,7 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
     console.log('Go to user profile with this user_id: ', userId)
   }
 
-  const handleApply = async (application: IApplication) => {
+  const handleApply = async (application: IPostApplication) => {
     //console.log(application)
     if (isApplied) {
       console.log('Handle go to application screen')
@@ -102,7 +107,14 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
           <RowItem
             iconName="time-outline"
             iconColor={colors.red}
-            title={`${item.startDate} - ${item.endDate}`}
+            title={`${formatDate(item.start_date)} - ${formatDate(
+              item.end_date,
+            )}`}
+          />
+          <RowItem
+            iconName="cash-outline"
+            iconColor={colors.red}
+            title="1.000.000"
           />
         </View>
         <View style={styles.description}>

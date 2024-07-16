@@ -1,8 +1,8 @@
-import {IApplication} from '../types/applications.type'
+import {IGetApplication, IPostApplication} from '../types/applications.type'
 import firestore from '@react-native-firebase/firestore'
 
 const applicationCollection = firestore().collection('applications')
-export const postApplication = async (resume: IApplication) => {
+export const postApplication = async (resume: IPostApplication) => {
   try {
     await applicationCollection.add(resume)
     console.log('Applied successfully!')
@@ -32,8 +32,8 @@ export const getAllMyApplications = async (user_id: string) => {
     const querySnapshot = await applicationCollection
       .where('user_id', '==', user_id)
       .get()
-    const result: IApplication[] = querySnapshot.docs.map(doc => {
-      const data = doc.data() as IApplication
+    const result: IGetApplication[] = querySnapshot.docs.map(doc => {
+      const data = doc.data() as IGetApplication
       return {
         ...data,
       }
