@@ -45,13 +45,19 @@ const ApplicationItem: React.FC<IApplicationItem> = ({item}) => {
     loadTask()
   }, [])
   const ownerInfor = others?.find(item => item.id === ownerId)
-
+  console.log(ownerInfor)
   const navigateToChat = () => {
     if (ownerId) {
       navigation.navigate('ChatNavigator', {
         screen: 'Chat',
         params: {uid: ownerId},
       })
+    }
+  }
+
+  const navigateToProfile = () => {
+    if (ownerId) {
+      navigation.navigate('Profile', {uid: ownerId})
     }
   }
 
@@ -85,7 +91,7 @@ const ApplicationItem: React.FC<IApplicationItem> = ({item}) => {
           title="Contact"
           onPress={navigateToChat}
         />
-        <ButtonItem title="Employer Profile" onPress={navigateToChat} />
+        <ButtonItem title="Employer Profile" onPress={navigateToProfile} />
       </View>
     </View>
   )

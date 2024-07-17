@@ -22,6 +22,7 @@ import ChatScreen from '../screens/Chat/chat-screen'
 import ManagementScreen from '../screens/Management/manage-screen'
 import CallScreen from '../screens/Call/call-screen'
 import PersonalScreen from '../screens/Personal/personal-screen'
+import ProfileScreen from '../screens/Profile/profile-screen'
 
 const RootTab = createBottomTabNavigator<RootTabParamList>()
 const RootStack = createStackNavigator<RootStackParamList>()
@@ -147,6 +148,7 @@ const AppNavigator = () => {
         />
         <RootStack.Screen name="ChatNavigator" component={ChatStackNavigator} />
         <RootStack.Screen name="Personal" component={PersonalScreen} />
+        <RootStack.Screen name="Profile" component={ProfileScreen} />
       </RootStack.Navigator>
     </NavigationContainer>
   )

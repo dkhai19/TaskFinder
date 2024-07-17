@@ -44,6 +44,9 @@ export const fetchOthers = createAsyncThunk(
             phone: data.phone,
             gender: data.gender,
             birthday: birthday,
+            introduction: data.introduction,
+            avatar: data.avatar,
+            cover: data.cover,
           }
         })
         .filter(user => user.id !== currentUserUID) as IUserProfiles[]

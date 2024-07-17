@@ -17,6 +17,7 @@ const initialState: userState = {
   currentUser: {
     id: '',
     birthday: '',
+    avatar: '',
     email: '',
     first_name: '',
     last_name: '',

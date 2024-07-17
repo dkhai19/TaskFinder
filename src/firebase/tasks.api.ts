@@ -28,6 +28,8 @@ export const getAllTasks = (
           start_date: startDate,
           location: location,
           status: data.status,
+          price: data.price,
+          size: data.quantity,
         }
       })
       callback(tasks)
@@ -56,7 +58,7 @@ export const getTaskById = async (task_id: string) => {
           start_date: startDate,
           location: location,
           status: data.status,
-        }
+        } as ITask
       }
     } else {
       console.log('No such task!')
@@ -64,5 +66,42 @@ export const getTaskById = async (task_id: string) => {
     }
   } catch (error) {
     console.error('Fail to get task detail', error)
+  }
+}
+
+export const getTaskByOwnerId = async (
+  owner_id: string,
+  callback: (data: ITask[]) => void,
+) => {
+  try {
+    const unsubscribe = taskCollection
+      .where('user_id', '==', owner_id)
+      .onSnapshot(snapshot => {
+        const tasks: ITask[] = snapshot.docs.map(doc => {
+          const data = doc.data()
+          const endDate = data.end_date.toDate().toISOString()
+          const startDate = data.start_date.toDate().toISOString()
+          const location = {
+            latitude: data.location.latitude,
+            longtitude: data.location.longitude,
+          }
+          return {
+            taskId: doc.id,
+            userId: data.user_id,
+            taskName: data.task_name,
+            taskDescription: data.task_description,
+            end_date: endDate,
+            start_date: startDate,
+            location: location,
+            status: data.status,
+            price: data.price,
+            size: data.quantity,
+          }
+        })
+        callback(tasks)
+      })
+    return unsubscribe
+  } catch (error) {
+    console.error('Error to get all task', error)
   }
 }

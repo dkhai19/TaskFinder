@@ -3,7 +3,7 @@ import {colors} from '../../constants/color'
 import ManageFilterBar from './manage-filterbar'
 import {typography} from '../../constants/typo'
 import {useEffect, useState} from 'react'
-import {IApplication} from '../../types/applications.type'
+import {IGetApplication} from '../../types/applications.type'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import {getAllMyApplications} from '../../firebase/applications.api'
@@ -14,7 +14,7 @@ const ManagementScreen = () => {
     //console.log(type)
   }
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
-  const [applications, setApplications] = useState<IApplication[]>()
+  const [applications, setApplications] = useState<IGetApplication[]>()
 
   useEffect(() => {
     const loadApplications = async () => {

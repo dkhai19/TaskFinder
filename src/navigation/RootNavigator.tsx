@@ -28,6 +28,7 @@ export type RootStackParamList = {
     params: ChatStackParamList[keyof ChatStackParamList]
   }
   Personal: undefined
+  Profile: {uid: string}
 }
 // export type RootStackParamList = {
 //   SigninScreen: undefined;

@@ -12,7 +12,6 @@ import {
 } from 'react-native'
 import {colors} from '../../constants/color'
 import {useEffect, useRef, useState} from 'react'
-import Icon from 'react-native-vector-icons/Ionicons'
 import {typography} from '../../constants/typo'
 import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
 import {RootStackParamList} from '../../navigation/RootNavigator'
@@ -32,6 +31,7 @@ import {AppDispatch} from '../../redux/store/store'
 import {updateCurrentUser} from '../../redux/slices/userSlice'
 import {validatePhone} from '../../validations/user-infor-validation'
 import SuccessAnimation from '../../animations/ToastSuccess'
+import HeaderCustom from '../../components/Header'
 const {width, height} = Dimensions.get('window')
 
 const PersonalScreen: React.FC = () => {
@@ -47,6 +47,7 @@ const PersonalScreen: React.FC = () => {
   const [canUpdated, setCanUpdate] = useState<boolean>(false)
   const [editInfor, setEditInfor] = useState<IUserProfiles>({
     id: currentUser.id,
+    avatar: currentUser.avatar,
     first_name: currentUser.first_name,
     last_name: currentUser.last_name,
     birthday: currentUser.birthday,
@@ -179,18 +180,7 @@ const PersonalScreen: React.FC = () => {
       )}
       {updated && <SuccessAnimation message="Your information have updated!" />}
       <ScrollView>
-        <View style={styles.headingContainer}>
-          <TouchableOpacity
-            style={{backgroundColor: colors.white}}
-            onPress={handleGoBack}>
-            <Icon name="arrow-back-outline" size={28} color={colors.black} />
-          </TouchableOpacity>
-          <View style={styles.headingText}>
-            <Text style={[typography.f20_medium, {color: colors.black}]}>
-              Personal Data
-            </Text>
-          </View>
-        </View>
+        <HeaderCustom heading="Personal" onPress={handleGoBack} />
         <View style={styles.imageContainer}>
           <View style={styles.imageBorder}>
             <Image style={styles.image} source={{uri: currentUser.avatar}} />
@@ -301,18 +291,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: colors.white,
-  },
-  headingContainer: {
-    flexDirection: 'row',
-    height: height * 0.1,
-    marginBottom: 16,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-  },
-  headingText: {
-    alignItems: 'center',
-    flex: 1,
-    paddingRight: 16,
   },
   imageContainer: {
     height: height * 0.18,

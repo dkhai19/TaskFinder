@@ -15,6 +15,10 @@ export const typography = {
     fontSize: 13,
     fontFamily: 'Poppins-Medium',
   },
+  f14_regular: {
+    fontSize: 14,
+    fontFamily: 'Poppins-Regular',
+  },
   f14_medium: {
     fontSize: 14,
     fontFamily: 'Poppins-Medium',
@@ -39,6 +43,14 @@ export const typography = {
     fontSize: 17,
     fontFamily: 'Poppins-Medium',
   },
+  f17_bold: {
+    fontSize: 17,
+    fontFamily: 'Poppins-Bold',
+  },
+  f18_bold: {
+    fontSize: 18,
+    fontFamily: 'Poppins-Bold',
+  },
   f20_medium: {
     fontSize: 20,
     fontFamily: 'Poppins-Medium',
@@ -55,4 +67,4 @@ export const typography = {
     fontSize: 36,
     fontFamily: 'Poppins-BoldItalic',
   },
-};
+}

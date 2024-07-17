@@ -27,8 +27,8 @@ const Status: React.FC<IStatus> = ({status}) => {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    top: 4,
-    right: 4,
+    top: 8,
+    right: 8,
   },
   content: {
     width: 45,

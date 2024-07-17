@@ -1,6 +1,7 @@
 export type IUsers = {
   id: string
-  avatar?: string
+  avatar: string
+  cover?: string
   email: string
   phone: string
   gender: string
@@ -16,6 +17,8 @@ export type IUsers = {
 export type IUserProfiles = {
   id: string
   email: string
+  avatar: string
+  cover?: string
   phone: string
   gender: string
   birthday: string
@@ -38,6 +41,7 @@ export type IPayloadUser = {
 
 export const mapUserProfileToUser = (profile: IUserProfiles): IUsers => ({
   id: profile.id,
+  avatar: profile.avatar,
   first_name: profile.first_name,
   last_name: profile.last_name,
   birthday: profile.birthday,
