@@ -3,11 +3,13 @@ import authSlice from './slices/authSlice'
 import userSlice from './slices/userSlice'
 import applicationSlice from './slices/applicationSlice'
 import taskSlice from './slices/taskSlice'
+import appSlice from './slices/appSlice'
 const combinedReducer = combineReducers({
   authentication: authSlice,
   application: applicationSlice,
   task: taskSlice,
   user: userSlice,
+  app: appSlice,
 })
 
 const rootReducer = (state: any, action: any) => {

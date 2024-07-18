@@ -39,6 +39,12 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
   ]
   const [additionaInfo, setAdditionalInfo] = useState<IUsers>({
     id: user.id,
+    avatar:
+      'https://www.shutterstock.com/image-vector/default-avatar-profile-icon-social-600nw-1677509740.jpg',
+    cover:
+      'https://timelinecovers.pro/facebook-cover/download/hungry-for-success-facebook-cover.jpg',
+    rating: 5,
+    fcmToken: 'abc',
     email: user.email,
     phone: user.phone,
     first_name: user.first_name,
@@ -46,6 +52,7 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
     birthday: user.birthday,
     introduction: user.introduction,
     gender: user.gender,
+
     role: user.role,
   })
   //Animation for show up modal

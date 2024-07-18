@@ -4,6 +4,7 @@ import {
   Text,
   View,
   TouchableWithoutFeedback,
+  KeyboardAvoidingView,
 } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import {colors} from '../../constants/color'
@@ -34,6 +35,8 @@ import {
 } from '../../redux/slices/applicationSlice'
 import {IPostApplication} from '../../types/applications.type'
 import {formatDate} from '../../validations/convert-date'
+import SearchScreen from './search-screen'
+import {toggleBottomTab} from '../../redux/slices/appSlice'
 
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiZHVja2hhaTIwMDJ2biIsImEiOiJjbHh2ODBvZXQwamtkMmpwdTFsa3JoeDVrIn0.vrtl6qLPN_NGnRKA2EvLvg',
@@ -143,16 +146,26 @@ const HomeScreen: React.FC = () => {
     //console.log(item)
     setTaskModal(item)
     dispatch(toggleModal())
+    dispatch(toggleBottomTab())
   }
 
   const touchWithoutFeedback = () => {}
 
+  const toggleSeachSreen = () => {
+    dispatch(toggleBottomTab())
+  }
+
   return (
-    <View style={styles.page}>
+    <KeyboardAvoidingView style={styles.page}>
       <View style={styles.container}>
+        <SearchScreen onPress={toggleSeachSreen} />
         {taskModal && modalVisible && (
           <View style={styles.overlay}>
-            <TouchableWithoutFeedback onPress={() => dispatch(toggleModal())}>
+            <TouchableWithoutFeedback
+              onPress={() => {
+                dispatch(toggleModal())
+                dispatch(toggleBottomTab())
+              }}>
               <View style={styles.overlayBackground}></View>
             </TouchableWithoutFeedback>
             <HomeModal item={taskModal} display={modalVisible} />
@@ -199,7 +212,7 @@ const HomeScreen: React.FC = () => {
           )}
         </Mapbox.MapView>
       </View>
-    </View>
+    </KeyboardAvoidingView>
   )
 }
 

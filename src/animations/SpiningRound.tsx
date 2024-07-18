@@ -1,19 +1,19 @@
-import {ReactNode, useEffect, useRef} from 'react';
-import {View, Animated, StyleSheet, TouchableOpacity} from 'react-native';
+import {ReactNode, useEffect, useRef} from 'react'
+import {View, Animated, StyleSheet, TouchableOpacity} from 'react-native'
 
 interface ISpinAnimation {
-  children: ReactNode;
+  children: ReactNode
 }
 
 const SpinAnimation: React.FC<ISpinAnimation> = ({children}) => {
-  const animatedValue = useRef(new Animated.Value(0)).current;
-  const scaleValue = useRef(new Animated.Value(1)).current;
+  const animatedValue = useRef(new Animated.Value(0)).current
+  const scaleValue = useRef(new Animated.Value(1)).current
   const spin = animatedValue.interpolate({
     inputRange: [0, 1],
     outputRange: ['0deg', '360deg'],
-  });
+  })
   const startSpin = () => {
-    animatedValue.setValue(0);
+    animatedValue.setValue(0)
     Animated.parallel([
       Animated.timing(animatedValue, {
         toValue: 1,
@@ -25,11 +25,11 @@ const SpinAnimation: React.FC<ISpinAnimation> = ({children}) => {
         duration: 1000,
         useNativeDriver: true,
       }),
-    ]).start();
-  };
+    ]).start()
+  }
   useEffect(() => {
-    startSpin();
-  });
+    startSpin()
+  })
 
   return (
     <Animated.View
@@ -41,11 +41,11 @@ const SpinAnimation: React.FC<ISpinAnimation> = ({children}) => {
       ]}>
       {children}
     </Animated.View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {},
-});
+})
 
-export default SpinAnimation;
+export default SpinAnimation

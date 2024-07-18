@@ -23,6 +23,8 @@ import ManagementScreen from '../screens/Management/manage-screen'
 import CallScreen from '../screens/Call/call-screen'
 import PersonalScreen from '../screens/Personal/personal-screen'
 import ProfileScreen from '../screens/Profile/profile-screen'
+import {useSelector} from 'react-redux'
+import {RootState} from '../redux/rootReducer'
 
 const RootTab = createBottomTabNavigator<RootTabParamList>()
 const RootStack = createStackNavigator<RootStackParamList>()
@@ -68,18 +70,20 @@ const RootTabNavigator = () => {
       StatusBar.setBarStyle('light-content')
     }, []),
   )
+  const isDisplay = useSelector((state: RootState) => state.app.displayBottom)
   return (
     <RootTab.Navigator
       screenOptions={({route}) => ({
         headerShown: false,
         tabBarShowLabel: false,
         tabBarStyle: {
+          display: isDisplay ? 'flex' : 'none',
           position: 'absolute',
           zIndex: 1,
           height: 60,
           left: 16,
           right: 16,
-          bottom: 16,
+          bottom: 8,
           borderRadius: 12,
           elevation: 5,
         },
