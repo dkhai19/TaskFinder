@@ -58,6 +58,8 @@ export const getTaskById = async (task_id: string) => {
           start_date: startDate,
           location: location,
           status: data.status,
+          price: data.price,
+          size: data.quantity,
         } as ITask
       }
     } else {

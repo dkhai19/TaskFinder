@@ -27,6 +27,13 @@ import {
 import {fetchOthers} from '../../redux/thunks/userThunks'
 import {signJWT} from '../../apis/stream'
 import {setToken} from '../../redux/slices/authSlice'
+import {getAllMyApplications} from '../../firebase/applications.api'
+import {
+  IApplication,
+  setApplications,
+} from '../../redux/slices/applicationSlice'
+import {IPostApplication} from '../../types/applications.type'
+import {formatDate} from '../../validations/convert-date'
 
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiZHVja2hhaTIwMDJ2biIsImEiOiJjbHh2ODBvZXQwamtkMmpwdTFsa3JoeDVrIn0.vrtl6qLPN_NGnRKA2EvLvg',
@@ -43,7 +50,7 @@ const HomeScreen: React.FC = () => {
   const modalVisible = useSelector((state: RootState) => state.task.taskModal)
   const tasks = useSelector((state: RootState) => state.task.tasksData)
   const [taskModal, setTaskModal] = useState<ITask>()
-
+  const [applied, setApplied] = useState<IPostApplication[]>()
   //console.log('Where are tasks', tasks)
   const dispatch = useDispatch<AppDispatch>()
 
@@ -51,12 +58,31 @@ const HomeScreen: React.FC = () => {
     let unsubscribe: UnsubcribeFunc | undefined
     const setupTasks = async () => {
       try {
-        dispatch(loadTasks()).unwrap()
+        // dispatch(loadTasks()).unwrap()
         unsubscribe = await getAllTasks(tasks => {
           dispatch(setTasks(tasks))
         })
       } catch (error) {
         console.error('Failed to load tasks:', error)
+      }
+    }
+
+    let unsubcribeApps: UnsubcribeFunc | undefined
+    const setupApps = async () => {
+      try {
+        unsubcribeApps = await getAllMyApplications(currentUser.id, data => {
+          setApplied(data)
+          const listChangeDate = data.map(item => {
+            const cvDate = formatDate(item.application_date.toISOString())
+            return {
+              ...item,
+              application_date: cvDate,
+            } as IApplication
+          })
+          dispatch(setApplications(listChangeDate))
+        })
+      } catch (error) {
+        console.error('Fail to load applications', error)
       }
     }
 
@@ -77,6 +103,7 @@ const HomeScreen: React.FC = () => {
     })
 
     setupTasks()
+    setupApps()
     setupLocation()
     dispatch(fetchOthers())
     dispatch(setToken(jwtString))
@@ -88,6 +115,9 @@ const HomeScreen: React.FC = () => {
     return () => {
       if (unsubscribe) {
         unsubscribe()
+      }
+      if (unsubcribeApps) {
+        unsubcribeApps()
       }
     }
   }, [dispatch])
@@ -125,7 +155,7 @@ const HomeScreen: React.FC = () => {
             <TouchableWithoutFeedback onPress={() => dispatch(toggleModal())}>
               <View style={styles.overlayBackground}></View>
             </TouchableWithoutFeedback>
-            <HomeModal item={taskModal} />
+            <HomeModal item={taskModal} display={modalVisible} />
           </View>
         )}
 

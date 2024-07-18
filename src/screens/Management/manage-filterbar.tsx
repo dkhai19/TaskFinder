@@ -25,10 +25,10 @@ const ManageFilterBar: React.FC<IManageFilterBar> = ({onChangeType}) => {
       case 'All':
         toValue = 0
         break
-      case 'Processing':
+      case 'Applying':
         toValue = 1
         break
-      case 'Granted':
+      case 'Accepted':
         toValue = 2
         break
       case 'Rejected':
@@ -50,7 +50,7 @@ const ManageFilterBar: React.FC<IManageFilterBar> = ({onChangeType}) => {
     outputRange: [0, width * 0.25, width * 0.5, width * 0.75],
   })
 
-  const options = ['All', 'Processing', 'Granted', 'Rejected']
+  const options = ['All', 'Applying', 'Accepted', 'Rejected']
 
   const handleChange = (item: string) => {
     setSelected(item)

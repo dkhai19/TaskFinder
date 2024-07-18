@@ -30,6 +30,7 @@ const ConversationScreen: React.FC = () => {
   const listOtherUsers = useSelector(
     (state: RootState) => state.user.otherUsers,
   )
+
   //console.log('list other users', listOtherUsers)
 
   useEffect(() => {
@@ -46,7 +47,7 @@ const ConversationScreen: React.FC = () => {
           const toHour = time.getHours() + ':' + time.getMinutes()
           return {
             id: receiverId,
-            avatar: '5', // can sua
+            avatar: user?.avatar || '', // can sua
             name: `${user?.first_name} ${user?.last_name}`,
             lastMessage: chat.lastMessage,
             lastMessageTimestamp: toHour,
@@ -82,8 +83,9 @@ const ConversationScreen: React.FC = () => {
           style={styles.imageContainer}>
           <Image
             style={styles.image}
-            source={require('../../assets/photos/image8.jpg')}
+            source={{uri: item.avatar}}
             resizeMode="stretch"
+            alt="Alt"
           />
         </TouchableOpacity>
         <View>
@@ -106,10 +108,26 @@ const ConversationScreen: React.FC = () => {
         style={{paddingVertical: 8}}>
         <ConversationItem
           name={item.name}
+          imageUrl={item.avatar}
           context={item.lastMessage}
           lastDate={item.lastMessageTimestamp}
         />
       </TouchableOpacity>
+    )
+  }
+
+  if (!listData) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text style={[typography.f16_semibold, {color: colors.black}]}>
+          Loading owner information.
+        </Text>
+      </View>
     )
   }
 

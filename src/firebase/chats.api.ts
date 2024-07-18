@@ -97,14 +97,14 @@ export const fetchConversations = (
   return unsubcribe
 }
 
-export const fetchMessages = (
+export const fetchMessages = async (
   chatUID: string,
   callback: (messages: IMessage[]) => void,
 ) => {
   const chatCollection = firestore().collection('chats')
 
   try {
-    return chatCollection
+    const unsubcribe = await chatCollection
       .doc(chatUID)
       .collection('messages')
       .orderBy('createdAt', 'asc')
@@ -116,6 +116,7 @@ export const fetchMessages = (
 
         callback(messages)
       })
+    return unsubcribe
   } catch (error) {
     console.error('Error fetching messages: ', error)
     return () => {}

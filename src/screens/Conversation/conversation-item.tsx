@@ -13,14 +13,12 @@ const ConversationItem: React.FC<IConversationItem> = ({
   name,
   context,
   lastDate,
+  imageUrl,
 }) => {
   return (
     <View style={styles.container}>
       <View style={{flex: 1}}>
-        <Image
-          style={styles.image}
-          source={require('../../assets/photos/image7.jpg')}
-        />
+        <Image style={styles.image} source={{uri: imageUrl}} alt="Alt" />
       </View>
       <View style={styles.mid}>
         <Text style={[typography.f16_medium, {color: colors.black}]}>

@@ -21,6 +21,8 @@ import client, {
   requestMicrophonePermission,
   signJWT,
 } from '../../apis/stream'
+import {UnsubcribeFunc} from '../../types/unsubcribe.type'
+import {typography} from '../../constants/typo'
 
 type Props = NativeStackScreenProps<ChatStackParamList, 'Chat'>
 
@@ -38,7 +40,7 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
     callId: 'default_3f595617-07a3-4f70-9f0f-7a898e85b455',
   }
   useEffect(() => {
-    let unsubscribe: (() => void) | null = null
+    let unsubscribe: UnsubcribeFunc | null
     const loadInformations = async () => {
       const findChatUID = await findCommonChats(sender_uid, receiver_uid)
       if (findChatUID) {
@@ -70,7 +72,7 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   const sendMessageHandler = async () => {
     const senderInfor: ISender = {
       _id: sender_uid,
-      avatar: '5',
+      avatar: currentUser.avatar,
       name: 'Do Duc Khai',
     }
     try {
@@ -121,6 +123,7 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
           {messages.map(message => (
             <MessageRow
               key={message._id}
+              receiverId={message.user._id}
               isMine={message.user._id === sender_uid ? true : false}
               content={message.text}
             />

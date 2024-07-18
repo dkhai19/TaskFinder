@@ -3,26 +3,40 @@ import {colors} from '../../constants/color'
 import ManageFilterBar from './manage-filterbar'
 import {typography} from '../../constants/typo'
 import {useEffect, useState} from 'react'
-import {IGetApplication} from '../../types/applications.type'
+import {IPostApplication} from '../../types/applications.type'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import {getAllMyApplications} from '../../firebase/applications.api'
 import ApplicationItem from './application-item'
+import {UnsubcribeFunc} from '../../types/unsubcribe.type'
+import {IApplication} from '../../redux/slices/applicationSlice'
 
 const ManagementScreen = () => {
   const handleChangeDataType = (type: string) => {
-    //console.log(type)
+    const tolower = type.toLowerCase()
+    setAction(tolower)
   }
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
-  const [applications, setApplications] = useState<IGetApplication[]>()
-
+  const applications = useSelector(
+    (state: RootState) => state.application.applied,
+  )
+  const [filterItems, setFilterItems] = useState<IApplication[]>()
+  const [action, setAction] = useState<string>()
   useEffect(() => {
-    const loadApplications = async () => {
-      const data = await getAllMyApplications(currentUser.id)
-      setApplications(data)
+    switch (action) {
+      case 'applying':
+        setFilterItems(applications.filter(item => item.status === 'applying'))
+        break
+      case 'accepted':
+        setFilterItems(applications.filter(item => item.status === 'accepted'))
+        break
+      case 'rejected':
+        setFilterItems(applications.filter(item => item.status === 'rejected'))
+        break
+      default:
+        setFilterItems(applications)
     }
-    loadApplications()
-  }, [])
+  }, [action])
 
   return (
     <View style={styles.container}>
@@ -36,8 +50,8 @@ const ManagementScreen = () => {
       </View>
       <View style={styles.content}>
         <ScrollView style={{paddingHorizontal: 16}}>
-          {applications &&
-            applications?.map(item => (
+          {filterItems &&
+            filterItems?.map(item => (
               <ApplicationItem key={item.task_id} item={item} />
             ))}
         </ScrollView>

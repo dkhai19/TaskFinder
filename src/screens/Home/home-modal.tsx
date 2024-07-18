@@ -1,4 +1,6 @@
 import {
+  Animated,
+  Dimensions,
   Image,
   StyleSheet,
   Text,
@@ -9,7 +11,7 @@ import {
 import DragView from '../../animations/Modal'
 import {colors} from '../../constants/color'
 import {ITask} from '../../types/tasks.type'
-import {useEffect, useState} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {IUsers} from '../../types/users.type'
 import {findUserById} from '../../firebase/users.api'
 import {typography} from '../../constants/typo'
@@ -19,39 +21,61 @@ import {IPostApplication} from '../../types/applications.type'
 import {checkIsApplied, postApplication} from '../../firebase/applications.api'
 import {RootState} from '../../redux/rootReducer'
 import {useSelector} from 'react-redux'
-import {FirebaseFirestoreTypes} from '@react-native-firebase/firestore'
-import {
-  convertFirestoreTimestampToDate,
-  formatDate,
-} from '../../validations/convert-date'
+import {formatDate} from '../../validations/convert-date'
+import {RootTabParamList} from '../../navigation/RootNavigator'
+import {useNavigation} from '@react-navigation/native'
+import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
+import LoadingModal from '../../animations/LoadingModal'
 
 interface IHomeModal {
   item: ITask
+  display: boolean
 }
 
-const HomeModal: React.FC<IHomeModal> = ({item}) => {
+const {width, height} = Dimensions.get('window')
+
+const HomeModal: React.FC<IHomeModal> = ({item, display}) => {
   //console.log('The task modal', item)
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootTabParamList>>()
   const [owner, setOwner] = useState<IUsers>()
-  const [isApplied, setIsApplied] = useState<boolean>()
+  const [isApplied, setIsApplied] = useState<boolean>(false)
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
+
+  const animValue = useRef(new Animated.Value(height)).current
+
+  useEffect(() => {
+    Animated.timing(animValue, {
+      toValue: height * 0.5,
+      duration: 2000,
+      useNativeDriver: true,
+    }).start()
+    return () => {
+      Animated.timing(animValue, {
+        toValue: height,
+        duration: 2000,
+        useNativeDriver: true,
+      }).start()
+    }
+  }, [display])
 
   useEffect(() => {
     const fetchData = async () => {
       try {
         const [findOwner, isUserApplied] = await Promise.all([
           findUserById(item.userId),
-          checkIsApplied(item.taskId, item.userId),
+          checkIsApplied(item.taskId, currentUser.id),
         ])
         setOwner(findOwner)
         setIsApplied(isUserApplied)
+
         //console.log('Have I applied to this task', isUserApplied);
       } catch (error) {
         console.error('Error fetching data', error)
       }
     }
-
     fetchData()
-  }, [item.userId, item.taskId])
+  }, [item])
 
   const handleFollow = () => {}
 
@@ -63,6 +87,7 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
     //console.log(application)
     if (isApplied) {
       console.log('Handle go to application screen')
+      navigation.navigate('Management')
     } else {
       setIsApplied(true)
       try {
@@ -73,19 +98,45 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
     }
   }
 
+  if (!owner) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text style={[typography.f16_semibold, {color: colors.black}]}>
+          Loading owner information.
+        </Text>
+      </View>
+    )
+  }
+
   return (
-    <DragView style={styles.container}>
+    <DragView
+      style={[
+        styles.container,
+        {
+          transform: [
+            {
+              translateY: animValue,
+            },
+          ],
+        },
+      ]}>
       <View style={styles.content}>
         <View style={styles.heading}>
           <View style={styles.row}>
             <TouchableOpacity onPress={() => navigateToProfile(item.userId)}>
               <Image
                 style={styles.image}
-                source={require('../../assets/photos/image5.jpg')}
+                source={{uri: owner?.avatar}}
+                alt="Alt"
               />
             </TouchableOpacity>
             <TouchableOpacity onPress={() => navigateToProfile(item.userId)}>
-              <Text style={[typography.f14_medium, {color: colors.black}]}>
+              <Text style={[typography.f16_semibold, {color: colors.black}]}>
                 {owner?.first_name + ' ' + owner?.last_name}
               </Text>
             </TouchableOpacity>
@@ -93,28 +144,28 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
           <TouchableOpacity
             onPress={handleFollow}
             style={styles.buttonContainer}>
-            <Text style={[typography.f12_regular, {color: colors.white}]}>
+            <Text style={[typography.f15_regular, {color: colors.white}]}>
               Follow
             </Text>
           </TouchableOpacity>
         </View>
         <View style={{marginTop: 12}}>
           <RowItem
-            iconName="pricetags-outline"
+            iconName="tag"
             iconColor={colors.red}
             title={item.taskName}
           />
           <RowItem
-            iconName="time-outline"
+            iconName="clock"
             iconColor={colors.red}
             title={`${formatDate(item.start_date)} - ${formatDate(
               item.end_date,
             )}`}
           />
           <RowItem
-            iconName="cash-outline"
+            iconName="dollar-sign"
             iconColor={colors.red}
-            title="1.000.000"
+            title={item.price.toString()}
           />
         </View>
         <View style={styles.description}>
@@ -129,8 +180,6 @@ const HomeModal: React.FC<IHomeModal> = ({item}) => {
                 user_id: currentUser.id,
                 application_date: new Date(),
                 status: 'applying',
-                first_name: currentUser.first_name,
-                last_name: currentUser.last_name,
                 rating: currentUser.rating,
               })
             }

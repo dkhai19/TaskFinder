@@ -46,6 +46,21 @@ const SettingScreen: React.FC = () => {
     navigation.navigate('Personal')
   }
 
+  if (!currentUser) {
+    return (
+      <View
+        style={{
+          flex: 1,
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}>
+        <Text style={[typography.f16_semibold, {color: colors.black}]}>
+          Loading owner information.
+        </Text>
+      </View>
+    )
+  }
+
   return (
     <View style={settingStyles.container}>
       <View style={settingStyles.body}>
@@ -54,6 +69,7 @@ const SettingScreen: React.FC = () => {
             <Image
               style={settingStyles.image}
               source={{uri: currentUser.avatar}}
+              alt="Alt"
             />
           </View>
           <View style={settingStyles.text_column}>

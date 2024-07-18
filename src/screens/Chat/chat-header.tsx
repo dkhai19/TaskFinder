@@ -26,6 +26,15 @@ const ChatHeader: React.FC<IChatHeader> = ({
     }
     fetchInfor()
   }, [])
+
+  if (!user) {
+    return (
+      <View>
+        <Text>Loading...</Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       <View style={styles.left}>
@@ -33,10 +42,7 @@ const ChatHeader: React.FC<IChatHeader> = ({
           <Icon name="chevron-back-outline" size={24} color={colors.black} />
         </TouchableOpacity>
         <View style={styles.imageContainer}>
-          <Image
-            style={styles.image}
-            source={require('../../assets/photos/image9.jpg')}
-          />
+          <Image style={styles.image} source={{uri: user?.avatar}} alt="Alt" />
         </View>
         <View>
           <Text style={[typography.f17_medium, {color: colors.black}]}>

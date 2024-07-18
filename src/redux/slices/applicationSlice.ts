@@ -1,10 +1,12 @@
 import {createSlice, PayloadAction} from '@reduxjs/toolkit'
+import {IPostApplication} from '../../types/applications.type'
+import {formatDate} from '../../validations/convert-date'
 
-interface IApplication {
+export interface IApplication {
+  application_date: string
+  status: string
   task_id: string
   user_id: string
-  status: string
-  application_date: string
 }
 
 const initialState = {
@@ -15,27 +17,11 @@ const applicationSlice = createSlice({
   name: 'applied',
   initialState,
   reducers: {
-    manageApplied(state, action: PayloadAction<IApplication>) {
-      const exists = state.applied.some(
-        item =>
-          item.task_id === action.payload.task_id &&
-          item.user_id === action.payload.user_id,
-      )
-
-      if (exists) {
-        state.applied = state.applied.filter(
-          item =>
-            !(
-              item.task_id === action.payload.task_id &&
-              item.user_id === action.payload.user_id
-            ),
-        )
-      } else {
-        state.applied.push(action.payload)
-      }
+    setApplications(state, action: PayloadAction<IApplication[]>) {
+      state.applied = action.payload
     },
   },
 })
 
-export const {manageApplied} = applicationSlice.actions
+export const {setApplications} = applicationSlice.actions
 export default applicationSlice.reducer

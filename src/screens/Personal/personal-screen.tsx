@@ -183,7 +183,11 @@ const PersonalScreen: React.FC = () => {
         <HeaderCustom heading="Personal" onPress={handleGoBack} />
         <View style={styles.imageContainer}>
           <View style={styles.imageBorder}>
-            <Image style={styles.image} source={{uri: currentUser.avatar}} />
+            <Image
+              style={styles.image}
+              source={{uri: currentUser.avatar}}
+              alt="Alt"
+            />
           </View>
         </View>
         <View style={styles.inputField}>

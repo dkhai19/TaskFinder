@@ -1,13 +1,38 @@
-import {Image, StyleSheet, Text, View} from 'react-native';
-import {typography} from '../../constants/typo';
-import {colors} from '../../constants/color';
+import {Image, StyleSheet, Text, View} from 'react-native'
+import {typography} from '../../constants/typo'
+import {colors} from '../../constants/color'
+import {useEffect, useState} from 'react'
+import {IUsers} from '../../types/users.type'
+import {findUserById} from '../../firebase/users.api'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
+import LoadingModal from '../../animations/LoadingModal'
 
 interface IMessageRow {
-  isMine: boolean;
-  content: string;
+  isMine: boolean
+  content: string
+  receiverId: string
 }
 
-const MessageRow: React.FC<IMessageRow> = ({isMine, content}) => {
+const MessageRow: React.FC<IMessageRow> = ({isMine, content, receiverId}) => {
+  const listOthers = useSelector((state: RootState) => state.user.otherUsers)
+  const receiver = listOthers?.find(item => item.id === receiverId)
+  const [isLoading, setIsLoading] = useState(true)
+
+  useEffect(() => {
+    if (!receiver) {
+      setIsLoading(false)
+    }
+  }, [receiver])
+
+  if (!receiver && !isMine) {
+    return (
+      <View>
+        <Text>Relax</Text>
+      </View>
+    )
+  }
+
   return (
     <View style={styles.container}>
       {isMine ? (
@@ -22,8 +47,15 @@ const MessageRow: React.FC<IMessageRow> = ({isMine, content}) => {
         <View style={styles.left}>
           <View style={styles.leftImage}>
             <Image
-              source={require('../../assets/photos/image5.jpg')}
+              source={
+                receiver
+                  ? {uri: receiver?.avatar}
+                  : require('../../assets/photos/image1.jpg')
+              }
+              onLoadStart={() => setIsLoading(true)}
+              onLoadEnd={() => setIsLoading(false)}
               style={styles.image}
+              alt=""
             />
           </View>
           <View style={styles.leftMessage}>
@@ -34,8 +66,8 @@ const MessageRow: React.FC<IMessageRow> = ({isMine, content}) => {
         </View>
       )}
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -78,6 +110,6 @@ const styles = StyleSheet.create({
     height: 38,
     borderRadius: 20,
   },
-});
+})
 
-export default MessageRow;
+export default MessageRow

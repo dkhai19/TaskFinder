@@ -5,9 +5,6 @@ export type IGetApplication = {
   status: string
   task_id: string
   user_id: string
-  first_name?: string
-  last_name?: string
-  rating?: number
 }
 
 export type IPostApplication = {
@@ -15,8 +12,6 @@ export type IPostApplication = {
   status: string
   task_id: string
   user_id: string
-  first_name?: string
-  last_name?: string
   rating?: number
 }
 

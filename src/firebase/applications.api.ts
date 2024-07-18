@@ -1,5 +1,6 @@
 import {IGetApplication, IPostApplication} from '../types/applications.type'
 import firestore from '@react-native-firebase/firestore'
+import {convertFirestoreTimestampToDate} from '../validations/convert-date'
 
 const applicationCollection = firestore().collection('applications')
 export const postApplication = async (resume: IPostApplication) => {
@@ -27,21 +28,28 @@ export const checkIsApplied = async (task_id: string, user_id: string) => {
   }
 }
 
-export const getAllMyApplications = async (user_id: string) => {
+export const getAllMyApplications = async (
+  user_id: string,
+  callback: (data: IPostApplication[]) => void,
+) => {
   try {
-    const querySnapshot = await applicationCollection
+    const unsubscribe = await applicationCollection
       .where('user_id', '==', user_id)
-      .get()
-    const result: IGetApplication[] = querySnapshot.docs.map(doc => {
-      const data = doc.data() as IGetApplication
-      return {
-        ...data,
-      }
-    })
-
-    return result
+      .onSnapshot(snapshot => {
+        const result: IPostApplication[] = snapshot.docs.map(doc => {
+          const data: IGetApplication = doc.data() as IGetApplication
+          const convertDate = convertFirestoreTimestampToDate(
+            data.application_date,
+          )
+          return {
+            ...data,
+            application_date: convertDate,
+          }
+        })
+        callback(result)
+      })
+    return unsubscribe
   } catch (error) {
     console.error('Error fetching messages: ', error)
-    return []
   }
 }

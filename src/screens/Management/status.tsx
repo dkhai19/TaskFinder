@@ -1,6 +1,7 @@
 import {StyleSheet, View} from 'react-native'
 import {colors} from '../../constants/color'
 import Icon from 'react-native-vector-icons/Ionicons'
+import {useEffect, useState} from 'react'
 
 interface IStatus {
   status: string
@@ -8,11 +9,15 @@ interface IStatus {
 
 const Status: React.FC<IStatus> = ({status}) => {
   const color =
-    status === 'accepted' ? '#399918' : 'rejected' ? '#E4003A' : '#4535C1'
+    status === 'accepted'
+      ? '#399918'
+      : status === 'rejected'
+      ? '#E4003A'
+      : '#4535C1'
   const iconName =
     status === 'accepted'
       ? 'checkmark-done-sharp'
-      : 'rejected'
+      : status === 'rejected'
       ? 'close-sharp'
       : 'sync-circle-sharp'
   return (
