@@ -25,6 +25,7 @@ import LoadingModal from '../../animations/LoadingModal'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {findUserById} from '../../firebase/users.api'
 import {setCurrentUser} from '../../redux/slices/userSlice'
+import {checkToken} from '../../firebase/notifications.api'
 
 type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>
 
@@ -67,6 +68,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
 
     const getUserInfor = await findUserById(uid)
     dispatch(setCurrentUser(getUserInfor))
+    await checkToken()
   }
 
   useEffect(() => {

@@ -11,8 +11,10 @@ import AppNavigator from './src/navigation/AppNavigator'
 import {Provider} from 'react-redux'
 import store from './src/redux/store/store'
 import {Buffer} from 'buffer'
+import {getNotificationPermission} from './src/firebase/notifications.api'
 global.Buffer = Buffer
 
+getNotificationPermission()
 function App(): React.JSX.Element {
   return (
     <SafeAreaView style={styles.backgroundStyle}>
