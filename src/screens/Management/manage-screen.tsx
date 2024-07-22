@@ -16,7 +16,6 @@ const ManagementScreen = () => {
     const tolower = type.toLowerCase()
     setAction(tolower)
   }
-  const currentUser = useSelector((state: RootState) => state.user.currentUser)
   const applications = useSelector(
     (state: RootState) => state.application.applied,
   )
@@ -36,6 +35,7 @@ const ManagementScreen = () => {
       default:
         setFilterItems(applications)
     }
+    console.log(applications)
   }, [action])
 
   return (

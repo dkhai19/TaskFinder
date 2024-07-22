@@ -1,3 +1,5 @@
+import {GeoPoint} from '@react-native-firebase/firestore'
+
 export type IUsers = {
   id: string
   avatar: string
@@ -12,6 +14,10 @@ export type IUsers = {
   role?: string
   introduction: string
   fcmToken?: string
+  location?: {
+    latitude: number
+    longitude: number
+  }
 }
 
 export type IUserProfiles = {

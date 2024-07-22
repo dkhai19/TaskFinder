@@ -39,7 +39,6 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
     if (others) {
       setSearchOther(others)
     }
-    console.log(searchOther)
   }, [])
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
@@ -92,13 +91,26 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
     )
   }
 
-  if (!searchOther) {
-    return (
-      <View>
-        <Text>Loading users ...</Text>
-      </View>
-    )
-  }
+  // if (!searchOther) {
+  //   return (
+  //     <View
+  //       style={[
+  //         {
+  //           width: 50,
+  //           height: 50,
+  //         },
+  //         styles.container,
+  //         displayBottom && {
+  //           borderTopLeftRadius: 4,
+  //           borderBottomLeftRadius: 4,
+  //           borderTopRightRadius: 24,
+  //           borderBottomRightRadius: 24,
+  //         },
+  //       ]}>
+  //       <Text>Loading users ...</Text>
+  //     </View>
+  //   )
+  // }
 
   const handleSearchChange = (input: string) => {
     const filtered = others?.filter(item => {
@@ -139,7 +151,7 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
         onChangeText={input => handleSearchChange(input)}
       />
       <FlatList
-        data={searchOther}
+        data={searchOther ? searchOther : others}
         renderItem={({item}) => renderSearchItem(item)}
       />
 

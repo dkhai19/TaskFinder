@@ -1,7 +1,7 @@
 import {createAsyncThunk} from '@reduxjs/toolkit'
 import {IUserProfiles, IUsers} from '../../types/users.type'
 import {handleAddUser} from '../../firebase/users.api'
-import firestore from '@react-native-firebase/firestore'
+import firestore, {GeoPoint} from '@react-native-firebase/firestore'
 import auth from '@react-native-firebase/auth'
 import {convertFirestoreTimestampToDate} from '../../validations/convert-date'
 const userCollection = firestore().collection('users')

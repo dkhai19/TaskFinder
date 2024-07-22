@@ -1,5 +1,5 @@
 import {IUserProfiles, IUsers} from '../types/users.type'
-import firestore from '@react-native-firebase/firestore'
+import firestore, {GeoPoint} from '@react-native-firebase/firestore'
 import storage from '@react-native-firebase/storage'
 import {
   convertFirestoreTimestampToDate,
@@ -12,7 +12,14 @@ const userCollection = firestore().collection('users')
 export const handleAddUser = async (user: IUsers) => {
   try {
     console.log('Adding user:', user)
-    await userCollection.doc(user.id).set({...user})
+    let convertGeoPoint
+    if (user.location) {
+      convertGeoPoint = new GeoPoint(
+        user.location.latitude + (Math.random() * (0.5 - 0.1) + 0.1),
+        user.location.longitude + (Math.random() * (0.5 - 0.1) + 0.1),
+      )
+    }
+    await userCollection.doc(user.id).set({...user, location: convertGeoPoint})
     console.log('User added successfully!')
   } catch (error) {
     console.error('Error adding user to Firestore:', error)

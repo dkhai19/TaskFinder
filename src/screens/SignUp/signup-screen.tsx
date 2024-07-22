@@ -33,10 +33,13 @@ import {setUserID} from '../../redux/slices/authSlice'
 import {RootState} from '../../redux/rootReducer'
 import {findUserById} from '../../firebase/users.api'
 import {setCurrentUser} from '../../redux/slices/userSlice'
+import {GeoPoint} from '@react-native-firebase/firestore'
+
 type Props = NativeStackScreenProps<LoginStackParamList, 'Signup'>
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
   const userId = useSelector((state: RootState) => state.authentication.uid)
+  const location = useSelector((state: RootState) => state.permission)
   //State store user information
   const dispatch = useDispatch<AppDispatch>()
   //State to control loading
@@ -154,6 +157,10 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
             introduction: '',
             rating: 0,
             phone: input.phoneNumber,
+            location: {
+              latitude: location.latitude,
+              longitude: location.longitude,
+            },
             role: 'employee',
           }
           dispatch(addUser(userData))

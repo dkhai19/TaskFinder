@@ -45,8 +45,6 @@ Mapbox.setAccessToken(
 const {width, height} = Dimensions.get('window')
 
 const HomeScreen: React.FC = () => {
-  const [location, setLocation] = useState<LocationCoordinates>([105.834160, 21.027763]); //prettier-ignore
-  const [permissionStatus, setPermissionStatus] = useState('pending')
   const [movingCamera, setMovingCamera] = useState(false)
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
   //const [tasks, setTasks] = useState<TaskData>([])
@@ -54,6 +52,7 @@ const HomeScreen: React.FC = () => {
   const tasks = useSelector((state: RootState) => state.task.tasksData)
   const [taskModal, setTaskModal] = useState<ITask>()
   const [applied, setApplied] = useState<IPostApplication[]>()
+  const location = useSelector((state: RootState) => state.permission)
   //console.log('Where are tasks', tasks)
   const dispatch = useDispatch<AppDispatch>()
 
@@ -89,15 +88,15 @@ const HomeScreen: React.FC = () => {
       }
     }
 
-    const setupLocation = async () => {
-      const requestStatus = await requestLocationPermission()
-      setPermissionStatus(requestStatus)
-      if (requestStatus === 'granted') {
-        const currentLocation = await getLocation()
-        setLocation(currentLocation)
-        console.log('Current location:', location)
-      }
-    }
+    // const setupLocation = async () => {
+    //   const requestStatus = await requestLocationPermission()
+    //   setPermissionStatus(requestStatus)
+    //   if (requestStatus === 'granted') {
+    //     const currentLocation = await getLocation()
+    //     setLocation(currentLocation)
+    //     console.log('Current location:', location)
+    //   }
+    // }
 
     //console.log('Current user', currentUser)
     const jwtString = signJWT({
@@ -107,7 +106,7 @@ const HomeScreen: React.FC = () => {
 
     setupTasks()
     setupApps()
-    setupLocation()
+    //setupLocation()
     dispatch(fetchOthers())
     dispatch(setToken(jwtString))
     setTimeout(() => {
@@ -125,7 +124,7 @@ const HomeScreen: React.FC = () => {
     }
   }, [dispatch])
 
-  if (permissionStatus === 'pending') {
+  if (location.status === 'pending') {
     return (
       <View style={styles.page}>
         <Text>Requesting location permission...</Text>
@@ -133,7 +132,7 @@ const HomeScreen: React.FC = () => {
     )
   }
 
-  if (permissionStatus !== 'granted') {
+  if (location.status !== 'granted') {
     return (
       <View style={styles.page}>
         <Text>Location permission was not granted.</Text>
@@ -181,13 +180,15 @@ const HomeScreen: React.FC = () => {
             <View>
               <Mapbox.Camera
                 //followUserLocation
-                centerCoordinate={location}
+                centerCoordinate={[location.longitude, location.latitude]}
                 zoomLevel={13}
                 pitch={60}
                 animationDuration={2000}
                 animationMode="flyTo"
               />
-              <Mapbox.PointAnnotation id="marker" coordinate={location}>
+              <Mapbox.PointAnnotation
+                id="marker"
+                coordinate={[location.longitude, location.latitude]}>
                 <View style={{width: 30, height: 30}}>
                   <IconButton
                     iconName="person-outline"

@@ -26,16 +26,39 @@ import AsyncStorage from '@react-native-async-storage/async-storage'
 import {findUserById} from '../../firebase/users.api'
 import {setCurrentUser} from '../../redux/slices/userSlice'
 import {checkToken} from '../../firebase/notifications.api'
+import {
+  getLocation,
+  LocationCoordinates,
+  requestLocationPermission,
+} from '../../apis/location'
+import {AppDispatch} from '../../redux/store/store'
+import {
+  setCurrentLocation,
+  setLocationPermisstion,
+} from '../../redux/slices/permissionSlice'
 
 type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
+  const dispatch = useDispatch<AppDispatch>()
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState({
     email: '',
     password: '',
   })
-  const dispatch = useDispatch()
+
+  useEffect(() => {
+    const setupLocation = async () => {
+      const requestStatus = await requestLocationPermission()
+      dispatch(setLocationPermisstion(requestStatus))
+      if (requestStatus === 'granted') {
+        const currentLocation = await getLocation()
+        dispatch(setCurrentLocation(currentLocation))
+        //console.log('Current location:', currentLocation)
+      }
+    }
+    setupLocation()
+  }, [])
   // const userId = useSelector((state: RootState) => state.authentication.uid);
   // console.log(userId);
   //Set error string to use to notice user about invalid input
