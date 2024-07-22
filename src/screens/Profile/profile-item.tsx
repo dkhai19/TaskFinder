@@ -19,7 +19,7 @@ const ProfileItem: React.FC<IProfileItem> = ({
         style={{
           flexDirection: 'row',
         }}>
-        <View style={{marginRight: 8}}>
+        <View style={{marginRight: 4}}>
           <Icon name={iconName} size={24} color={colors.red} />
         </View>
         <Text style={[typography.f16_medium, {color: colors.black}]}>

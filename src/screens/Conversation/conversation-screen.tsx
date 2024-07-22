@@ -30,7 +30,6 @@ const ConversationScreen: React.FC = () => {
   const listOtherUsers = useSelector(
     (state: RootState) => state.user.otherUsers,
   )
-
   //console.log('list other users', listOtherUsers)
 
   useEffect(() => {
@@ -107,6 +106,7 @@ const ConversationScreen: React.FC = () => {
         onPress={() => goToChatDetail(item.id)}
         style={{paddingVertical: 8}}>
         <ConversationItem
+          receiver_id={item.id}
           name={item.name}
           imageUrl={item.avatar}
           context={item.lastMessage}

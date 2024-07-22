@@ -1,4 +1,4 @@
-import {ScrollView, Text, View} from 'react-native'
+import {ScrollView, View} from 'react-native'
 import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
 import {ChatStackParamList} from '../../navigation/RootNavigator'
 import {StyleSheet} from 'react-native'
@@ -19,10 +19,13 @@ import {ICall} from '../../types/calls.type'
 import client, {
   requestCameraPermission,
   requestMicrophonePermission,
-  signJWT,
 } from '../../apis/stream'
 import {UnsubcribeFunc} from '../../types/unsubcribe.type'
-import {typography} from '../../constants/typo'
+import {IUsers} from '../../types/users.type'
+import {findUserById} from '../../firebase/users.api'
+import FadeView from '../../animations/FadeView'
+import {formatDate} from '../../validations/convert-date'
+import {sendNotification} from '../../apis/notify'
 
 type Props = NativeStackScreenProps<ChatStackParamList, 'Chat'>
 
@@ -33,6 +36,8 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   const [messages, setMessages] = useState<IMessage[]>([])
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
   const jwtToken = useSelector((state: RootState) => state.authentication.token)
+  const [receiver, setReceiver] = useState<IUsers>()
+
   const navigationItem: ICall = {
     apiKey: 'mmhfdzb5evj2',
     token: jwtToken,
@@ -42,6 +47,8 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   useEffect(() => {
     let unsubscribe: UnsubcribeFunc | null
     const loadInformations = async () => {
+      const findReceiver = await findUserById(receiver_uid)
+      setReceiver(findReceiver)
       const findChatUID = await findCommonChats(sender_uid, receiver_uid)
       if (findChatUID) {
         unsubscribe = await fetchMessages(
@@ -53,7 +60,7 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
       }
     }
     loadInformations()
-    console.log(jwtToken)
+    //console.log(jwtToken)
     return () => {
       if (unsubscribe) {
         unsubscribe()
@@ -73,12 +80,23 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
     const senderInfor: ISender = {
       _id: sender_uid,
       avatar: currentUser.avatar,
-      name: 'Do Duc Khai',
+      name: currentUser.first_name + ' ' + currentUser.last_name,
     }
+    console.log(receiver?.fcmToken)
     try {
       //console.log('Tin nhan gui di', messages);
-      await sendMessage(receiver_uid, text, senderInfor)
       setText('')
+      await sendMessage(receiver_uid, text, senderInfor).then(async () => {
+        await sendNotification(
+          receiver?.fcmToken || '',
+          `You got new message from ${currentUser.first_name} ${currentUser.last_name}`,
+          text,
+          {
+            chatboxId: '',
+            receiverId: receiver_uid,
+          },
+        )
+      })
     } catch (error) {
       console.error('Fail to send message', error)
     }
@@ -109,7 +127,7 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   }
 
   return (
-    <View style={styles.container}>
+    <FadeView style={styles.container}>
       <View style={styles.paddingOfTop}></View>
       <View style={styles.header}>
         <ChatHeader
@@ -137,7 +155,7 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
           handleTextChange={(text: string) => onTextChange(text)}
         />
       </View>
-    </View>
+    </FadeView>
   )
 }
 

@@ -62,7 +62,7 @@ const ApplicationItem: React.FC<IApplicationItem> = ({item}) => {
   }
 
   //console.log('Task detail ne', taskDetail)
-  if (!taskDetail || !ownerInfor) {
+  if (!taskDetail || !ownerInfor || isLoading) {
     return (
       <View
         style={{

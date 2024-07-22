@@ -58,7 +58,7 @@ const PersonalScreen: React.FC = () => {
   })
   const genderOptions = [
     {label: 'Male', value: 'Male'},
-    {label: 'Femail', value: 'Female'},
+    {label: 'Female', value: 'Female'},
     {label: 'Others', value: 'Others'},
   ]
   useEffect(() => {
@@ -272,6 +272,7 @@ const PersonalScreen: React.FC = () => {
               onChangeText={value => onChangeInformation('introduction', value)}
               multiline
               numberOfLines={6}
+              textAlignVertical="top"
             />
           </View>
           <View style={{marginTop: 48}}>

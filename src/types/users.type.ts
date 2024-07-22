@@ -25,6 +25,7 @@ export type IUserProfiles = {
   first_name: string
   last_name: string
   introduction: string
+  fcmToken?: string
 }
 
 // export type IUserAddtionalInfor = {

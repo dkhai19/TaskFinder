@@ -27,7 +27,9 @@ export const fetchOthers = createAsyncThunk(
     }
     const currentUserUID = currentUser.uid
     try {
-      const querySnapshot = await userCollection.get()
+      const querySnapshot = await userCollection
+        .where('role', '!=', 'employee')
+        .get()
       const users = querySnapshot.docs
         .map(doc => {
           const data = doc.data()

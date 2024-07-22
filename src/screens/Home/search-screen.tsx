@@ -1,18 +1,28 @@
 import {
   Animated,
   Dimensions,
+  FlatList,
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
+  TouchableWithoutFeedback,
   View,
 } from 'react-native'
 import {colors} from '../../constants/color'
 import Icon from 'react-native-vector-icons/Feather'
 import {typography} from '../../constants/typo'
-import {useEffect, useRef} from 'react'
+import {useEffect, useRef, useState} from 'react'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
+import {IUserProfiles} from '../../types/users.type'
+import SearchItem from './search-item'
+import {useNavigation} from '@react-navigation/native'
+import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
+import {RootStackParamList} from '../../navigation/RootNavigator'
 
 interface ISearchScreen {
   onPress: () => void
@@ -23,6 +33,16 @@ const {width, height} = Dimensions.get('window')
 const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
   const widAnim = useRef(new Animated.Value(50)).current
   const heiAnim = useRef(new Animated.Value(50)).current
+  const others = useSelector((state: RootState) => state.user.otherUsers)
+  const [searchOther, setSearchOther] = useState<IUserProfiles[]>()
+  useEffect(() => {
+    if (others) {
+      setSearchOther(others)
+    }
+    console.log(searchOther)
+  }, [])
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const displayBottom = useSelector(
     (state: RootState) => state.app.displayBottom,
   )
@@ -56,6 +76,39 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
       ]).start()
     }
   }
+
+  const navigateToUserProfile = (uid: string) => {
+    navigation.navigate('Profile', {uid: uid})
+  }
+
+  const renderSearchItem = (item: IUserProfiles) => {
+    return (
+      <View>
+        <SearchItem
+          user={item}
+          onPress={(uid: string) => navigateToUserProfile(uid)}
+        />
+      </View>
+    )
+  }
+
+  if (!searchOther) {
+    return (
+      <View>
+        <Text>Loading users ...</Text>
+      </View>
+    )
+  }
+
+  const handleSearchChange = (input: string) => {
+    const filtered = others?.filter(item => {
+      const fullName =
+        item.first_name.toLowerCase() + item.last_name.toLowerCase()
+      return fullName.includes(input.toLowerCase())
+    })
+    setSearchOther(filtered)
+  }
+
   return (
     <Animated.View
       style={[
@@ -80,10 +133,16 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
       </TouchableOpacity>
       <TextInput
         style={{
-          marginLeft: 48,
+          marginHorizontal: 60,
         }}
-        placeholder="Enter your interest"
+        placeholder="Type name of owner"
+        onChangeText={input => handleSearchChange(input)}
       />
+      <FlatList
+        data={searchOther}
+        renderItem={({item}) => renderSearchItem(item)}
+      />
+
       <View style={styles.content}></View>
     </Animated.View>
   )

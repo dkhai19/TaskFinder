@@ -19,8 +19,7 @@ export const checkToken = async () => {
   const checkPermission = await getNotificationPermission()
   if (checkPermission) {
     const fcmToken = await messaging().getToken()
-    if (fcmToken) {
-      console.log(fcmToken)
-    }
+    return fcmToken
   }
+  return ''
 }

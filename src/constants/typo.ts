@@ -27,6 +27,10 @@ export const typography = {
     fontSize: 15,
     fontFamily: 'Poppins-Regular',
   },
+  f15_medium: {
+    fontSize: 15,
+    fontFamily: 'Poppins-Medium',
+  },
   f16_regular: {
     fontSize: 16,
     fontFamily: 'Poppins-Regular',

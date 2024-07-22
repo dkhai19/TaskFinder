@@ -29,7 +29,7 @@ const CardItem: React.FC<ICardItem> = ({
           flex: 4,
         }}>
         <View style={{flex: 1}}>
-          <Text style={[typography.f16_semibold, {color: colors.black}]}>
+          <Text style={[typography.f15_medium, {color: colors.black}]}>
             {title}
           </Text>
         </View>
@@ -37,37 +37,37 @@ const CardItem: React.FC<ICardItem> = ({
           <Text
             numberOfLines={2}
             ellipsizeMode="tail"
-            style={[typography.f15_regular, {color: colors.opacityBlack(0.6)}]}>
+            style={[typography.f13_regular, {color: colors.opacityBlack(0.6)}]}>
             {descript}
           </Text>
         </View>
         <View style={{flexDirection: 'row', flex: 1, alignItems: 'center'}}>
-          <Text style={[typography.f16_semibold, {color: colors.black}]}>
+          <Text style={[typography.f15_medium, {color: colors.black}]}>
             {sDate}
           </Text>
           <Text
-            style={[typography.f16_regular, {color: colors.opacityBlack(0.7)}]}>
+            style={[typography.f15_medium, {color: colors.opacityBlack(0.7)}]}>
             {'  '}-{'  '}
           </Text>
-          <Text style={[typography.f16_semibold, {color: colors.black}]}>
+          <Text style={[typography.f15_medium, {color: colors.black}]}>
             {eDate}
           </Text>
         </View>
       </View>
       <View style={styles.right}>
         <View style={styles.priceContainer}>
-          <Icon name="dollar" size={32} color={colors.red} />
+          <Icon name="dollar" size={24} color={colors.red} />
           <View
             style={{
               paddingLeft: 8,
             }}>
-            <Text style={[typography.f20_bold, {color: colors.black}]}>
+            <Text style={[typography.f16_semibold, {color: colors.black}]}>
               {price}
             </Text>
           </View>
         </View>
         <TouchableOpacity onPress={onPress} style={styles.buttonContainer}>
-          <Text style={[typography.f18_bold, {color: colors.white}]}>
+          <Text style={[typography.f16_medium, {color: colors.white}]}>
             Apply
           </Text>
         </TouchableOpacity>

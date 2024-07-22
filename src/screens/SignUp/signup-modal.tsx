@@ -21,6 +21,7 @@ import {RootState} from '../../redux/rootReducer'
 import {useSelector} from 'react-redux'
 import RadioButtonGroup from '../../components/RadioButtonGroup'
 import {IUsers} from '../../types/users.type'
+import {checkToken} from '../../firebase/notifications.api'
 const {width, height} = Dimensions.get('window')
 
 interface IModal {
@@ -34,7 +35,7 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
   const user = useSelector((state: RootState) => state.user.currentUser)
   const genderOptions = [
     {label: 'Male', value: 'Male'},
-    {label: 'Femail', value: 'Female'},
+    {label: 'Female', value: 'Female'},
     {label: 'Others', value: 'Others'},
   ]
   const [additionaInfo, setAdditionalInfo] = useState<IUsers>({
@@ -44,7 +45,7 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
     cover:
       'https://timelinecovers.pro/facebook-cover/download/hungry-for-success-facebook-cover.jpg',
     rating: 5,
-    fcmToken: 'abc',
+    fcmToken: '',
     email: user.email,
     phone: user.phone,
     first_name: user.first_name,
@@ -55,8 +56,18 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
 
     role: user.role,
   })
+
   //Animation for show up modal
   useEffect(() => {
+    const setupFCM = async () => {
+      await checkToken().then(token => {
+        setAdditionalInfo(prev => ({
+          ...prev,
+          fcmToken: token,
+        }))
+      })
+    }
+    setupFCM()
     Animated.parallel([
       Animated.timing(translateYValue, {
         toValue: 0,
@@ -176,6 +187,7 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
             }
             multiline
             numberOfLines={6}
+            textAlignVertical="top"
           />
           <View style={{padding: 4}}>
             <Text style={[typography.f13_medium, styles.noteText]}>

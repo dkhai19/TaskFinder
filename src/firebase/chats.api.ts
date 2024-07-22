@@ -29,6 +29,7 @@ export const sendMessage = async (
     text: text,
     createdAt: timestamp,
     user: sender,
+    image: '',
   }
 
   // Fetch common chat UID

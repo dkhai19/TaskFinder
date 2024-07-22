@@ -61,7 +61,24 @@ const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
       </View>
     )
   }
+
+  const gotoChat = () => {
+    navigation.navigate('ChatNavigator', {
+      screen: 'Chat',
+      params: {uid: target?.id},
+    })
+  }
+
   const processingTask = ownerTasks?.filter(item => item.status === 'process')
+  const finishedTask = ownerTasks?.filter(item => item.status === 'finished')
+  const sumPrice = ownerTasks?.reduce(
+    (accumulator, item) => accumulator + item.price,
+    0,
+  )
+  let average
+  if (ownerTasks && sumPrice) {
+    average = sumPrice / ownerTasks.length
+  }
   return (
     <ScrollView
       style={profileStyle.container}
@@ -74,12 +91,16 @@ const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
         colors={['#f2ffaf', '#f47014']}
         style={profileStyle.avatarContainer}>
         <View style={profileStyle.avatarInner}>
-          <Image source={{uri: target.avatar}} style={profileStyle.avatar} />
+          <Image
+            source={{uri: target.avatar}}
+            style={profileStyle.avatar}
+            alt="Alt"
+          />
         </View>
       </LinearGradient>
       {/* Contact button container */}
       <View style={profileStyle.contactContainer}>
-        <TouchableOpacity style={profileStyle.contactButton}>
+        <TouchableOpacity onPress={gotoChat} style={profileStyle.contactButton}>
           <View style={{flexDirection: 'row'}}>
             <View style={{paddingRight: 6}}>
               <Icon name="chatbubble-outline" size={28} color={colors.black} />
@@ -90,7 +111,7 @@ const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
           </View>
         </TouchableOpacity>
         <View style={{marginTop: 12, alignItems: 'flex-end', marginRight: 8}}>
-          <Text style={[typography.f17_medium, {color: colors.black}]}>
+          <Text style={[typography.f15_medium, {color: colors.black}]}>
             {ownerTasks?.length} <Text style={{color: '#b3b3b8'}}>•</Text> tasks
           </Text>
         </View>
@@ -100,10 +121,11 @@ const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
           source={{uri: target.cover}}
           style={{flex: 1}}
           resizeMode="cover"
+          alt="Alt"
         />
       </View>
       <View style={profileStyle.nameContainer}>
-        <Text style={[typography.f24_semibold, {color: colors.black}]}>
+        <Text style={[typography.f20_bold, {color: colors.black}]}>
           {target.first_name + ' ' + target.last_name}
         </Text>
         <View style={profileStyle.tickContainer}>
@@ -123,12 +145,12 @@ const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
       <View style={profileStyle.itemsContainer}>
         <ProfileItem
           iconName="task"
-          mainContent={processingTask?.length.toString() + ' tasks' || ''}
+          mainContent={finishedTask?.length.toString() + ' tasks' || ''}
           subContent="Done"
         />
         <ProfileItem
           iconName="attach-money"
-          mainContent="5.0 per task"
+          mainContent={average?.toString() + ' per task' || '0 per task'}
           subContent="Average"
         />
       </View>

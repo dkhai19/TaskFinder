@@ -1,8 +1,12 @@
 import {Image, StyleSheet, Text, View} from 'react-native'
 import {typography} from '../../constants/typo'
 import {colors} from '../../constants/color'
+import {useEffect, useState} from 'react'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
 
 interface IConversationItem {
+  receiver_id: string
   imageUrl?: string
   name: string
   context: string
@@ -10,11 +14,21 @@ interface IConversationItem {
 }
 
 const ConversationItem: React.FC<IConversationItem> = ({
+  receiver_id,
   name,
   context,
   lastDate,
   imageUrl,
 }) => {
+  const current = useSelector((state: RootState) => state.user.currentUser.id)
+  const [isMine, setIsMine] = useState<boolean>(false)
+  useEffect(() => {
+    if (receiver_id !== current) {
+      setIsMine(() => true)
+    } else {
+      setIsMine(() => false)
+    }
+  }, [])
   return (
     <View style={styles.container}>
       <View style={{flex: 1}}>
@@ -25,10 +39,13 @@ const ConversationItem: React.FC<IConversationItem> = ({
           {name}
         </Text>
         <Text
-          style={[typography.f13_regular, {color: colors.opacityBlack(0.55)}]}
+          style={[
+            typography.f13_regular,
+            {color: isMine ? colors.opacityBlack(0.55) : colors.black},
+          ]}
           numberOfLines={1}
           ellipsizeMode="tail">
-          {context}
+          {isMine ? `You: ${context}` : `${context}`}
         </Text>
       </View>
       <View style={styles.tail}>

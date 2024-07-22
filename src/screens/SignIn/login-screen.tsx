@@ -88,6 +88,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
             )
             setTimeout(() => {
               setIsLoading(() => false)
+
               navigation.replace('Main')
             }, 1500)
           })

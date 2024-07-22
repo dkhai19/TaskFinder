@@ -83,9 +83,9 @@ const RootTabNavigator = () => {
           height: 60,
           left: 16,
           right: 16,
-          bottom: 8,
+          bottom: 16,
           borderRadius: 12,
-          elevation: 5,
+          elevation: 8,
         },
         tabBarIcon: ({focused}) => {
           let iconName: string = ''
