@@ -88,17 +88,6 @@ const HomeScreen: React.FC = () => {
       }
     }
 
-    // const setupLocation = async () => {
-    //   const requestStatus = await requestLocationPermission()
-    //   setPermissionStatus(requestStatus)
-    //   if (requestStatus === 'granted') {
-    //     const currentLocation = await getLocation()
-    //     setLocation(currentLocation)
-    //     console.log('Current location:', location)
-    //   }
-    // }
-
-    //console.log('Current user', currentUser)
     const jwtString = signJWT({
       user_id: currentUser?.id,
       name: `${currentUser?.first_name} ${currentUser?.last_name}`,
@@ -106,21 +95,19 @@ const HomeScreen: React.FC = () => {
 
     setupTasks()
     setupApps()
-    //setupLocation()
     dispatch(fetchOthers())
     dispatch(setToken(jwtString))
     setTimeout(() => {
       setMovingCamera(true)
     }, 2000)
 
-    //console.log(typeof unsubscribe)
     return () => {
       if (unsubscribe) {
         unsubscribe()
       }
-      if (unsubcribeApps) {
-        unsubcribeApps()
-      }
+      // if (unsubcribeApps) {
+      //   unsubcribeApps()
+      // }
     }
   }, [dispatch])
 
@@ -142,7 +129,6 @@ const HomeScreen: React.FC = () => {
   }
 
   const handleTaskPress = (item: ITask) => {
-    //console.log(item)
     setTaskModal(item)
     dispatch(toggleModal())
     dispatch(toggleBottomTab())

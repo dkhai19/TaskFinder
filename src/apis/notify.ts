@@ -87,3 +87,41 @@ export const sendNotification = async (
     throw error
   }
 }
+
+export const sendCallNotification = async (
+  fcmToken: string,
+  title: string,
+  bodyMessage: string,
+  dataPayload: {
+    callId: string
+  },
+): Promise<void> => {
+  const url =
+    'https://fcm.googleapis.com/v1/projects/vmafinalproject/messages:send'
+  if (fcmToken === '') {
+    return
+  }
+  try {
+    const accessToken = await getBearerToken()
+    const headers = {
+      Authorization: `Bearer ${accessToken}`,
+      'Content-Type': 'application/json',
+    }
+    const body = {
+      message: {
+        token: fcmToken,
+        notification: {
+          title: title,
+          body: bodyMessage,
+        },
+        data: dataPayload,
+      },
+    }
+
+    const response = await axios.post(url, body, {headers})
+    console.log('Notification sent:', response.data)
+  } catch (error) {
+    console.error('Error sending notification:', error)
+    throw error
+  }
+}

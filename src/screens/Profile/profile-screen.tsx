@@ -31,7 +31,7 @@ const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
   const others = useSelector((state: RootState) => state.user.otherUsers)
   const target = others?.find(item => item.id === route.params.uid)
   const [ownerTasks, setOwnerTasks] = useState<ITask[]>()
-
+  const myAppied = useSelector((state: RootState) => state.application.applied)
   useEffect(() => {
     if (target) {
       let unsubscribe: UnsubcribeFunc | undefined
@@ -168,6 +168,9 @@ const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
               fromDate={task.start_date}
               toDate={task.end_date}
               price={task.price}
+              status={
+                myAppied.find(item => item.task_id === task.taskId)?.status
+              }
             />
           ))}
       </View>

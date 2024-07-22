@@ -17,6 +17,7 @@ import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import {ICall} from '../../types/calls.type'
 import client, {
+  generateRandomCallId,
   requestCameraPermission,
   requestMicrophonePermission,
 } from '../../apis/stream'
@@ -37,13 +38,8 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
   const jwtToken = useSelector((state: RootState) => state.authentication.token)
   const [receiver, setReceiver] = useState<IUsers>()
+  const callId = generateRandomCallId()
 
-  const navigationItem: ICall = {
-    apiKey: 'mmhfdzb5evj2',
-    token: jwtToken,
-    uid: sender_uid,
-    callId: 'default_3f595617-07a3-4f70-9f0f-7a898e85b455',
-  }
   useEffect(() => {
     let unsubscribe: UnsubcribeFunc | null
     const loadInformations = async () => {
@@ -67,6 +63,12 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
       }
     }
   }, [receiver_uid])
+
+  const navigationItem: ICall = {
+    type: 'create',
+    receiver_fcmToken: receiver?.fcmToken || '',
+    callId: callId,
+  }
 
   const onBackHandler = () => {
     navigation.pop()

@@ -12,38 +12,64 @@ import {useEffect, useState} from 'react'
 import client from '../../apis/stream'
 import {typography} from '../../constants/typo'
 import {colors} from '../../constants/color'
+import {sendCallNotification} from '../../apis/notify'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
 
 type Props = NativeStackScreenProps<ChatStackParamList, 'Call'>
 
 const CallScreen: React.FC<Props> = ({navigation, route}) => {
   const [call, setCall] = useState<Call | null>(null)
-
+  const fcmToken = route.params.receiver_fcmToken
+  const currentUser = useSelector((state: RootState) => state.user.currentUser)
   const callId = route.params.callId
+  const callType = route.params.type
 
   useEffect(() => {
     const setupCall = async () => {
       const _call = client.call('default', callId)
-      try {
-        await _call.create() // Create the call
-      } catch (error) {
-        // Ignore if the call already exists
-        if (error !== 'Call already exists') {
-          console.error('Error creating call:', error)
-          return
+      if (callType === 'create') {
+        try {
+          Promise.all([
+            await sendCallNotification(
+              fcmToken,
+              `${currentUser.first_name} ${currentUser.last_name}`,
+              'Invite you to a call',
+              {
+                callId: callId,
+              },
+            ),
+            await _call.join({
+              create: true,
+            }),
+          ])
+        } catch (error) {
+          if (error !== 'Call already exists') {
+            console.error('Error creating call:', error)
+            return
+          }
         }
+      } else {
+        await _call.join()
       }
 
       setCall(_call)
 
-      try {
-        await _call.join() // Join the call
-        console.log('Joined the call')
-      } catch (error) {
-        console.error('Error joining call:', error)
-      }
+      // try {
+      //   await _call.join() // Join the call
+      //   console.log('Joined the call')
+      // } catch (error) {
+      //   console.error('Error joining call:', error)
+      // }
     }
 
     setupCall()
+    const leaveCall = async () => {
+      await call?.endCall()
+    }
+    return () => {
+      leaveCall()
+    }
   }, [])
 
   if (!call) {

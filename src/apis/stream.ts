@@ -83,3 +83,13 @@ export const requestMicrophonePermission = async () => {
 }
 
 export default client
+
+export function generateRandomCallId() {
+  // Tạo một chuỗi ngẫu nhiên
+  const randomString = Math.random().toString(36).substr(2)
+
+  // Băm chuỗi ngẫu nhiên đó bằng SHA-256
+  const hash = CryptoJS.SHA256(randomString).toString(CryptoJS.enc.Hex)
+
+  return hash
+}

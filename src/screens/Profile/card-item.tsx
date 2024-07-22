@@ -10,6 +10,7 @@ interface ICardItem {
   fromDate: string
   toDate: string
   price: number
+  status?: string
 }
 
 const CardItem: React.FC<ICardItem> = ({
@@ -19,9 +20,14 @@ const CardItem: React.FC<ICardItem> = ({
   fromDate,
   toDate,
   price,
+  status,
 }) => {
   const sDate = formatDate(fromDate)
   const eDate = formatDate(toDate)
+  let formatStatus
+  if (status) {
+    formatStatus = status?.substring(0, 1).toUpperCase() + status?.substring(1)
+  }
   return (
     <View style={styles.container}>
       <View
@@ -68,7 +74,7 @@ const CardItem: React.FC<ICardItem> = ({
         </View>
         <TouchableOpacity onPress={onPress} style={styles.buttonContainer}>
           <Text style={[typography.f16_medium, {color: colors.white}]}>
-            Apply
+            {formatStatus}
           </Text>
         </TouchableOpacity>
       </View>
@@ -88,11 +94,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
   },
   right: {
-    flex: 1,
+    flex: 2,
     justifyContent: 'space-between',
+    alignItems: 'flex-end',
   },
   buttonContainer: {
-    width: '100%',
+    width: '80%',
     height: 52,
     justifyContent: 'center',
     alignItems: 'center',
@@ -102,6 +109,7 @@ const styles = StyleSheet.create({
   priceContainer: {
     flexDirection: 'row',
     justifyContent: 'flex-end',
+    paddingRight: 8,
   },
 })
 

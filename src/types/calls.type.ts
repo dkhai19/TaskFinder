@@ -1,6 +1,5 @@
 export type ICall = {
-  apiKey: string
-  token: string
-  uid: string
+  type: string
+  receiver_fcmToken: string
   callId: string
 }
