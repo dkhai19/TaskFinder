@@ -57,7 +57,6 @@ const HomeScreen: React.FC = () => {
   const modalVisible = useSelector((state: RootState) => state.task.taskModal)
   const tasks = useSelector((state: RootState) => state.task.tasksData)
   const [taskModal, setTaskModal] = useState<ITask>()
-  const [applied, setApplied] = useState<IPostApplication[]>()
   const location = useSelector((state: RootState) => state.permission)
 
   const streamToken = useSelector(
@@ -114,7 +113,6 @@ const HomeScreen: React.FC = () => {
     const setupApps = async () => {
       try {
         unsubcribeApps = await getAllMyApplications(currentUser.id, data => {
-          setApplied(data)
           const listChangeDate = data.map(item => {
             const cvDate = formatDate(item.application_date.toISOString())
             return {

@@ -96,36 +96,36 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     await updateFcmToken(uid, fcmToken)
   }
 
-  // useEffect(() => {
-  //   const autoSignIn = async () => {
-  //     const getEmail = await AsyncStorage.getItem('email')
-  //     const getPwd = await AsyncStorage.getItem('password')
-  //     if (getEmail && getPwd) {
-  //       setIsLoading(() => true)
-  //       auth()
-  //         .signInWithEmailAndPassword(getEmail, getPwd)
-  //         .then(currentUser => {
-  //           dispatch(setUserID(currentUser.user.uid))
-  //           storeLoginInformation(
-  //             user.email,
-  //             user.password,
-  //             currentUser.user.uid,
-  //           )
-  //           setTimeout(() => {
-  //             setIsLoading(() => false)
-  //             navigation.replace('Main')
-  //           }, 1500)
-  //         })
-  //         .catch(error => {
-  //           setIsLoading(() => false)
-  //           console.log(error)
-  //         })
-  //     } else {
-  //       return
-  //     }
-  //   }
-  //   autoSignIn()
-  // }, [])
+  useEffect(() => {
+    const autoSignIn = async () => {
+      const getEmail = await AsyncStorage.getItem('email')
+      const getPwd = await AsyncStorage.getItem('password')
+      if (getEmail && getPwd) {
+        setIsLoading(() => true)
+        auth()
+          .signInWithEmailAndPassword(getEmail, getPwd)
+          .then(currentUser => {
+            dispatch(setUserID(currentUser.user.uid))
+            storeLoginInformation(
+              user.email,
+              user.password,
+              currentUser.user.uid,
+            )
+            setTimeout(() => {
+              setIsLoading(() => false)
+              navigation.replace('Main')
+            }, 1500)
+          })
+          .catch(error => {
+            setIsLoading(() => false)
+            console.log(error)
+          })
+      } else {
+        return
+      }
+    }
+    autoSignIn()
+  }, [])
 
   //Handle sign in logic
   const signInHandler = () => {

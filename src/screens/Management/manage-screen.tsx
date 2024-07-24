@@ -4,12 +4,16 @@ import ManageFilterBar from './manage-filterbar'
 import {typography} from '../../constants/typo'
 import {useEffect, useState} from 'react'
 import {IPostApplication} from '../../types/applications.type'
-import {useSelector} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import {getAllMyApplications} from '../../firebase/applications.api'
 import ApplicationItem from './application-item'
 import {UnsubcribeFunc} from '../../types/unsubcribe.type'
-import {IApplication} from '../../redux/slices/applicationSlice'
+import {
+  IApplication,
+  setApplications,
+} from '../../redux/slices/applicationSlice'
+import {formatDate} from '../../validations/convert-date'
 
 const ManagementScreen = () => {
   const handleChangeDataType = (type: string) => {
@@ -21,6 +25,32 @@ const ManagementScreen = () => {
   )
   const [filterItems, setFilterItems] = useState<IApplication[]>()
   const [action, setAction] = useState<string>()
+  const currentUser = useSelector((state: RootState) => state.user.currentUser)
+  const dispatch = useDispatch()
+  useEffect(() => {
+    if (applications.length === 0) {
+      console.log('Loading the applications in manage screen')
+      let unsubcribeApps: UnsubcribeFunc | undefined
+      const setupApps = async () => {
+        try {
+          unsubcribeApps = await getAllMyApplications(currentUser.id, data => {
+            const listChangeDate = data.map(item => {
+              const cvDate = formatDate(item.application_date.toISOString())
+              return {
+                ...item,
+                application_date: cvDate,
+              } as IApplication
+            })
+            dispatch(setApplications(listChangeDate))
+          })
+        } catch (error) {
+          console.error('Fail to load applications', error)
+        }
+      }
+      setupApps()
+    }
+  }, [])
+
   useEffect(() => {
     switch (action) {
       case 'applying':

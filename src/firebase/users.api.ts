@@ -6,6 +6,7 @@ import {
   formatDate,
 } from '../validations/convert-date'
 import {parseDateOfBirth} from '../validations/user-infor-validation'
+import {Platform} from 'react-native'
 
 const userCollection = firestore().collection('users')
 
@@ -65,8 +66,15 @@ export const parseDateString = (dateString: string): Date | null => {
 export const updateUserProfile = async (user_infor: IUserProfiles) => {
   console.log(user_infor)
   const birthdayDate = parseDateString(user_infor.birthday)
-  const imageURL =
-    'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?q=80&w=1780&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D'
+  const uploadUri =
+    Platform.OS === 'ios'
+      ? user_infor.avatar.replace('file://', '')
+      : user_infor.avatar
+  const fileName = 'avatar.jpg'
+  const storageRef = storage().ref(`users/${user_infor.id}/${fileName}`)
+  await storageRef.putFile(uploadUri)
+
+  const imageURL = await storageRef.getDownloadURL()
   // Ensure the date is valid
   if (!birthdayDate) {
     console.error('Invalid birthday date')

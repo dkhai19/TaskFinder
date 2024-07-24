@@ -3,6 +3,7 @@ import {
   Button,
   Dimensions,
   Image,
+  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -32,6 +33,9 @@ import {updateCurrentUser} from '../../redux/slices/userSlice'
 import {validatePhone} from '../../validations/user-infor-validation'
 import SuccessAnimation from '../../animations/ToastSuccess'
 import HeaderCustom from '../../components/Header'
+import ImagePicker from 'react-native-image-crop-picker'
+import {requestCameraPermission} from '../../apis/stream'
+
 const {width, height} = Dimensions.get('window')
 
 const PersonalScreen: React.FC = () => {
@@ -45,6 +49,7 @@ const PersonalScreen: React.FC = () => {
   const [updated, setUpdated] = useState<boolean>(false)
   const [displayToast, setDisplayToast] = useState<boolean>(false)
   const [canUpdated, setCanUpdate] = useState<boolean>(false)
+  const [imageUri, setImageUri] = useState<string>()
   const [editInfor, setEditInfor] = useState<IUserProfiles>({
     id: currentUser.id,
     avatar: currentUser.avatar,
@@ -84,7 +89,8 @@ const PersonalScreen: React.FC = () => {
         obj1.phone === obj2.phone &&
         obj1.gender === obj2.gender &&
         obj1.introduction === obj2.introduction &&
-        obj1.email === obj2.email
+        obj1.email === obj2.email &&
+        obj1.avatar === obj2.avatar
       )
     }
 
@@ -144,12 +150,36 @@ const PersonalScreen: React.FC = () => {
     }
   }
 
-  const handleUpdate = () => {
-    updateHandler(editInfor)
-  }
-
   const handleGoBack = () => {
     animationGoBack()
+  }
+
+  const handlePickImage = async () => {
+    const permission = await requestCameraPermission()
+    if (!permission) return
+    await ImagePicker.openPicker({
+      width: 100,
+      height: 110,
+      cropping: true,
+      mediaType: 'photo',
+    })
+      .then(async image => {
+        setEditInfor(prevState => ({
+          ...prevState,
+          avatar: image.path,
+        }))
+      })
+      .catch(error => {
+        console.log('Error: ', error)
+      })
+  }
+
+  const pickImage = () => {
+    handlePickImage()
+  }
+
+  const handleUpdate = () => {
+    updateHandler(editInfor)
   }
 
   if (!currentUser) {
@@ -185,9 +215,15 @@ const PersonalScreen: React.FC = () => {
           <View style={styles.imageBorder}>
             <Image
               style={styles.image}
-              source={{uri: currentUser.avatar}}
+              source={{uri: editInfor.avatar}}
               alt="Alt"
             />
+            <TouchableOpacity onPress={pickImage} style={styles.camera}>
+              <Image
+                style={styles.cameraImage}
+                source={require('../../assets/photos/camera.png')}
+              />
+            </TouchableOpacity>
           </View>
         </View>
         <View style={styles.inputField}>
@@ -345,6 +381,20 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderRadius: 8,
     backgroundColor: colors.opacityBlack(0.15),
+  },
+  camera: {
+    position: 'absolute',
+    bottom: 0,
+    right: 0,
+    width: 40,
+    height: 40,
+    backgroundColor: colors.white,
+    borderTopLeftRadius: 8,
+  },
+  cameraImage: {
+    width: 40,
+    height: 40,
+    borderRadius: 30,
   },
 })
 
