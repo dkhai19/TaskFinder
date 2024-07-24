@@ -41,6 +41,11 @@ import {
   StreamCall,
   StreamVideo,
 } from '@stream-io/video-react-native-sdk'
+import {getLocation, requestLocationPermission} from '../../apis/location'
+import {
+  setCurrentLocation,
+  setLocationPermisstion,
+} from '../../redux/slices/permissionSlice'
 
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiZHVja2hhaTIwMDJ2biIsImEiOiJjbHh2ODBvZXQwamtkMmpwdTFsa3JoeDVrIn0.vrtl6qLPN_NGnRKA2EvLvg',
@@ -152,6 +157,16 @@ const HomeScreen: React.FC = () => {
   }, [dispatch])
 
   useEffect(() => {
+    const setupLocation = async () => {
+      const requestStatus = await requestLocationPermission()
+      dispatch(setLocationPermisstion(requestStatus))
+      if (requestStatus === 'granted') {
+        const currentLocation = await getLocation()
+        dispatch(setCurrentLocation(currentLocation))
+        //console.log('Current location:', currentLocation)
+      }
+    }
+    setupLocation()
     messaging().onNotificationOpenedApp(remoteMessage => {
       if (remoteMessage.data) {
         if (remoteMessage.data.hasOwnProperty('callId')) {

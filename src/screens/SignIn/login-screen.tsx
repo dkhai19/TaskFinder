@@ -47,18 +47,18 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     password: '',
   })
 
-  useEffect(() => {
-    const setupLocation = async () => {
-      const requestStatus = await requestLocationPermission()
-      dispatch(setLocationPermisstion(requestStatus))
-      if (requestStatus === 'granted') {
-        const currentLocation = await getLocation()
-        dispatch(setCurrentLocation(currentLocation))
-        //console.log('Current location:', currentLocation)
-      }
-    }
-    setupLocation()
-  }, [])
+  // useEffect(() => {
+  //   const setupLocation = async () => {
+  //     const requestStatus = await requestLocationPermission()
+  //     dispatch(setLocationPermisstion(requestStatus))
+  //     if (requestStatus === 'granted') {
+  //       const currentLocation = await getLocation()
+  //       dispatch(setCurrentLocation(currentLocation))
+  //       //console.log('Current location:', currentLocation)
+  //     }
+  //   }
+  //   setupLocation()
+  // }, [])
   // const userId = useSelector((state: RootState) => state.authentication.uid);
   // console.log(userId);
   //Set error string to use to notice user about invalid input

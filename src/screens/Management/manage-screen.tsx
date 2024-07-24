@@ -49,7 +49,7 @@ const ManagementScreen = () => {
       }
       setupApps()
     }
-  }, [])
+  })
 
   useEffect(() => {
     switch (action) {

@@ -5,27 +5,42 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import {colors} from '../../constants/color';
-import Icon from 'react-native-vector-icons/Ionicons';
-import {useEffect} from 'react';
-import Pulse from '../../animations/Pulse';
+} from 'react-native'
+import {colors} from '../../constants/color'
+import Icon from 'react-native-vector-icons/Ionicons'
+import {useEffect} from 'react'
+import Pulse from '../../animations/Pulse'
 
-const {width} = Dimensions.get('window');
+const {width} = Dimensions.get('window')
 
 interface IChatInput {
-  value: string;
-  handleTextChange: (text: string) => void;
-  onSend: () => void;
+  value: string
+  handleTextChange: (text: string) => void
+  onSend: () => void
+  pickImage: () => void
 }
 
-const ChatInput: React.FC<IChatInput> = ({handleTextChange, value, onSend}) => {
-  const haveText: boolean = value !== '' ? true : false;
+const ChatInput: React.FC<IChatInput> = ({
+  handleTextChange,
+  value,
+  onSend,
+  pickImage,
+}) => {
+  const haveText: boolean = value !== '' ? true : false
 
   return (
     <View style={styles.container}>
       <View style={styles.body}>
-        <View style={{width: '90%'}}>
+        <View
+          style={{
+            width: '90%',
+            flexDirection: 'row',
+            alignItems: 'center',
+            paddingVertical: 4,
+          }}>
+          <TouchableOpacity onPress={pickImage} style={{paddingHorizontal: 8}}>
+            <Icon name="image" size={24} color={colors.red} />
+          </TouchableOpacity>
           <TextInput
             value={value}
             placeholder="The input information"
@@ -44,8 +59,8 @@ const ChatInput: React.FC<IChatInput> = ({handleTextChange, value, onSend}) => {
         </TouchableOpacity>
       </View>
     </View>
-  );
-};
+  )
+}
 
 const styles = StyleSheet.create({
   container: {
@@ -59,6 +74,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
   },
-});
+})
 
-export default ChatInput;
+export default ChatInput

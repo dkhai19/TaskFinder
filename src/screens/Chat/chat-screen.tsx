@@ -25,9 +25,8 @@ import {UnsubcribeFunc} from '../../types/unsubcribe.type'
 import {IUsers} from '../../types/users.type'
 import {findUserById} from '../../firebase/users.api'
 import FadeView from '../../animations/FadeView'
-import {formatDate} from '../../validations/convert-date'
 import {sendNotification} from '../../apis/notify'
-
+import ImagePicker from 'react-native-image-crop-picker'
 type Props = NativeStackScreenProps<ChatStackParamList, 'Chat'>
 
 const ChatScreen: React.FC<Props> = ({route, navigation}) => {
@@ -38,12 +37,12 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   const [chatUID, setChatUID] = useState<string>('')
   const sender_uid = useSelector((state: RootState) => state.authentication.uid)
   const [text, setText] = useState('')
+  const [image, setImage] = useState('')
   const [messages, setMessages] = useState<IMessage[]>([])
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
   const jwtToken = useSelector((state: RootState) => state.authentication.token)
   const [receiver, setReceiver] = useState<IUsers>()
   const callId = generateRandomCallId()
-
   useEffect(() => {
     let unsubscribe: UnsubcribeFunc | null
     const loadInformations = async () => {
@@ -83,17 +82,25 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
     setText(() => text)
   }
 
-  const sendMessageHandler = async () => {
+  const sendMessageHandler = async (imageURL?: string) => {
     const senderInfor: ISender = {
       _id: sender_uid,
       avatar: currentUser.avatar,
       name: currentUser.first_name + ' ' + currentUser.last_name,
     }
-    console.log(receiver?.fcmToken)
+    //console.log(receiver?.fcmToken)
     try {
       //console.log('Tin nhan gui di', messages);
       setText('')
-      await sendMessage(receiver_uid, text, senderInfor).then(async () => {
+      await sendMessage(
+        receiver_uid,
+        {
+          text: text,
+          image: imageURL ? imageURL : '',
+        },
+        senderInfor,
+      ).then(async () => {
+        setImage(() => '')
         await sendNotification(
           receiver?.fcmToken || '',
           `You got new message from ${currentUser.first_name} ${currentUser.last_name}`,
@@ -107,6 +114,29 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
     } catch (error) {
       console.error('Fail to send message', error)
     }
+  }
+
+  const handleSendImageLogic = async () => {
+    const permission = await requestCameraPermission()
+    if (!permission) return
+    await ImagePicker.openPicker({
+      width: 160,
+      height: 160,
+      cropping: true,
+      mediaType: 'photo',
+    })
+      .then(image => {
+        sendMessageHandler(image.path)
+        //setText(() => 'You sent an image')
+      })
+      .catch(error => {
+        console.log('Error: ', error)
+        return
+      })
+  }
+
+  const handleSentImage = () => {
+    handleSendImageLogic()
   }
 
   const authenticateUser = async () => {
@@ -150,7 +180,8 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
               key={message._id}
               receiverId={message.user._id}
               isMine={message.user._id === sender_uid ? true : false}
-              content={message.text}
+              content={message?.text || ''}
+              image={message.image}
             />
           ))}
         </ScrollView>
@@ -158,8 +189,9 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
       <View style={styles.inputField}>
         <ChatInput
           value={text}
-          onSend={sendMessageHandler}
+          onSend={() => sendMessageHandler('')}
           handleTextChange={(text: string) => onTextChange(text)}
+          pickImage={handleSentImage}
         />
       </View>
     </FadeView>

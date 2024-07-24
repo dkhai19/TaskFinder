@@ -12,9 +12,15 @@ interface IMessageRow {
   isMine: boolean
   content: string
   receiverId: string
+  image?: string
 }
 
-const MessageRow: React.FC<IMessageRow> = ({isMine, content, receiverId}) => {
+const MessageRow: React.FC<IMessageRow> = ({
+  isMine,
+  content,
+  receiverId,
+  image,
+}) => {
   const listOthers = useSelector((state: RootState) => state.user.otherUsers)
   const receiver = listOthers?.find(item => item.id === receiverId)
   const [isLoading, setIsLoading] = useState(true)
@@ -41,6 +47,16 @@ const MessageRow: React.FC<IMessageRow> = ({isMine, content, receiverId}) => {
             <Text style={[typography.f16_regular, {color: colors.black}]}>
               {content}
             </Text>
+            {image && (
+              <Image
+                source={{uri: image}}
+                alt="Alt"
+                style={{
+                  width: 160,
+                  height: 160,
+                }}
+              />
+            )}
           </View>
         </View>
       ) : (
@@ -59,9 +75,20 @@ const MessageRow: React.FC<IMessageRow> = ({isMine, content, receiverId}) => {
             />
           </View>
           <View style={styles.leftMessage}>
-            <Text style={[typography.f16_regular, {color: colors.black}]}>
-              {content}
-            </Text>
+            {image ? (
+              <Image
+                source={{uri: image}}
+                alt="Alt"
+                style={{
+                  width: 160,
+                  height: 160,
+                }}
+              />
+            ) : (
+              <Text style={[typography.f16_regular, {color: colors.black}]}>
+                {content}
+              </Text>
+            )}
           </View>
         </View>
       )}

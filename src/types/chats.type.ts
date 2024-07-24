@@ -9,7 +9,7 @@ export type IChat = {
 
 export type IMessage = {
   _id: string
-  text: string
+  text?: string
   image?: string
   createdAt: Date
   user: ISender

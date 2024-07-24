@@ -1,6 +1,7 @@
 import firestore from '@react-native-firebase/firestore'
 import {IChat, IMessage, ISender, IUserChats} from '../types/chats.type'
-
+import {Platform} from 'react-native'
+import storage from '@react-native-firebase/storage'
 const chatCollection = firestore().collection('chats')
 
 //Find chatUID between 2 users
@@ -17,20 +18,46 @@ export const findCommonChats = async (userUID1: string, userUID2: string) => {
   return result?.chatUID
 }
 
+const handleImage = async (uri: string, receiver_id: string) => {
+  const uploadUri = Platform.OS === 'ios' ? uri.replace('file://', '') : uri
+  const fileName = `${receiver_id}`
+  const storageRef = storage().ref(`chatImages/${fileName}`)
+  await storageRef.putFile(uploadUri)
+  const imageURL = await storageRef.getDownloadURL()
+  return imageURL
+}
+
 // Function to handle send message logic
 export const sendMessage = async (
   receiver_id: string,
-  text: string,
+  body: {
+    text: string
+    image: string
+  },
   sender: ISender,
 ) => {
   const timestamp = new Date()
-  const message: IMessage = {
-    _id: '',
-    text: text,
-    createdAt: timestamp,
-    user: sender,
-    image: '',
+
+  let message: IMessage
+  if (body.image === '') {
+    message = {
+      _id: '',
+      text: body.text,
+      createdAt: timestamp,
+      user: sender,
+    }
+  } else {
+    const imageUrl = await handleImage(body.image, receiver_id)
+    message = {
+      _id: '',
+      image: imageUrl,
+      createdAt: timestamp,
+      user: sender,
+    }
+    //console.log('Anh day nay', imageUrl)
   }
+
+  console.log(body)
 
   // Fetch common chat UID
   const commonChatUID = await findCommonChats(receiver_id, sender._id)
@@ -43,7 +70,7 @@ export const sendMessage = async (
       .collection('chats')
       .doc(commonChatUID)
       .update({
-        lastMessage: text,
+        lastMessage: body.text,
         lastMessageTimestamp: timestamp,
       })
 
@@ -66,7 +93,7 @@ export const sendMessage = async (
     const newChatRef = firestore().collection('chats').doc()
     batch.set(newChatRef, {
       members: userUIDs,
-      lastMessage: text,
+      lastMessage: body.text,
       lastMessageTimestamp: timestamp,
     })
 
