@@ -1,9 +1,7 @@
 import {
   Dimensions,
-  FlatList,
   Image,
   ScrollView,
-  StyleSheet,
   Text,
   TouchableOpacity,
   View,

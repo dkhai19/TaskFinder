@@ -144,6 +144,7 @@ const ConversationScreen: React.FC = () => {
           renderItem={({item}) => avatarItem(item)}
           horizontal
           showsHorizontalScrollIndicator={false}
+          initialNumToRender={10}
         />
       </View>
       <View style={styles.chatList}>
@@ -151,6 +152,7 @@ const ConversationScreen: React.FC = () => {
           data={listData}
           renderItem={({item}) => chatItem(item)}
           showsVerticalScrollIndicator={false}
+          initialNumToRender={10}
         />
       </View>
     </View>

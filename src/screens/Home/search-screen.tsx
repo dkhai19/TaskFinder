@@ -153,6 +153,7 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
       <FlatList
         data={searchOther ? searchOther : others}
         renderItem={({item}) => renderSearchItem(item)}
+        initialNumToRender={10}
       />
 
       <View style={styles.content}></View>
