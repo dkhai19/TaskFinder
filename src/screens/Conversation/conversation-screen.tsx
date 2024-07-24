@@ -50,7 +50,7 @@ const ConversationScreen: React.FC = () => {
             name: `${user?.first_name} ${user?.last_name}`,
             lastMessage: chat.lastMessage,
             lastMessageTimestamp: toHour,
-          }
+          } as IConversation
         }),
       )
       setListData(conversations)
@@ -70,7 +70,9 @@ const ConversationScreen: React.FC = () => {
   const goToChatDetail = (receiver_uid: string) => {
     navigation.navigate('ChatNavigator', {
       screen: 'Chat',
-      params: {uid: receiver_uid},
+      params: {
+        uid: receiver_uid,
+      },
     })
   }
 

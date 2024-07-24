@@ -13,7 +13,7 @@ const authSlice = createSlice({
     setUserID(state, action: PayloadAction<string>) {
       state.uid = action.payload
     },
-    setToken(state, action: PayloadAction<string>) {
+    setStreamToken(state, action: PayloadAction<string>) {
       state.token = action.payload
     },
     toggleTheme(state) {
@@ -22,5 +22,5 @@ const authSlice = createSlice({
   },
 })
 
-export const {setUserID, toggleTheme, setToken} = authSlice.actions
+export const {setUserID, toggleTheme, setStreamToken} = authSlice.actions
 export default authSlice.reducer

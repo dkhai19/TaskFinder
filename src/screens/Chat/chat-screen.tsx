@@ -32,6 +32,10 @@ type Props = NativeStackScreenProps<ChatStackParamList, 'Chat'>
 
 const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   const receiver_uid = route.params.uid
+
+  // console.log(receiver_uid)
+  // console.log(chatUID)
+  const [chatUID, setChatUID] = useState<string>('')
   const sender_uid = useSelector((state: RootState) => state.authentication.uid)
   const [text, setText] = useState('')
   const [messages, setMessages] = useState<IMessage[]>([])
@@ -47,6 +51,7 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
       setReceiver(findReceiver)
       const findChatUID = await findCommonChats(sender_uid, receiver_uid)
       if (findChatUID) {
+        setChatUID(findChatUID)
         unsubscribe = await fetchMessages(
           findChatUID,
           (newMessages: IMessage[]) => {
@@ -94,8 +99,8 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
           `You got new message from ${currentUser.first_name} ${currentUser.last_name}`,
           text,
           {
-            chatboxId: '',
-            receiverId: receiver_uid,
+            chatboxId: chatUID,
+            senderId: currentUser.id,
           },
         )
       })

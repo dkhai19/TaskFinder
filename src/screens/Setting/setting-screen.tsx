@@ -86,8 +86,8 @@ const SettingScreen: React.FC = () => {
           </View>
         </View>
         <View style={settingStyles.achievement_container}>
-          <KeyValueText title="Tasks done" value="123" />
-          <KeyValueText title="Rating" value="4.6" />
+          {/* <KeyValueText title="Tasks done" value="123" />
+          <KeyValueText title="Rating" value="4.6" /> */}
         </View>
         <View style={settingStyles.navigation_container}>
           <ListItem

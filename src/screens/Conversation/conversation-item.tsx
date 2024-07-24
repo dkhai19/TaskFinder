@@ -21,14 +21,7 @@ const ConversationItem: React.FC<IConversationItem> = ({
   imageUrl,
 }) => {
   const current = useSelector((state: RootState) => state.user.currentUser.id)
-  const [isMine, setIsMine] = useState<boolean>(false)
-  useEffect(() => {
-    if (receiver_id !== current) {
-      setIsMine(() => true)
-    } else {
-      setIsMine(() => false)
-    }
-  }, [])
+
   return (
     <View style={styles.container}>
       <View style={{flex: 1}}>
@@ -41,11 +34,13 @@ const ConversationItem: React.FC<IConversationItem> = ({
         <Text
           style={[
             typography.f13_regular,
-            {color: isMine ? colors.opacityBlack(0.55) : colors.black},
+            {
+              color: colors.black,
+            },
           ]}
           numberOfLines={1}
           ellipsizeMode="tail">
-          {isMine ? `You: ${context}` : `${context}`}
+          {`${context}`}
         </Text>
       </View>
       <View style={styles.tail}>

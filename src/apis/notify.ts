@@ -55,7 +55,7 @@ export const sendNotification = async (
   bodyMessage: string,
   dataPayload: {
     chatboxId: string
-    receiverId: string
+    senderId: string
   },
 ): Promise<void> => {
   const url =
@@ -102,6 +102,8 @@ export const sendCallNotification = async (
     return
   }
   try {
+    console.log('FCM token', fcmToken)
+    console.log('Call ID', dataPayload)
     const accessToken = await getBearerToken()
     const headers = {
       Authorization: `Bearer ${accessToken}`,

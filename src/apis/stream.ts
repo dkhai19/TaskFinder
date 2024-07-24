@@ -10,10 +10,6 @@ const STREAM_API_KEY = 'j4afxwujxm3t'
 const SECRET_API =
   'ppysy4acrw6jcu6ej328en4rmasxekv9d7yeqwyb2n5886cwv9pxz25uvapng5zm'
 
-const client = new StreamVideoClient({
-  apiKey: STREAM_API_KEY,
-})
-
 const base64url = (input: string): string => {
   return CryptoJS.enc.Base64.stringify(CryptoJS.enc.Utf8.parse(input))
     .replace(/=+$/, '')
@@ -44,6 +40,10 @@ export const signJWT = (user: IPayloadUser): string => {
 
   return `${data}.${signature}`
 }
+
+const client = new StreamVideoClient({
+  apiKey: STREAM_API_KEY,
+})
 
 export const requestCameraPermission = async () => {
   if (Platform.OS === 'ios') {

@@ -46,6 +46,16 @@ export const updateSignUpInformation = async (user_infor: IUsers) => {
     .catch(error => console.error('Update failed', error))
 }
 
+export const updateFcmToken = async (user_id: string, fcmToken: string) => {
+  await userCollection
+    .doc(user_id)
+    .update({fcmToken})
+    .then(() => {
+      console.log('Updated fcm token')
+    })
+    .catch(error => console.error('Update fcm token failed', error))
+}
+
 export const parseDateString = (dateString: string): Date | null => {
   const [day, month, year] = dateString.split('/')
   const parsedDate = new Date(`${year}-${month}-${day}`)

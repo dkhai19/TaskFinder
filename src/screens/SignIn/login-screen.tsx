@@ -23,7 +23,7 @@ import {useDispatch} from 'react-redux'
 import {setUserID} from '../../redux/slices/authSlice'
 import LoadingModal from '../../animations/LoadingModal'
 import AsyncStorage from '@react-native-async-storage/async-storage'
-import {findUserById} from '../../firebase/users.api'
+import {findUserById, updateFcmToken} from '../../firebase/users.api'
 import {setCurrentUser} from '../../redux/slices/userSlice'
 import {checkToken} from '../../firebase/notifications.api'
 import {
@@ -86,45 +86,46 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     password: string,
     uid: string,
   ) => {
-    await AsyncStorage.setItem('email', email)
-    await AsyncStorage.setItem('password', password)
-
+    await Promise.all([
+      await AsyncStorage.setItem('email', email),
+      await AsyncStorage.setItem('password', password),
+    ])
     const getUserInfor = await findUserById(uid)
     dispatch(setCurrentUser(getUserInfor))
-    await checkToken()
+    const fcmToken = await checkToken()
+    await updateFcmToken(uid, fcmToken)
   }
 
-  useEffect(() => {
-    const autoSignIn = async () => {
-      const getEmail = await AsyncStorage.getItem('email')
-      const getPwd = await AsyncStorage.getItem('password')
-      if (getEmail && getPwd) {
-        setIsLoading(() => true)
-        auth()
-          .signInWithEmailAndPassword(getEmail, getPwd)
-          .then(currentUser => {
-            dispatch(setUserID(currentUser.user.uid))
-            storeLoginInformation(
-              user.email,
-              user.password,
-              currentUser.user.uid,
-            )
-            setTimeout(() => {
-              setIsLoading(() => false)
-
-              navigation.replace('Main')
-            }, 1500)
-          })
-          .catch(error => {
-            setIsLoading(() => false)
-            console.log(error)
-          })
-      } else {
-        return
-      }
-    }
-    autoSignIn()
-  }, [])
+  // useEffect(() => {
+  //   const autoSignIn = async () => {
+  //     const getEmail = await AsyncStorage.getItem('email')
+  //     const getPwd = await AsyncStorage.getItem('password')
+  //     if (getEmail && getPwd) {
+  //       setIsLoading(() => true)
+  //       auth()
+  //         .signInWithEmailAndPassword(getEmail, getPwd)
+  //         .then(currentUser => {
+  //           dispatch(setUserID(currentUser.user.uid))
+  //           storeLoginInformation(
+  //             user.email,
+  //             user.password,
+  //             currentUser.user.uid,
+  //           )
+  //           setTimeout(() => {
+  //             setIsLoading(() => false)
+  //             navigation.replace('Main')
+  //           }, 1500)
+  //         })
+  //         .catch(error => {
+  //           setIsLoading(() => false)
+  //           console.log(error)
+  //         })
+  //     } else {
+  //       return
+  //     }
+  //   }
+  //   autoSignIn()
+  // }, [])
 
   //Handle sign in logic
   const signInHandler = () => {
@@ -142,6 +143,8 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
           }, 1500)
         })
         .catch(error => {
+          setIsLoading(() => false)
+          Alert.alert('Your input is invalid, check again!')
           console.log(error)
         })
     } else {

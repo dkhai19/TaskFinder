@@ -1,3 +1,4 @@
+import AsyncStorage from '@react-native-async-storage/async-storage'
 import messaging from '@react-native-firebase/messaging'
 import {PermissionsAndroid, Platform} from 'react-native'
 
@@ -19,6 +20,8 @@ export const checkToken = async () => {
   const checkPermission = await getNotificationPermission()
   if (checkPermission) {
     const fcmToken = await messaging().getToken()
+    await AsyncStorage.setItem('fcmToken', fcmToken)
+    console.log('fcmToken', fcmToken)
     return fcmToken
   }
   return ''

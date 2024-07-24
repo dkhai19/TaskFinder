@@ -5,6 +5,7 @@ import {
   View,
   TouchableWithoutFeedback,
   KeyboardAvoidingView,
+  SafeAreaView,
 } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
 import {colors} from '../../constants/color'
@@ -17,17 +18,11 @@ import {useDispatch, useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import HomeModal from './home-modal'
 import {setTasks, toggleModal} from '../../redux/slices/taskSlice'
-import {loadTasks} from '../../redux/thunks/taskThunks'
 import {AppDispatch} from '../../redux/store/store'
 import {UnsubcribeFunc} from '../../types/unsubcribe.type'
-import {
-  getLocation,
-  LocationCoordinates,
-  requestLocationPermission,
-} from '../../apis/location'
 import {fetchOthers} from '../../redux/thunks/userThunks'
-import {signJWT} from '../../apis/stream'
-import {setToken} from '../../redux/slices/authSlice'
+import client, {signJWT} from '../../apis/stream'
+import {setStreamToken} from '../../redux/slices/authSlice'
 import {getAllMyApplications} from '../../firebase/applications.api'
 import {
   IApplication,
@@ -37,6 +32,15 @@ import {IPostApplication} from '../../types/applications.type'
 import {formatDate} from '../../validations/convert-date'
 import SearchScreen from './search-screen'
 import {toggleBottomTab} from '../../redux/slices/appSlice'
+import {useNavigation} from '@react-navigation/native'
+import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
+import {RootStackParamList} from '../../navigation/RootNavigator'
+import messaging from '@react-native-firebase/messaging'
+import {
+  CallContent,
+  StreamCall,
+  StreamVideo,
+} from '@stream-io/video-react-native-sdk'
 
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiZHVja2hhaTIwMDJ2biIsImEiOiJjbHh2ODBvZXQwamtkMmpwdTFsa3JoeDVrIn0.vrtl6qLPN_NGnRKA2EvLvg',
@@ -45,6 +49,8 @@ Mapbox.setAccessToken(
 const {width, height} = Dimensions.get('window')
 
 const HomeScreen: React.FC = () => {
+  const navigation =
+    useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const [movingCamera, setMovingCamera] = useState(false)
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
   //const [tasks, setTasks] = useState<TaskData>([])
@@ -53,8 +59,43 @@ const HomeScreen: React.FC = () => {
   const [taskModal, setTaskModal] = useState<ITask>()
   const [applied, setApplied] = useState<IPostApplication[]>()
   const location = useSelector((state: RootState) => state.permission)
+
+  const streamToken = useSelector(
+    (state: RootState) => state.authentication.token,
+  )
   //console.log('Where are tasks', tasks)
   const dispatch = useDispatch<AppDispatch>()
+
+  const handleNotification = (uid: string) => {
+    navigation.navigate('ChatNavigator', {
+      screen: 'Chat',
+      params: {
+        uid: uid,
+      },
+    })
+  }
+
+  const handleJoinCall = async (callId: string) => {
+    //console.log('call ne', callId)
+    await client.connectUser(
+      {
+        id: currentUser.id,
+        name: `${currentUser.first_name} ${currentUser.last_name}`,
+      },
+      streamToken,
+    )
+    const _call = client.call('default', callId)
+    await _call.join()
+    return (
+      <StreamVideo client={client}>
+        <StreamCall call={_call}>
+          <SafeAreaView style={{flex: 1}}>
+            <CallContent layout="grid" />
+          </SafeAreaView>
+        </StreamCall>
+      </StreamVideo>
+    )
+  }
 
   useEffect(() => {
     let unsubscribe: UnsubcribeFunc | undefined
@@ -92,11 +133,12 @@ const HomeScreen: React.FC = () => {
       user_id: currentUser?.id,
       name: `${currentUser?.first_name} ${currentUser?.last_name}`,
     })
+    //console.log(jwtString)
 
     setupTasks()
     setupApps()
     dispatch(fetchOthers())
-    dispatch(setToken(jwtString))
+    dispatch(setStreamToken(jwtString))
     setTimeout(() => {
       setMovingCamera(true)
     }, 2000)
@@ -110,6 +152,36 @@ const HomeScreen: React.FC = () => {
       // }
     }
   }, [dispatch])
+
+  useEffect(() => {
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      if (remoteMessage.data) {
+        if (remoteMessage.data.hasOwnProperty('callId')) {
+          const callId = remoteMessage.data.callId as string
+          handleJoinCall(callId)
+        } else {
+          const uid = remoteMessage.data.userId as string
+          handleNotification(uid)
+        }
+      }
+      // Handles notification interactions when the app is brought from the background to the foreground by a notification tap.
+    })
+
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage && remoteMessage.data) {
+          if (remoteMessage.data.hasOwnProperty('callId')) {
+            const callId = remoteMessage.data.callId as string
+            handleJoinCall(callId)
+          } else {
+            const uid = remoteMessage.data.userId as string
+            handleNotification(uid)
+          }
+        }
+        // Handle notification interaction when the app is opened from a closed state
+      })
+  }, [])
 
   if (location.status === 'pending') {
     return (
@@ -167,8 +239,8 @@ const HomeScreen: React.FC = () => {
               <Mapbox.Camera
                 //followUserLocation
                 centerCoordinate={[location.longitude, location.latitude]}
-                zoomLevel={13}
-                pitch={60}
+                zoomLevel={15}
+                pitch={70}
                 animationDuration={2000}
                 animationMode="flyTo"
               />
