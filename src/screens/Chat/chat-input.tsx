@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {colors} from '../../constants/color'
 import Icon from 'react-native-vector-icons/Ionicons'
-import {useEffect} from 'react'
 import Pulse from '../../animations/Pulse'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
+import {getOpacityColor} from '../../constants/color'
 
 const {width} = Dimensions.get('window')
 
@@ -27,6 +28,21 @@ const ChatInput: React.FC<IChatInput> = ({
   pickImage,
 }) => {
   const haveText: boolean = value !== '' ? true : false
+  const colors = useSelector((state: RootState) => state.authentication.colors)
+
+  const styles = StyleSheet.create({
+    container: {
+      width: width * 0.9,
+      backgroundColor: colors.white,
+      borderRadius: 60,
+    },
+    body: {
+      paddingHorizontal: 16,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+  })
 
   return (
     <View style={styles.container}>
@@ -42,9 +58,10 @@ const ChatInput: React.FC<IChatInput> = ({
             <Icon name="image" size={24} color={colors.red} />
           </TouchableOpacity>
           <TextInput
+            style={{color: colors.black}}
             value={value}
             placeholder="The input information"
-            placeholderTextColor={colors.opacityBlack(0.4)}
+            placeholderTextColor={getOpacityColor(colors.black, 0.4)}
             onChangeText={handleTextChange}
           />
         </View>
@@ -53,7 +70,9 @@ const ChatInput: React.FC<IChatInput> = ({
             <Icon
               name="send"
               size={26}
-              color={haveText ? colors.red : colors.opacityBlack(0.55)}
+              color={
+                haveText ? colors.red : getOpacityColor(colors.black, 0.55)
+              }
             />
           </Pulse>
         </TouchableOpacity>
@@ -61,19 +80,5 @@ const ChatInput: React.FC<IChatInput> = ({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: width * 0.9,
-    backgroundColor: colors.white,
-    borderRadius: 60,
-  },
-  body: {
-    paddingHorizontal: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-})
 
 export default ChatInput

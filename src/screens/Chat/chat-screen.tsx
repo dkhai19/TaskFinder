@@ -2,7 +2,6 @@ import {ScrollView, View} from 'react-native'
 import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
 import {ChatStackParamList} from '../../navigation/RootNavigator'
 import {StyleSheet} from 'react-native'
-import {colors} from '../../constants/color'
 import ChatHeader from './chat-header'
 import ChatInput from './chat-input'
 import {useEffect, useState} from 'react'
@@ -41,6 +40,7 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
   const [messages, setMessages] = useState<IMessage[]>([])
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
   const jwtToken = useSelector((state: RootState) => state.authentication.token)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   const [receiver, setReceiver] = useState<IUsers>()
   const callId = generateRandomCallId()
   useEffect(() => {
@@ -163,6 +163,31 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
     authenticateUser()
   }
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    paddingOfTop: {
+      width: '100%',
+      backgroundColor: colors.white,
+    },
+    header: {
+      height: '7%',
+      width: '100%',
+    },
+    body: {
+      padding: 12,
+      height: '80%',
+    },
+    inputField: {
+      position: 'absolute',
+      left: 12,
+      right: 12,
+      bottom: 24,
+      alignItems: 'center',
+    },
+  })
+
   return (
     <FadeView style={styles.container}>
       <View style={styles.paddingOfTop}></View>
@@ -197,30 +222,5 @@ const ChatScreen: React.FC<Props> = ({route, navigation}) => {
     </FadeView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  paddingOfTop: {
-    width: '100%',
-    backgroundColor: colors.white,
-  },
-  header: {
-    height: '7%',
-    width: '100%',
-  },
-  body: {
-    padding: 12,
-    height: '80%',
-  },
-  inputField: {
-    position: 'absolute',
-    left: 12,
-    right: 12,
-    bottom: 24,
-    alignItems: 'center',
-  },
-})
 
 export default ChatScreen

@@ -1,6 +1,4 @@
 import {Dimensions, Image, StyleSheet, Text, View} from 'react-native'
-import {IPostApplication} from '../../types/applications.type'
-import {colors} from '../../constants/color'
 import {ITask} from '../../types/tasks.type'
 import {useEffect, useState} from 'react'
 import {getTaskById} from '../../firebase/tasks.api'
@@ -8,17 +6,13 @@ import {typography} from '../../constants/typo'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import IconItem from './icon-item'
-import {
-  convertFirestoreTimestampToDate,
-  formatDate,
-} from '../../validations/convert-date'
 import ButtonItem from './button-item'
 import {useNavigation} from '@react-navigation/native'
 import {RootStackParamList} from '../../navigation/RootNavigator'
 import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
 import Status from './status'
 import {IApplication} from '../../redux/slices/applicationSlice'
-import LoadingModal from '../../animations/LoadingModal'
+import {getOpacityColor} from '../../constants/color'
 
 interface IApplicationItem {
   item: IApplication
@@ -29,6 +23,7 @@ const ApplicationItem: React.FC<IApplicationItem> = ({item}) => {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const [taskDetail, setTaskDetail] = useState<ITask | null>()
   const others = useSelector((state: RootState) => state.user.otherUsers)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   const [ownerId, setOwnerId] = useState<string | null>()
   const [isLoading, setIsLoading] = useState<boolean>(false)
   //console.log(item)
@@ -60,6 +55,50 @@ const ApplicationItem: React.FC<IApplicationItem> = ({item}) => {
       navigation.navigate('Profile', {uid: ownerId})
     }
   }
+
+  const {width} = Dimensions.get('window')
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      marginTop: 16,
+      backgroundColor: colors.white,
+      borderRadius: 12,
+      paddingVertical: 20,
+    },
+    imageContainer: {
+      width: 70,
+      height: 70,
+      justifyContent: 'center',
+      alignItems: 'center',
+      elevation: 2,
+      borderRadius: 8,
+      marginLeft: 24,
+      marginRight: 12,
+    },
+    image: {
+      width: 66,
+      height: 66,
+      borderRadius: 8,
+    },
+    headingContainer: {
+      justifyContent: 'space-evenly',
+      maxWidth: width * 0.6,
+    },
+    iconItems: {
+      flexDirection: 'row',
+      paddingHorizontal: 24,
+      marginTop: 8,
+      paddingVertical: 8,
+      justifyContent: 'space-between',
+    },
+    buttons: {
+      flexDirection: 'row',
+      marginHorizontal: 24,
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      marginTop: 8,
+    },
+  })
 
   //console.log('Task detail ne', taskDetail)
   if (!taskDetail || !ownerInfor || isLoading) {
@@ -94,7 +133,7 @@ const ApplicationItem: React.FC<IApplicationItem> = ({item}) => {
             <Text
               style={[
                 typography.f15_regular,
-                {color: colors.opacityBlack(0.7)},
+                {color: getOpacityColor(colors.black, 0.7)},
               ]}>
               {ownerInfor?.first_name + ' ' + ownerInfor?.last_name}
             </Text>
@@ -119,48 +158,5 @@ const ApplicationItem: React.FC<IApplicationItem> = ({item}) => {
     )
   }
 }
-const {width} = Dimensions.get('window')
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    marginTop: 16,
-    backgroundColor: colors.white,
-    borderRadius: 12,
-    paddingVertical: 20,
-  },
-  imageContainer: {
-    width: 70,
-    height: 70,
-    justifyContent: 'center',
-    alignItems: 'center',
-    elevation: 2,
-    borderRadius: 8,
-    marginLeft: 24,
-    marginRight: 12,
-  },
-  image: {
-    width: 66,
-    height: 66,
-    borderRadius: 8,
-  },
-  headingContainer: {
-    justifyContent: 'space-evenly',
-    maxWidth: width * 0.6,
-  },
-  iconItems: {
-    flexDirection: 'row',
-    paddingHorizontal: 24,
-    marginTop: 8,
-    paddingVertical: 8,
-    justifyContent: 'space-between',
-  },
-  buttons: {
-    flexDirection: 'row',
-    marginHorizontal: 24,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginTop: 8,
-  },
-})
 
 export default ApplicationItem

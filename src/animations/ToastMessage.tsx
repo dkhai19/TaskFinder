@@ -1,9 +1,11 @@
 import {useEffect, useRef} from 'react'
 import {Easing} from 'react-native'
 import {Animated, Dimensions, StyleSheet, Text, View} from 'react-native'
-import {colors} from '../constants/color'
+
 import Ionicons from 'react-native-vector-icons/Ionicons'
 import {typography} from '../constants/typo'
+import {useSelector} from 'react-redux'
+import {RootState} from '../redux/rootReducer'
 const {width, height} = Dimensions.get('window')
 interface IToastMessage {
   message: string
@@ -11,6 +13,7 @@ interface IToastMessage {
 }
 const ToastMessage: React.FC<IToastMessage> = ({message, onHide}) => {
   const animatedValue = useRef(new Animated.Value(-500)).current
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   //Price Drop Alert
   useEffect(() => {
     Animated.sequence([
@@ -45,6 +48,20 @@ const ToastMessage: React.FC<IToastMessage> = ({message, onHide}) => {
     return () => clearTimeout(timer)
   }, [animatedValue, onHide])
 
+  const styles = StyleSheet.create({
+    container: {
+      position: 'absolute',
+      zIndex: 100,
+      width: width * 0.9,
+      height: 52,
+      top: 16,
+      borderRadius: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.red,
+    },
+  })
+
   return (
     <Animated.View
       style={[
@@ -70,19 +87,5 @@ const ToastMessage: React.FC<IToastMessage> = ({message, onHide}) => {
     </Animated.View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    zIndex: 100,
-    width: width * 0.9,
-    height: 52,
-    top: 16,
-    borderRadius: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.red,
-  },
-})
 
 export default ToastMessage

@@ -7,8 +7,9 @@ import {
   View,
   ViewStyle,
 } from 'react-native'
-import {colors} from '../constants/color'
 import {typography} from '../constants/typo'
+import {useSelector} from 'react-redux'
+import {RootState} from '../redux/rootReducer'
 
 interface IContainedButton {
   title: string
@@ -21,6 +22,17 @@ const ContainedButton: React.FC<IContainedButton> = ({
   style,
   onPress,
 }) => {
+  const colors = useSelector((state: RootState) => state.authentication.colors)
+  const styles = StyleSheet.create({
+    container: {
+      width: '100%',
+      height: 52,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 8,
+      backgroundColor: colors.red,
+    },
+  })
   return (
     <TouchableOpacity onPress={onPress} style={[styles.container, style]}>
       <Text style={[typography.f20_medium, {color: colors.white}]}>
@@ -29,16 +41,5 @@ const ContainedButton: React.FC<IContainedButton> = ({
     </TouchableOpacity>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: 52,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    backgroundColor: colors.red,
-  },
-})
 
 export default ContainedButton

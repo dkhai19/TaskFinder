@@ -8,10 +8,8 @@ import {
   SafeAreaView,
 } from 'react-native'
 import Mapbox from '@rnmapbox/maps'
-import {colors} from '../../constants/color'
 import {useEffect, useState} from 'react'
 import IconButton from '../../components/IconButton'
-
 import {getAllTasks} from '../../firebase/tasks.api'
 import {ITask} from '../../types/tasks.type'
 import {useDispatch, useSelector} from 'react-redux'
@@ -28,7 +26,6 @@ import {
   IApplication,
   setApplications,
 } from '../../redux/slices/applicationSlice'
-import {IPostApplication} from '../../types/applications.type'
 import {formatDate} from '../../validations/convert-date'
 import SearchScreen from './search-screen'
 import {toggleBottomTab} from '../../redux/slices/appSlice'
@@ -46,6 +43,7 @@ import {
   setCurrentLocation,
   setLocationPermisstion,
 } from '../../redux/slices/permissionSlice'
+import {getOpacityColor} from '../../constants/color'
 
 Mapbox.setAccessToken(
   'pk.eyJ1IjoiZHVja2hhaTIwMDJ2biIsImEiOiJjbHh2ODBvZXQwamtkMmpwdTFsa3JoeDVrIn0.vrtl6qLPN_NGnRKA2EvLvg',
@@ -58,6 +56,7 @@ const HomeScreen: React.FC = () => {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const [movingCamera, setMovingCamera] = useState(false)
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   //const [tasks, setTasks] = useState<TaskData>([])
   const modalVisible = useSelector((state: RootState) => state.task.taskModal)
   const tasks = useSelector((state: RootState) => state.task.tasksData)
@@ -196,6 +195,29 @@ const HomeScreen: React.FC = () => {
       })
   }, [])
 
+  const styles = StyleSheet.create({
+    page: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    container: {
+      width: width,
+      height: height,
+    },
+    map: {
+      flex: 1,
+    },
+    overlay: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: 1000,
+    },
+    overlayBackground: {
+      ...StyleSheet.absoluteFillObject,
+      backgroundColor: getOpacityColor(colors.black, 0.6),
+    },
+  })
+
   if (location.status === 'pending') {
     return (
       <View style={styles.page}>
@@ -287,28 +309,5 @@ const HomeScreen: React.FC = () => {
     </KeyboardAvoidingView>
   )
 }
-
-const styles = StyleSheet.create({
-  page: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  container: {
-    width: width,
-    height: height,
-  },
-  map: {
-    flex: 1,
-  },
-  overlay: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: 1000,
-  },
-  overlayBackground: {
-    ...StyleSheet.absoluteFillObject,
-    backgroundColor: colors.opacityBlack(0.6),
-  },
-})
 
 export default HomeScreen

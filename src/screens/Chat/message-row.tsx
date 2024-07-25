@@ -1,6 +1,5 @@
 import {Image, StyleSheet, Text, View} from 'react-native'
 import {typography} from '../../constants/typo'
-import {colors} from '../../constants/color'
 import {useEffect, useState} from 'react'
 import {IUsers} from '../../types/users.type'
 import {findUserById} from '../../firebase/users.api'
@@ -22,6 +21,7 @@ const MessageRow: React.FC<IMessageRow> = ({
   image,
 }) => {
   const listOthers = useSelector((state: RootState) => state.user.otherUsers)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   const receiver = listOthers?.find(item => item.id === receiverId)
   const [isLoading, setIsLoading] = useState(true)
 
@@ -30,6 +30,49 @@ const MessageRow: React.FC<IMessageRow> = ({
       setIsLoading(false)
     }
   }, [receiver])
+
+  const styles = StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      width: '100%',
+      marginVertical: 8,
+    },
+    left: {
+      flexDirection: 'row',
+      width: '70%',
+    },
+    leftImage: {
+      paddingRight: 8,
+    },
+    leftMessage: {
+      borderTopRightRadius: 10,
+      borderBottomLeftRadius: 10,
+      borderBottomRightRadius: 10,
+      padding: 10,
+      backgroundColor: colors.white,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    right: {
+      width: '100%',
+      alignItems: 'flex-end',
+    },
+    rightMessage: {
+      maxWidth: '70%',
+      borderTopLeftRadius: 10,
+      borderBottomLeftRadius: 10,
+      borderBottomRightRadius: 10,
+      padding: 10,
+      backgroundColor: '#67C4FF',
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    image: {
+      width: 38,
+      height: 38,
+      borderRadius: 20,
+    },
+  })
 
   if (!receiver && !isMine) {
     return (
@@ -95,48 +138,5 @@ const MessageRow: React.FC<IMessageRow> = ({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    width: '100%',
-    marginVertical: 8,
-  },
-  left: {
-    flexDirection: 'row',
-    width: '70%',
-  },
-  leftImage: {
-    paddingRight: 8,
-  },
-  leftMessage: {
-    borderTopRightRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    padding: 10,
-    backgroundColor: colors.white,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  right: {
-    width: '100%',
-    alignItems: 'flex-end',
-  },
-  rightMessage: {
-    maxWidth: '70%',
-    borderTopLeftRadius: 10,
-    borderBottomLeftRadius: 10,
-    borderBottomRightRadius: 10,
-    padding: 10,
-    backgroundColor: '#67C4FF',
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  image: {
-    width: 38,
-    height: 38,
-    borderRadius: 20,
-  },
-})
 
 export default MessageRow

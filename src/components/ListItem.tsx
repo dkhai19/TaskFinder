@@ -1,10 +1,11 @@
 import Icon from 'react-native-vector-icons/Ionicons'
 import {StyleSheet, Switch, Text, TouchableOpacity, View} from 'react-native'
-import {colors} from '../constants/color'
 import {typography} from '../constants/typo'
 import {useState} from 'react'
-import {useDispatch} from 'react-redux'
-import {toggleTheme} from '../redux/slices/authSlice'
+import {useDispatch, useSelector} from 'react-redux'
+import {setColors, toggleTheme} from '../redux/slices/authSlice'
+import {RootState} from '../redux/rootReducer'
+import {getOpacityColor} from '../constants/color'
 
 interface IListItem {
   iconName: string
@@ -23,12 +24,34 @@ const ListItem: React.FC<IListItem> = ({
   navigate,
   toggle,
 }) => {
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   const dispatch = useDispatch()
   const [isEnable, setIsEnable] = useState(false)
   const toggleSwitch = () => {
     setIsEnable(prevState => !prevState)
     dispatch(toggleTheme())
+    dispatch(setColors())
   }
+  const styles = StyleSheet.create({
+    container: {
+      width: '100%',
+      flexDirection: 'row',
+      paddingVertical: 18,
+      paddingHorizontal: 18,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    icon_container: {
+      paddingHorizontal: 8,
+      paddingVertical: 12,
+      backgroundColor: getOpacityColor(colors.red, 0.4),
+      borderRadius: 8,
+    },
+  })
   return (
     <TouchableOpacity onPress={onPress} style={styles.container}>
       <View style={styles.row}>
@@ -45,7 +68,10 @@ const ListItem: React.FC<IListItem> = ({
       </View>
       <View style={styles.row}>
         <Text
-          style={[typography.f13_regular, {color: colors.opacityBlack(0.25)}]}>
+          style={[
+            typography.f13_regular,
+            {color: getOpacityColor(colors.black, 0.5)},
+          ]}>
           {value}
         </Text>
         {navigate && (
@@ -53,7 +79,7 @@ const ListItem: React.FC<IListItem> = ({
             <Icon
               name="chevron-forward-outline"
               size={24}
-              color={colors.opacityBlack(0.25)}
+              color={getOpacityColor(colors.black, 0.5)}
             />
           </View>
         )}
@@ -70,26 +96,5 @@ const ListItem: React.FC<IListItem> = ({
     </TouchableOpacity>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    flexDirection: 'row',
-    paddingVertical: 18,
-    paddingHorizontal: 18,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  icon_container: {
-    paddingHorizontal: 8,
-    paddingVertical: 12,
-    backgroundColor: colors.opacityRed(0.4),
-    borderRadius: 8,
-  },
-})
 
 export default ListItem

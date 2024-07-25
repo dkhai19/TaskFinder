@@ -1,5 +1,4 @@
 import {Alert, Image, StyleSheet, Text, View} from 'react-native'
-import {colors} from '../../constants/color'
 import {typography} from '../../constants/typo'
 import {useDispatch, useSelector} from 'react-redux'
 import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
@@ -10,12 +9,14 @@ import KeyValueText from '../../components/KeyValue'
 import ListItem from '../../components/ListItem'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {RootState} from '../../redux/rootReducer'
+import {getOpacityColor} from '../../constants/color'
 
 const SettingScreen: React.FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const dispatch = useDispatch()
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   const showAlert = () => {
     Alert.alert('Signing out', 'Do you want to sign out?', [
       {
@@ -61,6 +62,64 @@ const SettingScreen: React.FC = () => {
     )
   }
 
+  const settingStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.white,
+      paddingTop: 16,
+    },
+    body: {
+      paddingTop: 16,
+      paddingHorizontal: 12,
+    },
+    header: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingVertical: 12,
+      //backgroundColor: colors.red,
+    },
+    image_row: {
+      flexDirection: 'row',
+      paddingVertical: 16,
+      alignItems: 'center',
+      maxHeight: 100,
+      borderBottomWidth: 0.2,
+      borderColor: getOpacityColor(colors.black, 0.5),
+    },
+    image_container: {
+      height: 80,
+      width: 80,
+      elevation: 5,
+      shadowColor: getOpacityColor(colors.black, 0.8),
+      shadowOffset: {width: 0, height: 2},
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      overflow: 'hidden',
+      borderRadius: 16,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    image: {
+      height: 70,
+      width: 70,
+      borderRadius: 16,
+    },
+    text_column: {
+      paddingLeft: 16,
+      justifyContent: 'center',
+      height: '100%',
+    },
+    achievement_container: {
+      flexDirection: 'row',
+      justifyContent: 'space-evenly',
+      paddingTop: 24,
+    },
+    navigation_container: {
+      paddingTop: 24,
+    },
+  })
+
   return (
     <View style={settingStyles.container}>
       <View style={settingStyles.body}>
@@ -79,7 +138,7 @@ const SettingScreen: React.FC = () => {
             <Text
               style={[
                 typography.f15_regular,
-                {color: colors.opacityBlack(0.4)},
+                {color: getOpacityColor(colors.black, 0.5)},
               ]}>
               {currentUser?.email}
             </Text>
@@ -110,61 +169,4 @@ const SettingScreen: React.FC = () => {
   )
 }
 
-const settingStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    paddingTop: 16,
-  },
-  body: {
-    paddingTop: 16,
-    paddingHorizontal: 12,
-  },
-  header: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 12,
-    //backgroundColor: colors.red,
-  },
-  image_row: {
-    flexDirection: 'row',
-    paddingVertical: 16,
-    alignItems: 'center',
-    maxHeight: 100,
-    borderBottomWidth: 0.2,
-    borderColor: colors.opacityBlack(0.3),
-  },
-  image_container: {
-    height: 80,
-    width: 80,
-    elevation: 5,
-    shadowColor: colors.opacityBlack(0.8),
-    shadowOffset: {width: 0, height: 2},
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
-    overflow: 'hidden',
-    borderRadius: 16,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  image: {
-    height: 70,
-    width: 70,
-    borderRadius: 16,
-  },
-  text_column: {
-    paddingLeft: 16,
-    justifyContent: 'center',
-    height: '100%',
-  },
-  achievement_container: {
-    flexDirection: 'row',
-    justifyContent: 'space-evenly',
-    paddingTop: 24,
-  },
-  navigation_container: {
-    paddingTop: 24,
-  },
-})
 export default SettingScreen

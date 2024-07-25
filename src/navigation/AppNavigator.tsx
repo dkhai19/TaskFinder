@@ -12,7 +12,6 @@ import HomeScreen from '../screens/Home/home-screen'
 import ConversationScreen from '../screens/Conversation/conversation-screen'
 import SettingScreen from '../screens/Setting/setting-screen'
 import Icon from 'react-native-vector-icons/Ionicons'
-import {colors} from '../constants/color'
 import {NavigationContainer, useFocusEffect} from '@react-navigation/native'
 import {StatusBar, View, useColorScheme} from 'react-native'
 import {useCallback} from 'react'
@@ -25,6 +24,7 @@ import PersonalScreen from '../screens/Personal/personal-screen'
 import ProfileScreen from '../screens/Profile/profile-screen'
 import {useSelector} from 'react-redux'
 import {RootState} from '../redux/rootReducer'
+import {getOpacityColor} from '../constants/color'
 
 const RootTab = createBottomTabNavigator<RootTabParamList>()
 const RootStack = createStackNavigator<RootStackParamList>()
@@ -65,6 +65,10 @@ const ChatStackNavigator = () => {
 }
 
 const RootTabNavigator = () => {
+  const colors = useSelector((state: RootState) => state.authentication.colors)
+  const theme = useSelector(
+    (state: RootState) => state.authentication.lightThem,
+  )
   useFocusEffect(
     useCallback(() => {
       StatusBar.setBarStyle('light-content')
@@ -104,7 +108,11 @@ const RootTabNavigator = () => {
               <Icon name={iconName} size={26} color={colors.red} />
             </SpinAnimation>
           ) : (
-            <Icon name={iconName} size={26} color={colors.black} />
+            <Icon
+              name={iconName}
+              size={26}
+              color={theme ? colors.black : colors.white}
+            />
           )
         },
       })}>

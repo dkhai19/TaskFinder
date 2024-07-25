@@ -1,13 +1,29 @@
-import {StyleSheet, Text, View} from 'react-native';
-import {typography} from '../constants/typo';
-import {colors} from '../constants/color';
+import {StyleSheet, Text, View} from 'react-native'
+import {typography} from '../constants/typo'
+import {useSelector} from 'react-redux'
+import {RootState} from '../redux/rootReducer'
+import {getOpacityColor} from '../constants/color'
 
 interface IKeyValueText {
-  title: string;
-  value: string;
+  title: string
+  value: string
 }
 
 const KeyValueText: React.FC<IKeyValueText> = ({title, value}) => {
+  const colors = useSelector((state: RootState) => state.authentication.colors)
+
+  const styles = StyleSheet.create({
+    column_item: {
+      alignItems: 'center',
+      padding: 12,
+    },
+    black_opacity_04: {
+      color: getOpacityColor(colors.black, 0.4),
+    },
+    black: {
+      color: colors.black,
+    },
+  })
   return (
     <View style={styles.column_item}>
       <Text style={[typography.f20_bold, styles.black]}>{value}</Text>
@@ -15,20 +31,7 @@ const KeyValueText: React.FC<IKeyValueText> = ({title, value}) => {
         {title}
       </Text>
     </View>
-  );
-};
+  )
+}
 
-const styles = StyleSheet.create({
-  column_item: {
-    alignItems: 'center',
-    padding: 12,
-  },
-  black_opacity_04: {
-    color: colors.opacityBlack(0.4),
-  },
-  black: {
-    color: colors.black,
-  },
-});
-
-export default KeyValueText;
+export default KeyValueText

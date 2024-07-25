@@ -1,7 +1,9 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
-import {colors} from '../../constants/color'
 import {typography} from '../../constants/typo'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
+import {getOpacityColor} from '../../constants/color'
 interface IButtonItem {
   iconName?: string
   title: string
@@ -9,6 +11,28 @@ interface IButtonItem {
 }
 
 const ButtonItem: React.FC<IButtonItem> = ({iconName, title, onPress}) => {
+  const colors = useSelector((state: RootState) => state.authentication.colors)
+  const styles = StyleSheet.create({
+    iconContainer: {
+      width: 180,
+      height: 52,
+      backgroundColor: getOpacityColor(colors.black, 0.2),
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      borderRadius: 8,
+    },
+    container: {
+      width: 180,
+      height: 52,
+      backgroundColor: getOpacityColor(colors.black, 0.15),
+      alignItems: 'center',
+      justifyContent: 'center',
+      flexDirection: 'row',
+      borderRadius: 8,
+    },
+  })
+
   return (
     <TouchableOpacity
       style={iconName ? styles.iconContainer : styles.container}
@@ -28,26 +52,5 @@ const ButtonItem: React.FC<IButtonItem> = ({iconName, title, onPress}) => {
     </TouchableOpacity>
   )
 }
-
-const styles = StyleSheet.create({
-  iconContainer: {
-    width: 180,
-    height: 52,
-    backgroundColor: colors.opacityRed(0.2),
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    borderRadius: 8,
-  },
-  container: {
-    width: 180,
-    height: 52,
-    backgroundColor: colors.opacityBlack(0.15),
-    alignItems: 'center',
-    justifyContent: 'center',
-    flexDirection: 'row',
-    borderRadius: 8,
-  },
-})
 
 export default ButtonItem

@@ -2,19 +2,12 @@ import {
   Animated,
   Dimensions,
   FlatList,
-  Keyboard,
-  KeyboardAvoidingView,
-  Platform,
   StyleSheet,
-  Text,
   TextInput,
   TouchableOpacity,
-  TouchableWithoutFeedback,
   View,
 } from 'react-native'
-import {colors} from '../../constants/color'
 import Icon from 'react-native-vector-icons/Feather'
-import {typography} from '../../constants/typo'
 import {useEffect, useRef, useState} from 'react'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
@@ -34,6 +27,7 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
   const widAnim = useRef(new Animated.Value(50)).current
   const heiAnim = useRef(new Animated.Value(50)).current
   const others = useSelector((state: RootState) => state.user.otherUsers)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   const [searchOther, setSearchOther] = useState<IUserProfiles[]>()
   useEffect(() => {
     if (others) {
@@ -91,27 +85,6 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
     )
   }
 
-  // if (!searchOther) {
-  //   return (
-  //     <View
-  //       style={[
-  //         {
-  //           width: 50,
-  //           height: 50,
-  //         },
-  //         styles.container,
-  //         displayBottom && {
-  //           borderTopLeftRadius: 4,
-  //           borderBottomLeftRadius: 4,
-  //           borderTopRightRadius: 24,
-  //           borderBottomRightRadius: 24,
-  //         },
-  //       ]}>
-  //       <Text>Loading users ...</Text>
-  //     </View>
-  //   )
-  // }
-
   const handleSearchChange = (input: string) => {
     const filtered = others?.filter(item => {
       const fullName =
@@ -120,6 +93,33 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
     })
     setSearchOther(filtered)
   }
+
+  const styles = StyleSheet.create({
+    container: {
+      position: 'absolute',
+      zIndex: 100,
+      top: 10,
+      left: 0,
+      backgroundColor: colors.white,
+      borderWidth: 0.5,
+      borderColor: colors.black,
+      elevation: 4,
+    },
+    iconContainer: {
+      position: 'absolute',
+      top: 4,
+      left: 4,
+      width: 40,
+      height: 40,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 20,
+    },
+    content: {
+      flex: 1,
+      top: height * 0.05,
+    },
+  })
 
   return (
     <Animated.View
@@ -146,6 +146,7 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
       <TextInput
         style={{
           marginHorizontal: 60,
+          color: colors.black,
         }}
         placeholder="Type name of owner"
         onChangeText={input => handleSearchChange(input)}
@@ -160,32 +161,5 @@ const SearchScreen: React.FC<ISearchScreen> = ({onPress}) => {
     </Animated.View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    zIndex: 100,
-    top: 10,
-    left: 0,
-    backgroundColor: colors.white,
-    borderWidth: 0.5,
-    borderColor: colors.black,
-    elevation: 4,
-  },
-  iconContainer: {
-    position: 'absolute',
-    top: 4,
-    left: 4,
-    width: 40,
-    height: 40,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 20,
-  },
-  content: {
-    flex: 1,
-    top: height * 0.05,
-  },
-})
 
 export default SearchScreen

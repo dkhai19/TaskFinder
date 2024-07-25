@@ -1,9 +1,7 @@
 import {ScrollView, StyleSheet, Text, View} from 'react-native'
-import {colors} from '../../constants/color'
 import ManageFilterBar from './manage-filterbar'
 import {typography} from '../../constants/typo'
 import {useEffect, useState} from 'react'
-import {IPostApplication} from '../../types/applications.type'
 import {useDispatch, useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import {getAllMyApplications} from '../../firebase/applications.api'
@@ -14,6 +12,7 @@ import {
   setApplications,
 } from '../../redux/slices/applicationSlice'
 import {formatDate} from '../../validations/convert-date'
+import {getOpacityColor} from '../../constants/color'
 
 const ManagementScreen = () => {
   const handleChangeDataType = (type: string) => {
@@ -23,6 +22,8 @@ const ManagementScreen = () => {
   const applications = useSelector(
     (state: RootState) => state.application.applied,
   )
+  const colors = useSelector((state: RootState) => state.authentication.colors)
+
   const [filterItems, setFilterItems] = useState<IApplication[]>()
   const [action, setAction] = useState<string>()
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
@@ -68,6 +69,28 @@ const ManagementScreen = () => {
     console.log(applications)
   }, [action])
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.white,
+    },
+    headingText: {
+      marginTop: 36,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    filterBar: {
+      marginTop: 24,
+      borderTopWidth: 0.5,
+      borderBottomWidth: 1,
+      borderColor: colors.black,
+      borderRadius: 8,
+    },
+    content: {
+      flex: 1,
+      backgroundColor: getOpacityColor(colors.black, 0.15),
+    },
+  })
   return (
     <View style={styles.container}>
       <View style={styles.headingText}>
@@ -90,26 +113,4 @@ const ManagementScreen = () => {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  headingText: {
-    marginTop: 36,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  filterBar: {
-    marginTop: 24,
-    borderTopWidth: 0.5,
-    borderBottomWidth: 1,
-    borderColor: colors.black,
-    borderRadius: 8,
-  },
-  content: {
-    flex: 1,
-    backgroundColor: colors.opacityBlack(0.15),
-  },
-})
 export default ManagementScreen

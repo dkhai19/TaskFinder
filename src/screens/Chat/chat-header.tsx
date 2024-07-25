@@ -1,11 +1,12 @@
 import {Image, StyleSheet, TouchableOpacity} from 'react-native'
 import {Text, View} from 'react-native'
-import {colors} from '../../constants/color'
 import Icon from 'react-native-vector-icons/Ionicons'
 import {typography} from '../../constants/typo'
 import {useEffect, useState} from 'react'
 import {IUsers} from '../../types/users.type'
 import {findUserById} from '../../firebase/users.api'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
 
 interface IChatHeader {
   onBack: () => void
@@ -18,6 +19,7 @@ const ChatHeader: React.FC<IChatHeader> = ({
   onBack,
   onCallHander,
 }) => {
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   const [user, setUser] = useState<IUsers>()
   useEffect(() => {
     const fetchInfor = async () => {
@@ -34,6 +36,32 @@ const ChatHeader: React.FC<IChatHeader> = ({
       </View>
     )
   }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.white,
+      flexDirection: 'row',
+    },
+    left: {
+      flexDirection: 'row',
+      width: '80%',
+      alignItems: 'center',
+    },
+    right: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    imageContainer: {
+      paddingHorizontal: 16,
+    },
+    image: {
+      width: 34,
+      height: 34,
+      borderRadius: 17,
+    },
+  })
 
   return (
     <View style={styles.container}>
@@ -58,31 +86,5 @@ const ChatHeader: React.FC<IChatHeader> = ({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    flexDirection: 'row',
-  },
-  left: {
-    flexDirection: 'row',
-    width: '80%',
-    alignItems: 'center',
-  },
-  right: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  imageContainer: {
-    paddingHorizontal: 16,
-  },
-  image: {
-    width: 34,
-    height: 34,
-    borderRadius: 17,
-  },
-})
 
 export default ChatHeader

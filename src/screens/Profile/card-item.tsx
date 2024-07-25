@@ -1,8 +1,10 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native'
 import {typography} from '../../constants/typo'
-import {colors} from '../../constants/color'
 import {formatDate} from '../../validations/convert-date'
 import Icon from 'react-native-vector-icons/Foundation'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
+import {getOpacityColor} from '../../constants/color'
 interface ICardItem {
   onPress: () => void
   title: string
@@ -24,10 +26,46 @@ const CardItem: React.FC<ICardItem> = ({
 }) => {
   const sDate = formatDate(fromDate)
   const eDate = formatDate(toDate)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
+  const lightTheme = useSelector(
+    (state: RootState) => state.authentication.lightThem,
+  )
   let formatStatus
   if (status) {
     formatStatus = status?.substring(0, 1).toUpperCase() + status?.substring(1)
   }
+
+  const styles = StyleSheet.create({
+    container: {
+      width: '100%',
+      borderRadius: 20,
+      backgroundColor: lightTheme ? '#e0e0e6' : '#404040',
+      height: 160,
+      marginTop: 12,
+      paddingVertical: 16,
+      paddingHorizontal: 20,
+      flexDirection: 'row',
+    },
+    right: {
+      flex: 2,
+      justifyContent: 'space-between',
+      alignItems: 'flex-end',
+    },
+    buttonContainer: {
+      width: '80%',
+      height: 52,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.red,
+      borderRadius: 12,
+    },
+    priceContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      paddingRight: 8,
+    },
+  })
+
   return (
     <View style={styles.container}>
       <View
@@ -43,7 +81,10 @@ const CardItem: React.FC<ICardItem> = ({
           <Text
             numberOfLines={2}
             ellipsizeMode="tail"
-            style={[typography.f13_regular, {color: colors.opacityBlack(0.6)}]}>
+            style={[
+              typography.f13_regular,
+              {color: getOpacityColor(colors.black, 0.6)},
+            ]}>
             {descript}
           </Text>
         </View>
@@ -52,7 +93,10 @@ const CardItem: React.FC<ICardItem> = ({
             {sDate}
           </Text>
           <Text
-            style={[typography.f15_medium, {color: colors.opacityBlack(0.7)}]}>
+            style={[
+              typography.f15_medium,
+              {color: getOpacityColor(colors.black, 0.7)},
+            ]}>
             {'  '}-{'  '}
           </Text>
           <Text style={[typography.f15_medium, {color: colors.black}]}>
@@ -81,36 +125,5 @@ const CardItem: React.FC<ICardItem> = ({
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    borderRadius: 20,
-    backgroundColor: '#e0e0e6',
-    height: 160,
-    marginTop: 12,
-    paddingVertical: 16,
-    paddingHorizontal: 20,
-    flexDirection: 'row',
-  },
-  right: {
-    flex: 2,
-    justifyContent: 'space-between',
-    alignItems: 'flex-end',
-  },
-  buttonContainer: {
-    width: '80%',
-    height: 52,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.red,
-    borderRadius: 12,
-  },
-  priceContainer: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingRight: 8,
-  },
-})
 
 export default CardItem

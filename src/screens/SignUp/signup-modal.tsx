@@ -1,20 +1,16 @@
 import {
-  Button,
   StyleSheet,
   Text,
   View,
   Animated,
   Dimensions,
-  TouchableOpacity,
   TextInput,
 } from 'react-native'
-import {colors} from '../../constants/color'
 import {useEffect, useRef, useState} from 'react'
 import {typography} from '../../constants/typo'
 import Input from '../../components/Input'
 import ContainedButton from '../../components/ContainedButton'
 import {updateSignUpInformation} from '../../firebase/users.api'
-import {parseDateOfBirth} from '../../validations/user-infor-validation'
 import DatePicker from 'react-native-date-picker'
 import IconButton from '../../components/IconButton'
 import {RootState} from '../../redux/rootReducer'
@@ -22,7 +18,8 @@ import {useSelector} from 'react-redux'
 import RadioButtonGroup from '../../components/RadioButtonGroup'
 import {IUsers} from '../../types/users.type'
 import {checkToken} from '../../firebase/notifications.api'
-const {width, height} = Dimensions.get('window')
+import {getOpacityColor} from '../../constants/color'
+const {height} = Dimensions.get('window')
 
 interface IModal {
   onPress: () => void
@@ -33,6 +30,7 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
   const [date, setDate] = useState(new Date())
   const [open, setOpen] = useState(false)
   const user = useSelector((state: RootState) => state.user.currentUser)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   const genderOptions = [
     {label: 'Male', value: 'Male'},
     {label: 'Female', value: 'Female'},
@@ -90,19 +88,51 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
   }
 
   const handleUpdateUser = async () => {
-    // const parseDOB = parseDateOfBirth(additionaInfo.birthday)
-    // if (!parseDOB) {
-    //   console.log('Error date format!')
-    //   return
-    // }
-    // const updatedInfo = {
-    //   ...additionaInfo,
-    //   birthday: parseDOB,
-    // }
     await updateSignUpInformation(additionaInfo).then(() => {
       onPress()
     })
   }
+
+  const styles = StyleSheet.create({
+    container: {
+      position: 'absolute',
+      zIndex: 1,
+      top: 0,
+      bottom: 0,
+      left: 0,
+      right: 0,
+      backgroundColor: colors.white,
+    },
+    body: {
+      paddingHorizontal: 8,
+    },
+    headerText: {
+      height: height * 0.15,
+      paddingHorizontal: 16,
+      alignItems: 'center',
+      justifyContent: 'flex-end',
+      marginBottom: 16,
+    },
+    twoInRow: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      marginBottom: 16,
+    },
+    singleInputContainer: {
+      width: '47%',
+    },
+    textBold: {
+      color: colors.black,
+    },
+    noteText: {
+      color: getOpacityColor(colors.black, 0.5),
+    },
+    introduction: {
+      borderWidth: 2,
+      borderColor: getOpacityColor(colors.black, 0.4),
+      borderRadius: 12,
+    },
+  })
 
   return (
     <Animated.View
@@ -206,46 +236,5 @@ const SignUpModal: React.FC<IModal> = ({onPress}) => {
     </Animated.View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    zIndex: 1,
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-    backgroundColor: colors.white,
-  },
-  body: {
-    paddingHorizontal: 8,
-  },
-  headerText: {
-    height: height * 0.15,
-    paddingHorizontal: 16,
-    alignItems: 'center',
-    justifyContent: 'flex-end',
-    marginBottom: 16,
-  },
-  twoInRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: 16,
-  },
-  singleInputContainer: {
-    width: '47%',
-  },
-  textBold: {
-    color: colors.black,
-  },
-  noteText: {
-    color: colors.opacityBlack(0.5),
-  },
-  introduction: {
-    borderWidth: 2,
-    borderColor: colors.opacityBlack(0.4),
-    borderRadius: 12,
-  },
-})
 
 export default SignUpModal

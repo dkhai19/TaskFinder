@@ -2,6 +2,7 @@ import {
   Dimensions,
   Image,
   ScrollView,
+  StyleSheet,
   Text,
   TouchableOpacity,
   View,
@@ -14,22 +15,25 @@ import {useEffect, useState} from 'react'
 import {UnsubcribeFunc} from '../../types/unsubcribe.type'
 import {getTaskByOwnerId} from '../../firebase/tasks.api'
 import {ITask} from '../../types/tasks.type'
-import {colors} from '../../constants/color'
 import LinearGradient from 'react-native-linear-gradient'
 import Icon from 'react-native-vector-icons/Ionicons'
 import {typography} from '../../constants/typo'
 import HeaderCustom from '../../components/Header'
-import {profileStyle} from './profile.style'
 import ProfileItem from './profile-item'
 import CardItem from './card-item'
+import {getOpacityColor} from '../../constants/color'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>
-
+const {width, height} = Dimensions.get('window')
 const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
   const others = useSelector((state: RootState) => state.user.otherUsers)
   const target = others?.find(item => item.id === route.params.uid)
   const [ownerTasks, setOwnerTasks] = useState<ITask[]>()
   const myAppied = useSelector((state: RootState) => state.application.applied)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
+  const lightTheme = useSelector(
+    (state: RootState) => state.authentication.lightThem,
+  )
   useEffect(() => {
     if (target) {
       let unsubscribe: UnsubcribeFunc | undefined
@@ -77,6 +81,96 @@ const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
   if (ownerTasks && sumPrice) {
     average = sumPrice / ownerTasks.length
   }
+
+  const profileStyle = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.white,
+    },
+    headerContainer: {
+      position: 'absolute',
+      zIndex: 20,
+    },
+    coverContainer: {
+      width: width,
+      height: height * 0.25,
+      backgroundColor: colors.blue,
+    },
+    avatarContainer: {
+      position: 'absolute',
+      zIndex: 20,
+      left: 16,
+      top: height * 0.19,
+      width: 130,
+      height: 130,
+      borderRadius: 80,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    avatarInner: {
+      width: 122,
+      height: 122,
+      borderRadius: 60,
+      backgroundColor: 'white',
+      justifyContent: 'center',
+      alignItems: 'center',
+      overflow: 'hidden',
+    },
+    avatar: {
+      width: 115,
+      height: 115,
+      borderRadius: 60,
+    },
+    contactContainer: {
+      position: 'absolute',
+      zIndex: 20,
+      right: 16,
+      top: height * 0.22,
+    },
+    contactButton: {
+      width: 150,
+      height: 60,
+      borderRadius: 30,
+      backgroundColor: lightTheme ? '#e0e0e6' : '#404040',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderWidth: 3,
+      borderColor: colors.white,
+    },
+    nameContainer: {
+      flexDirection: 'row',
+      marginTop: height * 0.09,
+      paddingLeft: 24,
+    },
+    tickContainer: {
+      paddingTop: 6,
+      paddingLeft: 8,
+    },
+    tickBackground: {
+      width: 22,
+      height: 22,
+      borderRadius: 20,
+      backgroundColor: getOpacityColor(colors.white, 0.9),
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    introContainer: {
+      marginTop: 8,
+      paddingHorizontal: 24,
+    },
+    taskContainer: {
+      marginTop: 24,
+      paddingHorizontal: 24,
+      marginBottom: 24,
+    },
+    itemsContainer: {
+      marginTop: 36,
+      marginHorizontal: 24,
+      alignItems: 'center',
+      flexDirection: 'row',
+    },
+  })
+
   return (
     <ScrollView
       style={profileStyle.container}
@@ -167,7 +261,8 @@ const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
               toDate={task.end_date}
               price={task.price}
               status={
-                myAppied.find(item => item.task_id === task.taskId)?.status
+                myAppied.find(item => item.task_id === task.taskId)?.status ||
+                'Open'
               }
             />
           ))}
@@ -175,7 +270,5 @@ const ProfileScreen: React.FC<Props> = ({navigation, route}) => {
     </ScrollView>
   )
 }
-
-const {width, height} = Dimensions.get('window')
 
 export default ProfileScreen

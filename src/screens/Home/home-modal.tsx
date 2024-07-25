@@ -9,7 +9,6 @@ import {
   View,
 } from 'react-native'
 import DragView from '../../animations/Modal'
-import {colors} from '../../constants/color'
 import {ITask} from '../../types/tasks.type'
 import {useEffect, useRef, useState} from 'react'
 import {IUsers} from '../../types/users.type'
@@ -25,7 +24,7 @@ import {formatDate} from '../../validations/convert-date'
 import {RootTabParamList} from '../../navigation/RootNavigator'
 import {useNavigation} from '@react-navigation/native'
 import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
-import LoadingModal from '../../animations/LoadingModal'
+import {getOpacityColor} from '../../constants/color'
 
 interface IHomeModal {
   item: ITask
@@ -41,6 +40,7 @@ const HomeModal: React.FC<IHomeModal> = ({item, display}) => {
   const [owner, setOwner] = useState<IUsers>()
   const [isApplied, setIsApplied] = useState<boolean>(false)
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
 
   const animValue = useRef(new Animated.Value(height)).current
 
@@ -97,6 +97,50 @@ const HomeModal: React.FC<IHomeModal> = ({item, display}) => {
       }
     }
   }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.white,
+      borderTopLeftRadius: 8,
+      borderTopRightRadius: 8,
+    },
+    content: {
+      flex: 1,
+      paddingHorizontal: 16,
+    },
+    heading: {
+      marginTop: 24,
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+    },
+    image: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      marginHorizontal: 8,
+    },
+    row: {
+      flexDirection: 'row',
+      alignItems: 'center',
+    },
+    buttonContainer: {
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: colors.red,
+      paddingHorizontal: 16,
+      paddingVertical: 8,
+      borderRadius: 6,
+    },
+    description: {
+      marginTop: 12,
+      paddingHorizontal: 8,
+      borderRadius: 12,
+      minHeight: 100,
+      backgroundColor: getOpacityColor(colors.black, 0.15),
+    },
+  })
 
   if (!owner) {
     return (
@@ -169,7 +213,12 @@ const HomeModal: React.FC<IHomeModal> = ({item, display}) => {
           />
         </View>
         <View style={styles.description}>
-          <TextInput value={item.taskDescription} editable={false} multiline />
+          <TextInput
+            style={{color: colors.black}}
+            value={item.taskDescription}
+            editable={false}
+            multiline
+          />
         </View>
         <View style={{marginTop: 24}}>
           <ContainedButton
@@ -189,49 +238,5 @@ const HomeModal: React.FC<IHomeModal> = ({item, display}) => {
     </DragView>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 8,
-    borderTopRightRadius: 8,
-  },
-  content: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
-  heading: {
-    marginTop: 24,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-  },
-  image: {
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    marginHorizontal: 8,
-  },
-  row: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-  buttonContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.red,
-    paddingHorizontal: 16,
-    paddingVertical: 8,
-    borderRadius: 6,
-  },
-  description: {
-    marginTop: 12,
-    paddingHorizontal: 8,
-    borderRadius: 12,
-    minHeight: 100,
-    backgroundColor: colors.opacityBlack(0.15),
-  },
-})
 
 export default HomeModal

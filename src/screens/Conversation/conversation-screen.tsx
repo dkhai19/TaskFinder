@@ -7,9 +7,7 @@ import {
   View,
 } from 'react-native'
 import {useEffect, useState} from 'react'
-import {colors} from '../../constants/color'
 import {typography} from '../../constants/typo'
-
 import {fetchConversations} from '../../firebase/chats.api'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
@@ -20,12 +18,14 @@ import {useNavigation} from '@react-navigation/native'
 import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
 import {RootStackParamList} from '../../navigation/RootNavigator'
 import ConversationItem from './conversation-item'
+import {getOpacityColor} from '../../constants/color'
 
 const ConversationScreen: React.FC = () => {
   const navigation =
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   //Need to change
   const userUID = useSelector((state: RootState) => state.authentication.uid)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   const [listData, setListData] = useState<IConversation[]>([])
   const listOtherUsers = useSelector(
     (state: RootState) => state.user.otherUsers,
@@ -93,7 +93,7 @@ const ConversationScreen: React.FC = () => {
           <Text
             style={[
               typography.f13_regular,
-              {color: colors.opacityBlack(0.55)},
+              {color: getOpacityColor(colors.black, 0.55)},
             ]}>
             {item.name}
           </Text>
@@ -117,6 +117,42 @@ const ConversationScreen: React.FC = () => {
       </TouchableOpacity>
     )
   }
+
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.white,
+    },
+    title: {
+      marginTop: 36,
+      marginBottom: 24,
+      alignItems: 'center',
+    },
+    black: {
+      color: colors.black,
+    },
+    avatarList: {},
+    avatarItem: {
+      height: 90,
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginLeft: 24,
+      marginBottom: 16,
+    },
+    imageContainer: {
+      width: 60,
+      height: 60,
+    },
+    image: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+    },
+    chatList: {
+      flex: 1,
+      paddingHorizontal: 24,
+    },
+  })
 
   if (!listData) {
     return (
@@ -159,39 +195,4 @@ const ConversationScreen: React.FC = () => {
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  title: {
-    marginTop: 36,
-    marginBottom: 24,
-    alignItems: 'center',
-  },
-  black: {
-    color: colors.black,
-  },
-  avatarList: {},
-  avatarItem: {
-    height: 90,
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginLeft: 24,
-    marginBottom: 16,
-  },
-  imageContainer: {
-    width: 60,
-    height: 60,
-  },
-  image: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-  },
-  chatList: {
-    flex: 1,
-    paddingHorizontal: 24,
-  },
-})
 export default ConversationScreen

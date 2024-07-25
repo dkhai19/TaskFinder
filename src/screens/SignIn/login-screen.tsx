@@ -8,7 +8,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {colors} from '../../constants/color'
 import {typography} from '../../constants/typo'
 import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
 import {LoginStackParamList} from '../../navigation/RootNavigator'
@@ -19,28 +18,22 @@ import {
   validatePassword,
 } from '../../validations/user-infor-validation'
 import Icon from 'react-native-vector-icons/Ionicons'
-import {useDispatch} from 'react-redux'
+import {useDispatch, useSelector} from 'react-redux'
 import {setUserID} from '../../redux/slices/authSlice'
 import LoadingModal from '../../animations/LoadingModal'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 import {findUserById, updateFcmToken} from '../../firebase/users.api'
 import {setCurrentUser} from '../../redux/slices/userSlice'
 import {checkToken} from '../../firebase/notifications.api'
-import {
-  getLocation,
-  LocationCoordinates,
-  requestLocationPermission,
-} from '../../apis/location'
 import {AppDispatch} from '../../redux/store/store'
-import {
-  setCurrentLocation,
-  setLocationPermisstion,
-} from '../../redux/slices/permissionSlice'
+import {RootState} from '../../redux/rootReducer'
+import {getOpacityColor} from '../../constants/color'
 
 type Props = NativeStackScreenProps<LoginStackParamList, 'Login'>
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
   const dispatch = useDispatch<AppDispatch>()
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   const [isLoading, setIsLoading] = useState(false)
   const [user, setUser] = useState({
     email: '',
@@ -64,7 +57,6 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
   //Set error string to use to notice user about invalid input
   const [alert, setAlert] = useState('')
 
-  //State to control user want to hide password or not
   const [hidePassword, setHidePassword] = useState<boolean>(true)
   const handleHideOrShowPassword = () => {
     setHidePassword(prev => !prev)
@@ -152,6 +144,96 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
       Alert.alert('Your input is invalid, check again!')
     }
   }
+
+  const loginStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    images_layer: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: -1,
+    },
+    background_layer: {
+      flex: 1,
+      backgroundColor: getOpacityColor(colors.black, 0.75),
+    },
+    image1_container: {
+      width: '100%',
+      height: '60%',
+      backgroundColor: colors.blue,
+    },
+    image2_container: {
+      width: '100%',
+      height: '40%',
+      backgroundColor: colors.red,
+    },
+    image3_container: {
+      width: '100%',
+      height: '45%',
+      backgroundColor: colors.red,
+    },
+    image4_container: {
+      width: '100%',
+      height: '55%',
+      backgroundColor: colors.blue,
+    },
+    content_container: {
+      flex: 1,
+      paddingHorizontal: 16,
+    },
+    slogan_container: {
+      flex: 1,
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    },
+    middle: {
+      flex: 5,
+    },
+    input_container: {
+      width: '100%',
+      height: 60,
+      borderRadius: 71,
+      backgroundColor: getOpacityColor(colors.white, 0.3),
+      justifyContent: 'center',
+      marginTop: 16,
+    },
+    input: {
+      color: colors.white,
+      paddingVertical: 18,
+      paddingLeft: 28,
+      paddingRight: 16,
+      width: '85%',
+    },
+    button_container: {
+      width: '100%',
+      height: 60,
+      borderRadius: 71,
+      backgroundColor: colors.red,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 16,
+    },
+    register_container: {
+      flexDirection: 'row',
+      width: '100%',
+      justifyContent: 'flex-end',
+      marginTop: 16,
+    },
+    agreement_container: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      alignItems: 'center',
+      paddingBottom: 16,
+    },
+    icon_container: {
+      padding: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  })
+
   return (
     <View
       // behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -212,7 +294,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
               <TextInput
                 style={loginStyles.input}
                 placeholder="Enter email or username"
-                placeholderTextColor={colors.opacityWhite(0.8)}
+                placeholderTextColor={getOpacityColor(colors.white, 0.8)}
                 onChangeText={text => handleChangeUserInput('email', text)}
               />
             </View>
@@ -220,7 +302,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
               <TextInput
                 style={loginStyles.input}
                 placeholder="Enter password"
-                placeholderTextColor={colors.opacityWhite(0.8)}
+                placeholderTextColor={getOpacityColor(colors.white, 0.8)}
                 onChangeText={text => handleChangeUserInput('password', text)}
                 secureTextEntry={hidePassword}
               />
@@ -278,96 +360,5 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     </View>
   )
 }
-
-const {width, height} = Dimensions.get('window')
-
-const loginStyles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  images_layer: {
-    ...StyleSheet.absoluteFillObject,
-    zIndex: -1,
-  },
-  background_layer: {
-    flex: 1,
-    backgroundColor: colors.opacityBlack(0.75),
-  },
-  image1_container: {
-    width: '100%',
-    height: '60%',
-    backgroundColor: colors.blue,
-  },
-  image2_container: {
-    width: '100%',
-    height: '40%',
-    backgroundColor: colors.red,
-  },
-  image3_container: {
-    width: '100%',
-    height: '45%',
-    backgroundColor: colors.red,
-  },
-  image4_container: {
-    width: '100%',
-    height: '55%',
-    backgroundColor: colors.blue,
-  },
-  content_container: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
-  slogan_container: {
-    flex: 1,
-    justifyContent: 'flex-end',
-    alignItems: 'center',
-  },
-  middle: {
-    flex: 5,
-  },
-  input_container: {
-    width: '100%',
-    height: 60,
-    borderRadius: 71,
-    backgroundColor: colors.opacityWhite(0.3),
-    justifyContent: 'center',
-    marginTop: 16,
-  },
-  input: {
-    color: colors.white,
-    paddingVertical: 18,
-    paddingLeft: 28,
-    paddingRight: 16,
-    width: '85%',
-  },
-  button_container: {
-    width: '100%',
-    height: 60,
-    borderRadius: 71,
-    backgroundColor: colors.red,
-    justifyContent: 'center',
-    alignItems: 'center',
-    marginTop: 16,
-  },
-  register_container: {
-    flexDirection: 'row',
-    width: '100%',
-    justifyContent: 'flex-end',
-    marginTop: 16,
-  },
-  agreement_container: {
-    position: 'absolute',
-    bottom: 0,
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    paddingBottom: 16,
-  },
-  icon_container: {
-    padding: 8,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-})
 
 export default LoginScreen

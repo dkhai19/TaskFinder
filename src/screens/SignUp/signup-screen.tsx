@@ -1,5 +1,4 @@
 import {
-  Alert,
   Dimensions,
   Image,
   KeyboardAvoidingView,
@@ -10,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {colors} from '../../constants/color'
 import {typography} from '../../constants/typo'
 import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
 import {LoginStackParamList} from '../../navigation/RootNavigator'
@@ -23,7 +21,6 @@ import {
 } from '../../validations/user-infor-validation'
 import Icon from 'react-native-vector-icons/Ionicons'
 import SignUpModal from './signup-modal'
-import {signupStyles} from './signup-styles'
 import {IUsers} from '../../types/users.type'
 import LoadingModal from '../../animations/LoadingModal'
 import {useDispatch, useSelector} from 'react-redux'
@@ -33,13 +30,14 @@ import {setUserID} from '../../redux/slices/authSlice'
 import {RootState} from '../../redux/rootReducer'
 import {findUserById} from '../../firebase/users.api'
 import {setCurrentUser} from '../../redux/slices/userSlice'
-import {GeoPoint} from '@react-native-firebase/firestore'
+import {getOpacityColor} from '../../constants/color'
 
 type Props = NativeStackScreenProps<LoginStackParamList, 'Signup'>
 
 const LoginScreen: React.FC<Props> = ({navigation}) => {
   const userId = useSelector((state: RootState) => state.authentication.uid)
   const location = useSelector((state: RootState) => state.permission)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   //State store user information
   const dispatch = useDispatch<AppDispatch>()
   //State to control loading
@@ -181,6 +179,110 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     }
   }
 
+  const signupStyles = StyleSheet.create({
+    container: {
+      flex: 1,
+    },
+    images_layer: {
+      ...StyleSheet.absoluteFillObject,
+      zIndex: -1,
+    },
+    background_layer: {
+      flex: 1,
+      backgroundColor: getOpacityColor(colors.black, 0.75),
+    },
+    image1_container: {
+      width: '100%',
+      height: '60%',
+      backgroundColor: colors.blue,
+    },
+    image2_container: {
+      width: '100%',
+      height: '40%',
+      backgroundColor: colors.red,
+    },
+    image3_container: {
+      width: '100%',
+      height: '45%',
+      backgroundColor: colors.red,
+    },
+    image4_container: {
+      width: '100%',
+      height: '55%',
+      backgroundColor: colors.blue,
+    },
+    content_container: {
+      flex: 1,
+      paddingHorizontal: 16,
+    },
+    slogan_container: {
+      flex: 1,
+      justifyContent: 'flex-end',
+      alignItems: 'center',
+    },
+    middle: {
+      flex: 7,
+    },
+    input_container: {
+      width: '100%',
+      height: 60,
+      borderRadius: 71,
+      backgroundColor: getOpacityColor(colors.white, 0.3),
+      marginTop: 16,
+      flexDirection: 'row',
+      justifyContent: 'flex-start',
+      alignItems: 'center',
+    },
+    input: {
+      color: colors.white,
+      paddingVertical: 18,
+      paddingLeft: 28,
+      paddingRight: 16,
+      width: '85%',
+    },
+    icon_container: {
+      padding: 8,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    button_container: {
+      width: '100%',
+      height: 60,
+      borderRadius: 71,
+      backgroundColor: colors.red,
+      justifyContent: 'center',
+      alignItems: 'center',
+      marginTop: 16,
+    },
+    register_container: {
+      flexDirection: 'row',
+      width: '100%',
+      justifyContent: 'flex-end',
+      marginTop: 16,
+    },
+    agreement_container: {
+      position: 'absolute',
+      bottom: 0,
+      left: 0,
+      right: 0,
+      alignItems: 'center',
+      paddingBottom: 16,
+    },
+    alert: {
+      height: 60,
+      width: '60%',
+      backgroundColor: colors.white,
+    },
+    phone_container: {
+      width: '20%',
+      height: '80%',
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRightWidth: 1,
+      borderColor: colors.white,
+    },
+  })
+
   return (
     <KeyboardAvoidingView
       behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -243,7 +345,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 style={signupStyles.input}
                 placeholder="Enter email or username"
                 onChangeText={text => handleInputChange('email', text)}
-                placeholderTextColor={colors.opacityWhite(0.8)}
+                placeholderTextColor={getOpacityColor(colors.white, 0.8)}
               />
             </View>
             {errorMessages.invalidEmail !== '' ? (
@@ -257,7 +359,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
               <TextInput
                 style={signupStyles.input}
                 placeholder="Enter password"
-                placeholderTextColor={colors.opacityWhite(0.8)}
+                placeholderTextColor={getOpacityColor(colors.white, 0.8)}
                 onChangeText={text => handleInputChange('password', text)}
                 secureTextEntry={hidePassword}
               />
@@ -282,7 +384,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
               <TextInput
                 style={signupStyles.input}
                 placeholder="Confirm your password"
-                placeholderTextColor={colors.opacityWhite(0.8)}
+                placeholderTextColor={getOpacityColor(colors.white, 0.8)}
                 onChangeText={text =>
                   handleInputChange('confirmPassword', text)
                 }
@@ -316,7 +418,7 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 inputMode="numeric"
                 placeholder="Enter phone number"
                 onChangeText={text => handleInputChange('phoneNumber', text)}
-                placeholderTextColor={colors.opacityWhite(0.8)}
+                placeholderTextColor={getOpacityColor(colors.white, 0.8)}
               />
             </View>
             {errorMessages.invalidPhone !== '' ? (
@@ -370,7 +472,5 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     </KeyboardAvoidingView>
   )
 }
-
-const {width, height} = Dimensions.get('window')
 
 export default LoginScreen

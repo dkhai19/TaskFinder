@@ -1,12 +1,13 @@
 import React, {useEffect, useState} from 'react'
 import {IUserProfiles} from '../../types/users.type'
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
-import {colors} from '../../constants/color'
 import {UnsubcribeFunc} from '../../types/unsubcribe.type'
 import {getTaskByOwnerId} from '../../firebase/tasks.api'
 import {ITask} from '../../types/tasks.type'
 import {typography} from '../../constants/typo'
 import Icon from 'react-native-vector-icons/Ionicons'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
 interface ISearchItem {
   user: IUserProfiles
   onPress: (uid: string) => void
@@ -14,6 +15,7 @@ interface ISearchItem {
 
 const SearchItem: React.FC<ISearchItem> = ({user, onPress}) => {
   const [ownerTasks, setOwnerTasks] = useState<ITask[]>()
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   useEffect(() => {
     if (user) {
       let unsubscribe: UnsubcribeFunc | undefined
@@ -30,6 +32,44 @@ const SearchItem: React.FC<ISearchItem> = ({user, onPress}) => {
       }
     }
   }, [])
+
+  const styles = StyleSheet.create({
+    container: {
+      width: '100%',
+      height: 80,
+      padding: 12,
+      marginTop: 16,
+      borderBottomWidth: 0.25,
+      borderColor: colors.black,
+    },
+    content: {
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+    },
+    imgContainer: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+    image: {
+      width: 60,
+      height: 60,
+      borderRadius: 30,
+    },
+    profileButton: {
+      width: 90,
+    },
+    button: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      padding: 8,
+      backgroundColor: colors.red,
+      borderRadius: 8,
+    },
+  })
 
   if (!ownerTasks) {
     return (
@@ -83,43 +123,5 @@ const SearchItem: React.FC<ISearchItem> = ({user, onPress}) => {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    width: '100%',
-    height: 80,
-    padding: 12,
-    marginTop: 16,
-    borderBottomWidth: 0.25,
-    borderColor: colors.black,
-  },
-  content: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-  },
-  imgContainer: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  image: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
-  },
-  profileButton: {
-    width: 90,
-  },
-  button: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: 8,
-    backgroundColor: colors.red,
-    borderRadius: 8,
-  },
-})
 
 export default SearchItem

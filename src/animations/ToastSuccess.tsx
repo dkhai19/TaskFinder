@@ -2,7 +2,9 @@ import React, {useEffect, useRef} from 'react'
 import {Animated, StyleSheet, Text, View} from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
 import {typography} from '../constants/typo'
-import {colors} from '../constants/color'
+import {useSelector} from 'react-redux'
+import {RootState} from '../redux/rootReducer'
+import {getOpacityColor} from '../constants/color'
 
 interface ISuccess {
   message: string
@@ -11,7 +13,7 @@ interface ISuccess {
 const SuccessAnimation: React.FC<ISuccess> = ({message}) => {
   const scaleAnim = useRef(new Animated.Value(0)).current
   const opacityAnim = useRef(new Animated.Value(0)).current
-
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   useEffect(() => {
     Animated.parallel([
       Animated.timing(scaleAnim, {
@@ -26,6 +28,24 @@ const SuccessAnimation: React.FC<ISuccess> = ({message}) => {
       }),
     ]).start()
   }, [])
+
+  const styles = StyleSheet.create({
+    container: {
+      position: 'absolute',
+      zIndex: 100,
+      top: 0,
+      bottom: 0,
+      right: 0,
+      left: 0,
+      justifyContent: 'center',
+      alignItems: 'center',
+      backgroundColor: getOpacityColor(colors.black, 0.3),
+    },
+    checkmarkContainer: {
+      justifyContent: 'center',
+      alignItems: 'center',
+    },
+  })
 
   return (
     <View style={styles.container}>
@@ -47,23 +67,5 @@ const SuccessAnimation: React.FC<ISuccess> = ({message}) => {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    position: 'absolute',
-    zIndex: 100,
-    top: 0,
-    bottom: 0,
-    right: 0,
-    left: 0,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: colors.opacityBlack(0.3),
-  },
-  checkmarkContainer: {
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-})
 
 export default SuccessAnimation

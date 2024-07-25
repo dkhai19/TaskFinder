@@ -11,7 +11,6 @@ import {
 import {useEffect, useState} from 'react'
 import client from '../../apis/stream'
 import {typography} from '../../constants/typo'
-import {colors} from '../../constants/color'
 import {sendCallNotification} from '../../apis/notify'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
@@ -24,7 +23,7 @@ const CallScreen: React.FC<Props> = ({navigation, route}) => {
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
   const callId = route.params.callId
   const callType = route.params.type
-
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   useEffect(() => {
     const setupCall = async () => {
       const _call = client.call('default', callId)

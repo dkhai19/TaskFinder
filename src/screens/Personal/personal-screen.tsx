@@ -1,9 +1,7 @@
 import {
   Animated,
-  Button,
   Dimensions,
   Image,
-  Platform,
   ScrollView,
   StyleSheet,
   Text,
@@ -11,7 +9,6 @@ import {
   TouchableOpacity,
   View,
 } from 'react-native'
-import {colors} from '../../constants/color'
 import {useEffect, useRef, useState} from 'react'
 import {typography} from '../../constants/typo'
 import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
@@ -35,6 +32,7 @@ import SuccessAnimation from '../../animations/ToastSuccess'
 import HeaderCustom from '../../components/Header'
 import ImagePicker from 'react-native-image-crop-picker'
 import {requestCameraPermission} from '../../apis/stream'
+import {getOpacityColor} from '../../constants/color'
 
 const {width, height} = Dimensions.get('window')
 
@@ -43,13 +41,17 @@ const PersonalScreen: React.FC = () => {
     useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const dispatch = useDispatch<AppDispatch>()
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
+  const lightTheme = useSelector(
+    (state: RootState) => state.authentication.lightThem,
+  )
   const animValue = useRef(new Animated.Value(width)).current
   const [date, setDate] = useState(new Date())
   const [open, setOpen] = useState(false)
   const [updated, setUpdated] = useState<boolean>(false)
   const [displayToast, setDisplayToast] = useState<boolean>(false)
   const [canUpdated, setCanUpdate] = useState<boolean>(false)
-  const [imageUri, setImageUri] = useState<string>()
+  // const [imageUri, setImageUri] = useState<string>()
   const [editInfor, setEditInfor] = useState<IUserProfiles>({
     id: currentUser.id,
     avatar: currentUser.avatar,
@@ -190,6 +192,77 @@ const PersonalScreen: React.FC = () => {
     )
   }
 
+  const styles = StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: colors.white,
+    },
+    imageContainer: {
+      height: height * 0.18,
+
+      alignItems: 'center',
+    },
+    imageBorder: {
+      width: 110,
+      height: 120,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 12,
+    },
+    image: {
+      width: 100,
+      height: 110,
+      borderRadius: 12,
+    },
+    inputField: {
+      flex: 1,
+      paddingHorizontal: 16,
+    },
+    nameContainer: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      marginBottom: 24,
+    },
+    birthdayContainer: {
+      flexDirection: 'row',
+      marginBottom: 24,
+      justifyContent: 'space-between',
+      alignItems: 'center',
+    },
+    phoneContainer: {
+      marginBottom: 24,
+    },
+    introduction: {
+      borderWidth: 2,
+      borderColor: getOpacityColor(colors.black, 0.4),
+      borderRadius: 12,
+      color: colors.black,
+    },
+    buttonContainer: {
+      width: '100%',
+      height: 52,
+      justifyContent: 'center',
+      alignItems: 'center',
+      borderRadius: 8,
+      backgroundColor: getOpacityColor(colors.black, 0.15),
+    },
+    camera: {
+      position: 'absolute',
+      bottom: 0,
+      right: 0,
+      width: 40,
+      height: 40,
+      backgroundColor: lightTheme ? colors.white : colors.black,
+      borderTopLeftRadius: 8,
+    },
+    cameraImage: {
+      width: 40,
+      height: 40,
+      borderRadius: 30,
+    },
+  })
+
   return (
     <Animated.View
       style={[
@@ -221,7 +294,7 @@ const PersonalScreen: React.FC = () => {
             <TouchableOpacity onPress={pickImage} style={styles.camera}>
               <Image
                 style={styles.cameraImage}
-                source={require('../../assets/photos/camera.png')}
+                source={require(`../../assets/photos/cameralight.png`)}
               />
             </TouchableOpacity>
           </View>
@@ -316,7 +389,7 @@ const PersonalScreen: React.FC = () => {
               <ContainedButton title="Apply changes" onPress={handleUpdate} />
             ) : (
               <View style={styles.buttonContainer}>
-                <Text style={[typography.f20_medium, {color: colors.white}]}>
+                <Text style={[typography.f20_medium, {color: colors.black}]}>
                   Apply Changes
                 </Text>
               </View>
@@ -327,75 +400,5 @@ const PersonalScreen: React.FC = () => {
     </Animated.View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: colors.white,
-  },
-  imageContainer: {
-    height: height * 0.18,
-
-    alignItems: 'center',
-  },
-  imageBorder: {
-    width: 110,
-    height: 120,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 12,
-  },
-  image: {
-    width: 100,
-    height: 110,
-    borderRadius: 12,
-  },
-  inputField: {
-    flex: 1,
-    paddingHorizontal: 16,
-  },
-  nameContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 24,
-  },
-  birthdayContainer: {
-    flexDirection: 'row',
-    marginBottom: 24,
-    justifyContent: 'space-between',
-    alignItems: 'center',
-  },
-  phoneContainer: {
-    marginBottom: 24,
-  },
-  introduction: {
-    borderWidth: 2,
-    borderColor: colors.opacityBlack(0.4),
-    borderRadius: 12,
-  },
-  buttonContainer: {
-    width: '100%',
-    height: 52,
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 8,
-    backgroundColor: colors.opacityBlack(0.15),
-  },
-  camera: {
-    position: 'absolute',
-    bottom: 0,
-    right: 0,
-    width: 40,
-    height: 40,
-    backgroundColor: colors.white,
-    borderTopLeftRadius: 8,
-  },
-  cameraImage: {
-    width: 40,
-    height: 40,
-    borderRadius: 30,
-  },
-})
 
 export default PersonalScreen

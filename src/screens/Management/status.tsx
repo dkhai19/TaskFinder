@@ -1,7 +1,5 @@
 import {StyleSheet, View} from 'react-native'
-import {colors} from '../../constants/color'
 import Icon from 'react-native-vector-icons/Ionicons'
-import {useEffect, useState} from 'react'
 
 interface IStatus {
   status: string

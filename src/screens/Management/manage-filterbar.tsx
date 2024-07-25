@@ -7,9 +7,10 @@ import {
   Animated,
   Dimensions,
 } from 'react-native'
-import {colors} from '../../constants/color'
-
-const {width, height} = Dimensions.get('window')
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
+import {getOpacityColor} from '../../constants/color'
+const {width} = Dimensions.get('window')
 
 interface IManageFilterBar {
   onChangeType: (type: string) => void
@@ -18,7 +19,7 @@ interface IManageFilterBar {
 const ManageFilterBar: React.FC<IManageFilterBar> = ({onChangeType}) => {
   const [selected, setSelected] = useState('All')
   const [animation, setAnimation] = useState(new Animated.Value(0))
-
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   useEffect(() => {
     let toValue: number
     switch (selected) {
@@ -57,6 +58,38 @@ const ManageFilterBar: React.FC<IManageFilterBar> = ({onChangeType}) => {
     onChangeType(item)
   }
 
+  const styles = StyleSheet.create({
+    container: {
+      flexDirection: 'row',
+      position: 'relative',
+    },
+    background: {
+      position: 'absolute',
+      width: width * 0.25,
+      height: '100%',
+      backgroundColor: getOpacityColor(colors.red, 0.15),
+      borderRadius: 5,
+    },
+    button: {
+      flex: 1,
+      padding: 12,
+      alignItems: 'center',
+      justifyContent: 'center',
+    },
+    activeButton: {
+      // Add styles for active button if needed
+    },
+    normalText: {
+      fontSize: 14,
+      color: colors.black,
+    },
+    boldText: {
+      fontSize: 16,
+      fontWeight: '700',
+      color: colors.red,
+    },
+  })
+
   return (
     <View style={styles.container}>
       <Animated.View style={[styles.background, {transform: [{translateX}]}]} />
@@ -73,37 +106,5 @@ const ManageFilterBar: React.FC<IManageFilterBar> = ({onChangeType}) => {
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    position: 'relative',
-  },
-  background: {
-    position: 'absolute',
-    width: width * 0.25,
-    height: '100%',
-    backgroundColor: colors.opacityRed(0.15),
-    borderRadius: 5,
-  },
-  button: {
-    flex: 1,
-    padding: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  activeButton: {
-    // Add styles for active button if needed
-  },
-  normalText: {
-    fontSize: 14,
-    color: colors.black,
-  },
-  boldText: {
-    fontSize: 16,
-    fontWeight: '700',
-    color: colors.red,
-  },
-})
 
 export default ManageFilterBar

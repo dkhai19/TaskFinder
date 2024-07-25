@@ -1,9 +1,9 @@
 import {Image, StyleSheet, Text, View} from 'react-native'
 import {typography} from '../../constants/typo'
-import {colors} from '../../constants/color'
 import {useEffect, useState} from 'react'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
+import {getOpacityColor} from '../../constants/color'
 
 interface IConversationItem {
   receiver_id: string
@@ -20,7 +20,7 @@ const ConversationItem: React.FC<IConversationItem> = ({
   lastDate,
   imageUrl,
 }) => {
-  const current = useSelector((state: RootState) => state.user.currentUser.id)
+  const colors = useSelector((state: RootState) => state.authentication.colors)
 
   return (
     <View style={styles.container}>
@@ -45,7 +45,10 @@ const ConversationItem: React.FC<IConversationItem> = ({
       </View>
       <View style={styles.tail}>
         <Text
-          style={[typography.f11_regular, {color: colors.opacityBlack(0.55)}]}>
+          style={[
+            typography.f11_regular,
+            {color: getOpacityColor(colors.black, 0.55)},
+          ]}>
           {lastDate}
         </Text>
       </View>

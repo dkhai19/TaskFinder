@@ -1,7 +1,9 @@
 import {StyleSheet, Text, View} from 'react-native'
-import {colors} from '../../constants/color'
 import Icon from 'react-native-vector-icons/MaterialIcons'
 import {typography} from '../../constants/typo'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
+import {getOpacityColor} from '../../constants/color'
 interface IProfileItem {
   iconName: string
   mainContent: string
@@ -13,6 +15,18 @@ const ProfileItem: React.FC<IProfileItem> = ({
   mainContent,
   subContent,
 }) => {
+  const colors = useSelector((state: RootState) => state.authentication.colors)
+
+  const styles = StyleSheet.create({
+    container: {
+      alignItems: 'center',
+      justifyContent: 'center',
+      borderRightWidth: 0.5,
+      borderColor: getOpacityColor(colors.black, 0.5),
+      minHeight: 60,
+      minWidth: 180,
+    },
+  })
   return (
     <View style={styles.container}>
       <View
@@ -31,23 +45,15 @@ const ProfileItem: React.FC<IProfileItem> = ({
           marginTop: 6,
         }}>
         <Text
-          style={[typography.f16_semibold, {color: colors.opacityBlack(0.5)}]}>
+          style={[
+            typography.f16_semibold,
+            {color: getOpacityColor(colors.black, 0.5)},
+          ]}>
           {subContent}
         </Text>
       </View>
     </View>
   )
 }
-
-const styles = StyleSheet.create({
-  container: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    borderRightWidth: 0.5,
-    borderColor: colors.opacityBlack(0.5),
-    minHeight: 60,
-    minWidth: 180,
-  },
-})
 
 export default ProfileItem

@@ -2,7 +2,8 @@ import {Text} from 'react-native'
 import {StyleSheet, View} from 'react-native'
 import Icon from 'react-native-vector-icons/Feather'
 import {typography} from '../../constants/typo'
-import {colors} from '../../constants/color'
+import {useSelector} from 'react-redux'
+import {RootState} from '../../redux/rootReducer'
 interface IRowItem {
   iconName: string
   iconColor: string
@@ -10,6 +11,7 @@ interface IRowItem {
 }
 
 const RowItem: React.FC<IRowItem> = ({iconName, iconColor, title}) => {
+  const colors = useSelector((state: RootState) => state.authentication.colors)
   return (
     <View style={styles.container}>
       <View style={styles.iconContainer}>
