@@ -1,11 +1,11 @@
 import {Image, StyleSheet, Text, View} from 'react-native'
-import {typography} from '../../constants/typo'
+import {typography} from '../../../constants/typo'
 import {useEffect, useState} from 'react'
-import {IUsers} from '../../types/users.type'
-import {findUserById} from '../../firebase/users.api'
+import {IUsers} from '../../../types/users.type'
+import {findUserById} from '../../../firebase/users.api'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
-import LoadingModal from '../../animations/LoadingModal'
+import {RootState} from '../../../redux/rootReducer'
+import LoadingModal from '../../../animations/LoadingModal'
 
 interface IMessageRow {
   isMine: boolean
@@ -109,7 +109,7 @@ const MessageRow: React.FC<IMessageRow> = ({
               source={
                 receiver
                   ? {uri: receiver?.avatar}
-                  : require('../../assets/photos/image1.jpg')
+                  : require('../../../assets/photos/image1.jpg')
               }
               onLoadStart={() => setIsLoading(true)}
               onLoadEnd={() => setIsLoading(false)}

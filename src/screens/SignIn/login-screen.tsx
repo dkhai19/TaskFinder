@@ -39,23 +39,10 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     email: '',
     password: '',
   })
-
-  // useEffect(() => {
-  //   const setupLocation = async () => {
-  //     const requestStatus = await requestLocationPermission()
-  //     dispatch(setLocationPermisstion(requestStatus))
-  //     if (requestStatus === 'granted') {
-  //       const currentLocation = await getLocation()
-  //       dispatch(setCurrentLocation(currentLocation))
-  //       //console.log('Current location:', currentLocation)
-  //     }
-  //   }
-  //   setupLocation()
-  // }, [])
-  // const userId = useSelector((state: RootState) => state.authentication.uid);
-  // console.log(userId);
-  //Set error string to use to notice user about invalid input
-  const [alert, setAlert] = useState('')
+  const [errorText, setErrorText] = useState({
+    errorEmail: '',
+    errorPwd: '',
+  })
 
   const [hidePassword, setHidePassword] = useState<boolean>(true)
   const handleHideOrShowPassword = () => {
@@ -89,60 +76,81 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
   }
 
   useEffect(() => {
-    const autoSignIn = async () => {
-      const getEmail = await AsyncStorage.getItem('email')
-      const getPwd = await AsyncStorage.getItem('password')
-      if (getEmail && getPwd) {
-        setIsLoading(() => true)
-        auth()
-          .signInWithEmailAndPassword(getEmail, getPwd)
-          .then(currentUser => {
-            dispatch(setUserID(currentUser.user.uid))
-            storeLoginInformation(
-              user.email,
-              user.password,
-              currentUser.user.uid,
-            )
-            setTimeout(() => {
-              setIsLoading(() => false)
-              navigation.replace('Main')
-            }, 1500)
-          })
-          .catch(error => {
-            setIsLoading(() => false)
-            console.log(error)
-          })
-      } else {
-        return
-      }
+    if (!validateEmail(user.email)) {
+      setErrorText(prevState => ({
+        ...prevState,
+        errorEmail:
+          'Email must have at least 6 characters and suffix is @gmail.com',
+      }))
+    } else {
+      setErrorText(prevState => ({
+        ...prevState,
+        errorEmail: '',
+      }))
     }
-    autoSignIn()
-  }, [])
+    if (!validatePassword(user.password)) {
+      setErrorText(prevState => ({
+        ...prevState,
+        errorPwd:
+          'Password must contain at least a capital letter, a number and a special character',
+      }))
+    } else {
+      setErrorText(prevState => ({
+        ...prevState,
+        errorPwd: '',
+      }))
+    }
+  }, [user])
+
+  // useEffect(() => {
+  //   const autoSignIn = async () => {
+  //     const getEmail = await AsyncStorage.getItem('email')
+  //     const getPwd = await AsyncStorage.getItem('password')
+  //     if (getEmail && getPwd) {
+  //       setIsLoading(() => true)
+  //       auth()
+  //         .signInWithEmailAndPassword(getEmail, getPwd)
+  //         .then(currentUser => {
+  //           dispatch(setUserID(currentUser.user.uid))
+  //           storeLoginInformation(
+  //             user.email,
+  //             user.password,
+  //             currentUser.user.uid,
+  //           )
+  //           setTimeout(() => {
+  //             setIsLoading(() => false)
+  //             navigation.replace('Main')
+  //           }, 1500)
+  //         })
+  //         .catch(error => {
+  //           setIsLoading(() => false)
+  //           console.log(error)
+  //         })
+  //     } else {
+  //       return
+  //     }
+  //   }
+  //   autoSignIn()
+  // }, [])
 
   //Handle sign in logic
   const signInHandler = () => {
-    if (validateEmail(user.email) && validatePassword(user.password)) {
-      setIsLoading(() => true)
-      auth()
-        .signInWithEmailAndPassword(user.email, user.password)
-        .then(currentUser => {
-          dispatch(setUserID(currentUser.user.uid))
-          //console.log(currentUser.user.uid);
-          storeLoginInformation(user.email, user.password, currentUser.user.uid)
-          setTimeout(() => {
-            setIsLoading(() => false)
-            navigation.replace('Main')
-          }, 1500)
-        })
-        .catch(error => {
+    setIsLoading(() => true)
+    auth()
+      .signInWithEmailAndPassword(user.email, user.password)
+      .then(currentUser => {
+        dispatch(setUserID(currentUser.user.uid))
+        //console.log(currentUser.user.uid);
+        storeLoginInformation(user.email, user.password, currentUser.user.uid)
+        setTimeout(() => {
           setIsLoading(() => false)
-          Alert.alert('Your input is invalid, check again!')
-          console.log(error)
-        })
-    } else {
-      setIsLoading(() => false)
-      Alert.alert('Your input is invalid, check again!')
-    }
+          navigation.replace('Main')
+        }, 1500)
+      })
+      .catch(error => {
+        setIsLoading(() => false)
+        console.log(error)
+      })
   }
 
   const loginStyles = StyleSheet.create({
@@ -200,15 +208,14 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     input: {
       color: colors.white,
       paddingVertical: 18,
-      paddingLeft: 28,
       paddingRight: 16,
+      paddingHorizontal: 24,
       width: '85%',
     },
     button_container: {
       width: '100%',
       height: 60,
       borderRadius: 71,
-      backgroundColor: colors.red,
       justifyContent: 'center',
       alignItems: 'center',
       marginTop: 16,
@@ -229,8 +236,14 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     },
     icon_container: {
       padding: 8,
+      paddingRight: 16,
       justifyContent: 'center',
       alignItems: 'center',
+      opacity: 1,
+    },
+    error: {
+      fontSize: 14,
+      color: 'red',
     },
   })
 
@@ -298,9 +311,18 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 onChangeText={text => handleChangeUserInput('email', text)}
               />
             </View>
-            <View style={[loginStyles.input_container, {flexDirection: 'row'}]}>
+            {errorText.errorEmail !== '' && (
+              <View style={{paddingLeft: 24, marginTop: 8}}>
+                <Text style={loginStyles.error}>{errorText.errorEmail}</Text>
+              </View>
+            )}
+            <View
+              style={[
+                loginStyles.input_container,
+                {flexDirection: 'row', justifyContent: 'space-between'},
+              ]}>
               <TextInput
-                style={loginStyles.input}
+                style={[loginStyles.input]}
                 placeholder="Enter password"
                 placeholderTextColor={getOpacityColor(colors.white, 0.8)}
                 onChangeText={text => handleChangeUserInput('password', text)}
@@ -316,9 +338,25 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 />
               </TouchableOpacity>
             </View>
+            {errorText.errorPwd !== '' && (
+              <View style={{paddingLeft: 24, marginTop: 8}}>
+                <Text style={loginStyles.error}>{errorText.errorPwd}</Text>
+              </View>
+            )}
             <TouchableOpacity
               onPress={signInHandler}
-              style={loginStyles.button_container}>
+              disabled={
+                !validateEmail(user.email) || !validatePassword(user.password)
+              }
+              style={[
+                loginStyles.button_container,
+                {
+                  backgroundColor:
+                    validateEmail(user.email) && validatePassword(user.password)
+                      ? colors.red
+                      : '#888d89',
+                },
+              ]}>
               <Text style={[typography.f17_medium, {color: colors.white}]}>
                 Sign In
               </Text>

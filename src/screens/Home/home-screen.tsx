@@ -27,7 +27,7 @@ import {
   setApplications,
 } from '../../redux/slices/applicationSlice'
 import {formatDate} from '../../validations/convert-date'
-import SearchScreen from './search-screen'
+import SearchScreen from './components/search-screen'
 import {toggleBottomTab} from '../../redux/slices/appSlice'
 import {useNavigation} from '@react-navigation/native'
 import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'

@@ -19,8 +19,8 @@ import LinearGradient from 'react-native-linear-gradient'
 import Icon from 'react-native-vector-icons/Ionicons'
 import {typography} from '../../constants/typo'
 import HeaderCustom from '../../components/Header'
-import ProfileItem from './profile-item'
-import CardItem from './card-item'
+import ProfileItem from './components/profile-item'
+import CardItem from './components/card-item'
 import {getOpacityColor} from '../../constants/color'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Profile'>

@@ -1,10 +1,10 @@
 import {StyleSheet, Text, TouchableOpacity, View} from 'react-native'
-import {typography} from '../../constants/typo'
-import {formatDate} from '../../validations/convert-date'
+import {typography} from '../../../constants/typo'
+import {formatDate} from '../../../validations/convert-date'
 import Icon from 'react-native-vector-icons/Foundation'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
-import {getOpacityColor} from '../../constants/color'
+import {RootState} from '../../../redux/rootReducer'
+import {getOpacityColor} from '../../../constants/color'
 interface ICardItem {
   onPress: () => void
   title: string

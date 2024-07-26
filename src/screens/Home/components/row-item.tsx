@@ -1,9 +1,9 @@
 import {Text} from 'react-native'
 import {StyleSheet, View} from 'react-native'
 import Icon from 'react-native-vector-icons/Feather'
-import {typography} from '../../constants/typo'
+import {typography} from '../../../constants/typo'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
+import {RootState} from '../../../redux/rootReducer'
 interface IRowItem {
   iconName: string
   iconColor: string

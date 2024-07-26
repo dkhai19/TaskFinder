@@ -10,12 +10,12 @@ import {
 import Icon from 'react-native-vector-icons/Feather'
 import {useEffect, useRef, useState} from 'react'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
-import {IUserProfiles} from '../../types/users.type'
+import {RootState} from '../../../redux/rootReducer'
+import {IUserProfiles} from '../../../types/users.type'
 import SearchItem from './search-item'
 import {useNavigation} from '@react-navigation/native'
 import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
-import {RootStackParamList} from '../../navigation/RootNavigator'
+import {RootStackParamList} from '../../../navigation/RootNavigator'
 
 interface ISearchScreen {
   onPress: () => void

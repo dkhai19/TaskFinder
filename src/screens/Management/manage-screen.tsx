@@ -1,11 +1,11 @@
 import {ScrollView, StyleSheet, Text, View} from 'react-native'
-import ManageFilterBar from './manage-filterbar'
+import ManageFilterBar from './components/manage-filterbar'
 import {typography} from '../../constants/typo'
 import {useEffect, useState} from 'react'
 import {useDispatch, useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import {getAllMyApplications} from '../../firebase/applications.api'
-import ApplicationItem from './application-item'
+import ApplicationItem from './components/application-item'
 import {UnsubcribeFunc} from '../../types/unsubcribe.type'
 import {
   IApplication,
@@ -19,15 +19,18 @@ const ManagementScreen = () => {
     const tolower = type.toLowerCase()
     setAction(tolower)
   }
+
   const applications = useSelector(
     (state: RootState) => state.application.applied,
   )
+
   const colors = useSelector((state: RootState) => state.authentication.colors)
 
   const [filterItems, setFilterItems] = useState<IApplication[]>()
   const [action, setAction] = useState<string>()
   const currentUser = useSelector((state: RootState) => state.user.currentUser)
   const dispatch = useDispatch()
+
   useEffect(() => {
     if (applications.length === 0) {
       console.log('Loading the applications in manage screen')

@@ -17,7 +17,7 @@ import {convertFirestoreTimestampToDate} from '../../validations/convert-date'
 import {useNavigation} from '@react-navigation/native'
 import {NativeStackNavigationProp} from 'react-native-screens/lib/typescript/native-stack/types'
 import {RootStackParamList} from '../../navigation/RootNavigator'
-import ConversationItem from './conversation-item'
+import ConversationItem from './components/conversation-item'
 import {getOpacityColor} from '../../constants/color'
 
 const ConversationScreen: React.FC = () => {

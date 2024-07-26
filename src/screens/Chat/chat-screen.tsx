@@ -2,8 +2,8 @@ import {ScrollView, View} from 'react-native'
 import {NativeStackScreenProps} from 'react-native-screens/lib/typescript/native-stack/types'
 import {ChatStackParamList} from '../../navigation/RootNavigator'
 import {StyleSheet} from 'react-native'
-import ChatHeader from './chat-header'
-import ChatInput from './chat-input'
+import ChatHeader from './components/chat-header'
+import ChatInput from './components/chat-input'
 import {useEffect, useState} from 'react'
 import {
   fetchMessages,
@@ -11,7 +11,7 @@ import {
   sendMessage,
 } from '../../firebase/chats.api'
 import {IMessage, ISender} from '../../types/chats.type'
-import MessageRow from './message-row'
+import MessageRow from './components/message-row'
 import {useSelector} from 'react-redux'
 import {RootState} from '../../redux/rootReducer'
 import {ICall} from '../../types/calls.type'

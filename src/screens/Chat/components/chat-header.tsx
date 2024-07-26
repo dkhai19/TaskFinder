@@ -1,12 +1,12 @@
 import {Image, StyleSheet, TouchableOpacity} from 'react-native'
 import {Text, View} from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
-import {typography} from '../../constants/typo'
+import {typography} from '../../../constants/typo'
 import {useEffect, useState} from 'react'
-import {IUsers} from '../../types/users.type'
-import {findUserById} from '../../firebase/users.api'
+import {IUsers} from '../../../types/users.type'
+import {findUserById} from '../../../firebase/users.api'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
+import {RootState} from '../../../redux/rootReducer'
 
 interface IChatHeader {
   onBack: () => void

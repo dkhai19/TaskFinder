@@ -15,6 +15,7 @@ import {LoginStackParamList} from '../../navigation/RootNavigator'
 import auth from '@react-native-firebase/auth'
 import {useEffect, useState} from 'react'
 import {
+  validateConfirmPassword,
   validateEmail,
   validatePassword,
   validatePhone,
@@ -60,17 +61,56 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
     invalidConfirmPassword: '',
     invalidPhone: '',
   })
-
+  let checkInput: Boolean
+  if (
+    validateEmail(input.email) &&
+    validatePassword(input.password) &&
+    validatePhone(input.phoneNumber) &&
+    input.password === input.confirmPassword
+  ) {
+    checkInput = true
+  } else {
+    checkInput = false
+  }
   //Check every input of confirmPassword whether it matchs password
+
   useEffect(() => {
-    if (input.confirmPassword !== input.password && input.password !== '') {
-      errorMessages.invalidConfirmPassword = 'Your confirm password not match!'
-    } else {
-      setErrorMessage({
-        ...errorMessages,
-        invalidConfirmPassword: '',
-      })
-    }
+    setErrorMessage(prevState => ({
+      ...prevState,
+      invalidEmail: !validateEmail(input.email)
+        ? 'Email must have at least 6 characters before @ and the suffix follow @gmail.com'
+        : '',
+    }))
+  }, [input.email])
+
+  useEffect(() => {
+    setErrorMessage(prevState => ({
+      ...prevState,
+      invalidPassword: !validatePassword(input.password)
+        ? 'Password must have at least 8 characters, 1 number, 1 capital and 1 special character '
+        : '',
+    }))
+  }, [input.password])
+
+  useEffect(() => {
+    setErrorMessage(prevState => ({
+      ...prevState,
+      invalidPhone: !validatePhone(input.phoneNumber)
+        ? 'Phone number must match VietNam phone number'
+        : '',
+    }))
+  }, [input.phoneNumber])
+
+  useEffect(() => {
+    setErrorMessage(prevState => ({
+      ...prevState,
+      invalidConfirmPassword: !validateConfirmPassword(
+        input.password,
+        input.confirmPassword,
+      )
+        ? 'Your confirm password not match!'
+        : '',
+    }))
   }, [input.confirmPassword])
 
   //State to control user want to hide password or not
@@ -112,71 +152,43 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
 
   //Sign up function
   const signUpFirebaseHandler = () => {
-    if (!validateEmail(input.email)) {
-      setErrorMessage(prevState => ({
-        ...prevState,
-        invalidEmail:
-          'Email must have at least 6 characters before @ and the suffix follow @gmail.com',
-      }))
-    }
-    if (!validatePassword(input.password)) {
-      setErrorMessage(prevState => ({
-        ...prevState,
-        invalidPassword:
-          'Password must have at least 8 characters, 1 number, 1 capital and 1 special character ',
-      }))
-    }
-    if (!validatePhone(input.phoneNumber)) {
-      console.log(input.phoneNumber)
-      setErrorMessage(prevState => ({
-        ...prevState,
-        invalidPhone: 'Phone number must match VietNam phone number',
-      }))
-    }
-    if (
-      validateEmail(input.email) &&
-      validatePassword(input.password) &&
-      input.password === input.confirmPassword &&
-      validatePhone(input.phoneNumber)
-    ) {
-      setIsLoading(true)
-      auth()
-        .createUserWithEmailAndPassword(input.email, input.password)
-        .then(UserCredential => {
-          const uid = UserCredential.user.uid
-          const userData: IUsers = {
-            id: uid,
-            avatar: '',
-            email: input.email,
-            birthday: '',
-            first_name: '',
-            last_name: '',
-            gender: '',
-            introduction: '',
-            rating: 0,
-            phone: input.phoneNumber,
-            location: {
-              latitude: location.latitude,
-              longitude: location.longitude,
-            },
-            role: 'employee',
-          }
-          dispatch(addUser(userData))
-          dispatch(setUserID(uid))
-          dispatch(setCurrentUser(userData))
-          setIsLoading(false)
-          setOpenModal(true)
-          //navigation.navigate('Main');
-        })
-        .catch(error => {
-          setIsLoading(() => false)
-          if (error.code === 'auth/email-already-in-use') {
-            console.log(
-              ' The email address is already in use by another account.',
-            )
-          }
-        })
-    }
+    setIsLoading(true)
+    auth()
+      .createUserWithEmailAndPassword(input.email, input.password)
+      .then(UserCredential => {
+        const uid = UserCredential.user.uid
+        const userData: IUsers = {
+          id: uid,
+          avatar: '',
+          email: input.email,
+          birthday: '',
+          first_name: '',
+          last_name: '',
+          gender: '',
+          introduction: '',
+          rating: 0,
+          phone: input.phoneNumber,
+          location: {
+            latitude: location.latitude,
+            longitude: location.longitude,
+          },
+          role: 'employee',
+        }
+        dispatch(addUser(userData))
+        dispatch(setUserID(uid))
+        dispatch(setCurrentUser(userData))
+        setIsLoading(false)
+        setOpenModal(true)
+        //navigation.navigate('Main');
+      })
+      .catch(error => {
+        setIsLoading(() => false)
+        if (error.code === 'auth/email-already-in-use') {
+          console.log(
+            ' The email address is already in use by another account.',
+          )
+        }
+      })
   }
 
   const signupStyles = StyleSheet.create({
@@ -249,7 +261,6 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
       width: '100%',
       height: 60,
       borderRadius: 71,
-      backgroundColor: colors.red,
       justifyContent: 'center',
       alignItems: 'center',
       marginTop: 16,
@@ -348,13 +359,13 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 placeholderTextColor={getOpacityColor(colors.white, 0.8)}
               />
             </View>
-            {errorMessages.invalidEmail !== '' ? (
+            {errorMessages.invalidEmail !== '' && (
               <View style={{paddingHorizontal: 16}}>
-                <Text style={[typography.f15_regular, {color: 'yellow'}]}>
+                <Text style={[typography.f15_regular, {color: 'red'}]}>
                   {errorMessages.invalidEmail}
                 </Text>
               </View>
-            ) : null}
+            )}
             <View style={[signupStyles.input_container]}>
               <TextInput
                 style={signupStyles.input}
@@ -373,13 +384,13 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 />
               </TouchableOpacity>
             </View>
-            {errorMessages.invalidPassword !== '' ? (
+            {errorMessages.invalidPassword !== '' && (
               <View style={{paddingHorizontal: 16}}>
-                <Text style={[typography.f15_regular, {color: 'yellow'}]}>
+                <Text style={[typography.f15_regular, {color: 'red'}]}>
                   {errorMessages.invalidPassword}
                 </Text>
               </View>
-            ) : null}
+            )}
             <View style={[signupStyles.input_container]}>
               <TextInput
                 style={signupStyles.input}
@@ -400,13 +411,13 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 />
               </TouchableOpacity>
             </View>
-            {errorMessages.invalidConfirmPassword !== '' ? (
+            {errorMessages.invalidConfirmPassword !== '' && (
               <View style={{paddingHorizontal: 16}}>
-                <Text style={[typography.f15_regular, {color: 'yellow'}]}>
+                <Text style={[typography.f15_regular, {color: 'red'}]}>
                   {errorMessages.invalidConfirmPassword}
                 </Text>
               </View>
-            ) : null}
+            )}
             <View style={signupStyles.input_container}>
               <View style={signupStyles.phone_container}>
                 <Text style={[typography.f17_medium, {color: colors.white}]}>
@@ -421,16 +432,22 @@ const LoginScreen: React.FC<Props> = ({navigation}) => {
                 placeholderTextColor={getOpacityColor(colors.white, 0.8)}
               />
             </View>
-            {errorMessages.invalidPhone !== '' ? (
+            {errorMessages.invalidPhone !== '' && (
               <View style={{paddingHorizontal: 16}}>
-                <Text style={[typography.f15_regular, {color: 'yellow'}]}>
+                <Text style={[typography.f15_regular, {color: 'red'}]}>
                   {errorMessages.invalidPhone}
                 </Text>
               </View>
-            ) : null}
+            )}
             <TouchableOpacity
               onPress={handleConfirmSignUp}
-              style={signupStyles.button_container}>
+              disabled={checkInput ? false : true}
+              style={[
+                signupStyles.button_container,
+                {
+                  backgroundColor: checkInput ? colors.red : '#888d89',
+                },
+              ]}>
               <Text style={[typography.f17_medium, {color: colors.white}]}>
                 Create Account
               </Text>

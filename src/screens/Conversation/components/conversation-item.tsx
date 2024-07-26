@@ -1,9 +1,9 @@
 import {Image, StyleSheet, Text, View} from 'react-native'
-import {typography} from '../../constants/typo'
+import {typography} from '../../../constants/typo'
 import {useEffect, useState} from 'react'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
-import {getOpacityColor} from '../../constants/color'
+import {RootState} from '../../../redux/rootReducer'
+import {getOpacityColor} from '../../../constants/color'
 
 interface IConversationItem {
   receiver_id: string
@@ -61,6 +61,8 @@ const styles = StyleSheet.create({
     maxHeight: 70,
     flexDirection: 'row',
     paddingVertical: 10,
+    paddingBottom: 8,
+    borderBottomWidth: 0.25,
   },
   image: {
     width: 60,

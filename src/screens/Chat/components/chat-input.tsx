@@ -7,10 +7,10 @@ import {
   View,
 } from 'react-native'
 import Icon from 'react-native-vector-icons/Ionicons'
-import Pulse from '../../animations/Pulse'
+import Pulse from '../../../animations/Pulse'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
-import {getOpacityColor} from '../../constants/color'
+import {RootState} from '../../../redux/rootReducer'
+import {getOpacityColor} from '../../../constants/color'
 
 const {width} = Dimensions.get('window')
 

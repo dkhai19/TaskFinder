@@ -8,8 +8,8 @@ import {
   Dimensions,
 } from 'react-native'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
-import {getOpacityColor} from '../../constants/color'
+import {RootState} from '../../../redux/rootReducer'
+import {getOpacityColor} from '../../../constants/color'
 const {width} = Dimensions.get('window')
 
 interface IManageFilterBar {

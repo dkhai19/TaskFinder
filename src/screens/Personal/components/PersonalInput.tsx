@@ -1,8 +1,8 @@
 import {StyleSheet, Text, TextInput, View} from 'react-native'
-import {typography} from '../../constants/typo'
+import {typography} from '../../../constants/typo'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
-import {getOpacityColor} from '../../constants/color'
+import {RootState} from '../../../redux/rootReducer'
+import {getOpacityColor} from '../../../constants/color'
 interface IPersonalInput {
   label: string
   isNumeric?: boolean

@@ -1,9 +1,9 @@
 import {StyleSheet, Text, View} from 'react-native'
 import Icon from 'react-native-vector-icons/MaterialIcons'
-import {typography} from '../../constants/typo'
+import {typography} from '../../../constants/typo'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
-import {getOpacityColor} from '../../constants/color'
+import {RootState} from '../../../redux/rootReducer'
+import {getOpacityColor} from '../../../constants/color'
 interface IProfileItem {
   iconName: string
   mainContent: string

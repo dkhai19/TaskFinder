@@ -1,13 +1,13 @@
 import React, {useEffect, useState} from 'react'
-import {IUserProfiles} from '../../types/users.type'
+import {IUserProfiles} from '../../../types/users.type'
 import {Image, StyleSheet, Text, TouchableOpacity, View} from 'react-native'
-import {UnsubcribeFunc} from '../../types/unsubcribe.type'
-import {getTaskByOwnerId} from '../../firebase/tasks.api'
-import {ITask} from '../../types/tasks.type'
-import {typography} from '../../constants/typo'
+import {UnsubcribeFunc} from '../../../types/unsubcribe.type'
+import {getTaskByOwnerId} from '../../../firebase/tasks.api'
+import {ITask} from '../../../types/tasks.type'
+import {typography} from '../../../constants/typo'
 import Icon from 'react-native-vector-icons/Ionicons'
 import {useSelector} from 'react-redux'
-import {RootState} from '../../redux/rootReducer'
+import {RootState} from '../../../redux/rootReducer'
 interface ISearchItem {
   user: IUserProfiles
   onPress: (uid: string) => void
