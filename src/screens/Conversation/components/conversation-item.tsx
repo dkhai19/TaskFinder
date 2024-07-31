@@ -58,7 +58,7 @@ const ConversationItem: React.FC<IConversationItem> = ({
 
 const styles = StyleSheet.create({
   container: {
-    maxHeight: 70,
+    minHeight: 70,
     flexDirection: 'row',
     paddingVertical: 10,
     paddingBottom: 8,

@@ -92,6 +92,25 @@ export const updateUserProfile = async (user_infor: IUserProfiles) => {
     })
 }
 
+export const updateUserAvatar = async (user_id: string, avatar: string) => {
+  const uploadUri =
+    Platform.OS === 'ios' ? avatar.replace('file://', '') : avatar
+  const fileName = 'avatar.jpg'
+  const storageRef = storage().ref(`users/${user_id}/${fileName}`)
+  await storageRef.putFile(uploadUri)
+  const imageURL = await storageRef.getDownloadURL()
+
+  await userCollection
+    .doc(user_id)
+    .update({avatar: imageURL})
+    .then(() => {
+      console.log('Change profile success!')
+    })
+    .catch(error => {
+      console.error('Change profile failed', error)
+    })
+}
+
 export const findUserById = async (user_id: string): Promise<IUsers> => {
   const userDoc = await firestore().collection('users').doc(user_id).get()
   const data = userDoc.data()

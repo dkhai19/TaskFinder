@@ -51,7 +51,6 @@ const PersonalScreen: React.FC = () => {
   const [updated, setUpdated] = useState<boolean>(false)
   const [displayToast, setDisplayToast] = useState<boolean>(false)
   const [canUpdated, setCanUpdate] = useState<boolean>(false)
-  // const [imageUri, setImageUri] = useState<string>()
   const [editInfor, setEditInfor] = useState<IUserProfiles>({
     id: currentUser.id,
     avatar: currentUser.avatar,
@@ -238,6 +237,7 @@ const PersonalScreen: React.FC = () => {
       borderColor: getOpacityColor(colors.black, 0.4),
       borderRadius: 12,
       color: colors.black,
+      paddingLeft: 8,
     },
     buttonContainer: {
       width: '100%',
